@@ -1,8 +1,5 @@
 package com.gameminers.kahur;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-
 public enum WoodColor {
 	OAK		(0xBC9862, "Oak"),
 	BIRCH	(0xD7CB8D, "Birch"),

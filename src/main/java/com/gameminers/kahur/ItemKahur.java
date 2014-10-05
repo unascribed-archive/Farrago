@@ -25,6 +25,7 @@ public class ItemKahur extends Item {
 		return true;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean advanced) {
 		WoodColor bodyColor = WoodColor.BIG_OAK;
@@ -115,6 +116,7 @@ public class ItemKahur extends Item {
 		pump = r.registerIcon("kahur:kahur_pump");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
 		for (WoodColor body : WoodColor.values()) {
