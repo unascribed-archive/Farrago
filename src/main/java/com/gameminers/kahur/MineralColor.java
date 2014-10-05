@@ -14,7 +14,7 @@ public enum MineralColor {
 	GOLD	(Items.gold_ingot, 0xFCEE4B, "Gold"),
 	QUARTZ	(Items.quartz, 0xDACEC1, "Nether Quartz"),
 	EMERALD	(Items.emerald, 0x17DD62, "Emerald"),
-	DIAMOND	(Items.diamond, 0x77CEFB, "Diamond"),
+	DIAMOND	(Items.diamond, 0x5DECF5, "Diamond"),
 	;
 	private final ItemStack material;
 	private final int color;
