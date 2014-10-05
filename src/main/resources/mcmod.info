@@ -1,0 +1,16 @@
+[
+{
+  "modid": "kahur",
+  "name": "Kahur",
+  "description": "Adds the Kahur, a gun which can shoot arbitrary items.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Aesen"],
+  "credits": "FourTwentyBlazeIt for the idea, Aesen for all code and art",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
