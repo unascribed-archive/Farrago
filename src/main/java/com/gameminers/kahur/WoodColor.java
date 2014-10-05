@@ -2,8 +2,8 @@ package com.gameminers.kahur;
 
 public enum WoodColor {
 	OAK		(0xBC9862, "Oak"),
-	BIRCH	(0xD7CB8D, "Birch"),
 	SPRUCE	(0x805E36, "Spruce"),
+	BIRCH	(0xD7CB8D, "Birch"),
 	JUNGLE	(0xB88764, "Jungle"),
 	ACACIA	(0xBA683B, "Acacia"),
 	BIG_OAK	(0x492F17, "Dark Oak"),

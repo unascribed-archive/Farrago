@@ -57,20 +57,20 @@ public class KahurMod {
 					tag.setString("KahurPumpMaterial", pump.name());
 					kahur.setTagCompound(tag);
 					GameRegistry.addRecipe(kahur,
-							"S  ",
-							"MP ",
-							" /S",
-							'S', new ItemStack(Blocks.planks, 1, body.ordinal()),
-							'P', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-							'M', pump.getMaterial(),
+							"B  ",
+							"PD ",
+							" /B",
+							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
+							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
+							'P', pump.getMaterial(),
 							'/', Items.stick);
 					GameRegistry.addRecipe(kahur,
-							"  S",
-							" PM",
-							"S/ ",
-							'S', new ItemStack(Blocks.planks, 1, body.ordinal()),
-							'P', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-							'M', pump.getMaterial(),
+							"  B",
+							" DP",
+							"B/ ",
+							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
+							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
+							'P', pump.getMaterial(),
 							'/', Items.stick);
 				}
 			}

@@ -119,9 +119,9 @@ public class ItemKahur extends Item {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
-		for (WoodColor body : WoodColor.values()) {
-			for (WoodColor drum : WoodColor.values()) {
-				for (MineralColor pump : MineralColor.values()) {
+		for (MineralColor pump : MineralColor.values()) {
+			for (WoodColor body : WoodColor.values()) {
+				for (WoodColor drum : WoodColor.values()) {
 					ItemStack kahur = new ItemStack(item);
 					NBTTagCompound tag = new NBTTagCompound();
 					tag.setString("KahurBodyMaterial", body.name());
