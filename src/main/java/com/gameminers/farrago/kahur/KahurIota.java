@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.gameminers.farrago.Iota;
-import com.gameminers.farrago.Proxy;
 import com.gameminers.farrago.kahur.client.InitScreen;
 import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
 import com.gameminers.farrago.kahur.entity.render.RenderKahurProjectile;
