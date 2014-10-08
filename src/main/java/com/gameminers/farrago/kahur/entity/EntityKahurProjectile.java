@@ -1,4 +1,4 @@
-package com.gameminers.kahur;
+package com.gameminers.farrago.kahur.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.entity.RenderSnowball;

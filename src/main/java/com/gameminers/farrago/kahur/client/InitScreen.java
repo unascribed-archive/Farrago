@@ -1,4 +1,4 @@
-package com.gameminers.kahur;
+package com.gameminers.farrago.kahur.client;
 
 import gminers.glasspane.GlassPane;
 import gminers.glasspane.HorzAlignment;
@@ -16,6 +16,8 @@ import java.util.Random;
 import net.minecraft.util.ResourceLocation;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
+
+import com.gameminers.farrago.kahur.WoodColor;
 
 public class InitScreen {
 	private static final String[] prefixes = { "Initializing", "Actuating", "Separating", "Differentiating", "Reversing", "Preparing", "Digitizing", "Crunching", "Invoking", "Computing", "Programming", "Animating", "Exciting", "Energizing", "Inspiring", "Propelling", "Impelling", "Weakening", "Strengthening", "Comprehending", "Discerning", "Contrasting", "Marking", "Interpreting", "Associating", "Linking", "Depolarizing", "Executing", "Slashing", "Deleting", "Purging", "Clearing", "Extrapolating", "Randomizing", "Supersampling", "Subsampling", "Composing", "Chaining", "Cleaning", "Disinfecting", "Infecting", "Mining", "Shrinking", "Growing", "Augmenting", "Exaggerating", "Elaborating", "Reflecting", "Redirecting", "Dodging", "Throwing", "Implying", "Losing", "Winning", "Verifying", "Trusting", "Utilizing", "Clicking", "Priming", "Approaching", "Dropping", "Injecting", "Leveraging", "Synergizing", "Destroying" };

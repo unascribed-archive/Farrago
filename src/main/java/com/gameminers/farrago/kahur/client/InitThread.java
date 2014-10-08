@@ -1,4 +1,6 @@
-package com.gameminers.kahur;
+package com.gameminers.farrago.kahur.client;
+
+import com.gameminers.farrago.kahur.KahurIota;
 
 import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.item.Item;
@@ -37,7 +39,7 @@ public class InitThread extends Thread {
 				String n = Item.itemRegistry.getNameForObject(i);
 				setText("Calculating item mass for "+n);
 				try {
-					KahurMod.calculateMass(i, 0, 32767);
+					KahurIota.calculateMass(i, 0, 32767);
 				} catch (StackOverflowError error) {
 					blink();
 					continue;
@@ -50,7 +52,7 @@ public class InitThread extends Thread {
 			}
 		}
 		setText("Baking item masses");
-		KahurMod.bake();
+		KahurIota.bake();
 		while (progress.getLagPercentage() < 0.95) {
 			try {
 				sleep(100);

@@ -18,3 +18,7 @@
 /README.txt
 /.gradle/
 /.settings/
+/asm/
+/augment/
+*.log
+*.log.[0-99]

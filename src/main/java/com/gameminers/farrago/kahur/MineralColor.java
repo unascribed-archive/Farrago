@@ -1,4 +1,4 @@
-package com.gameminers.kahur;
+package com.gameminers.farrago.kahur;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;

@@ -1,8 +1,13 @@
-package com.gameminers.kahur;
+package com.gameminers.farrago.kahur.item;
 
 import gminers.kitchensink.RandomPool;
 
 import java.util.List;
+
+import com.gameminers.farrago.kahur.KahurIota;
+import com.gameminers.farrago.kahur.MineralColor;
+import com.gameminers.farrago.kahur.WoodColor;
+import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -33,7 +38,7 @@ public class ItemKahur extends Item {
 	public ItemKahur() {
 		setUnlocalizedName("kahur");
 		setTextureName("kahur:kahur");
-		setCreativeTab(KahurMod.creativeTab);
+		setCreativeTab(KahurIota.creativeTab);
 	}
 	
 	@Override
@@ -185,17 +190,30 @@ public class ItemKahur extends Item {
 	@Override
 	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target) {
 		if (player.isSneaking()) {
-			NBTTagCompound tag = stack.getTagCompound();
-			if (tag == null) {
-				tag = new NBTTagCompound();
-				stack.setTagCompound(tag);
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityId")) {
+				return true;
 			}
-			tag.setInteger("KahurEntityId", EntityList.getEntityID(target));
-			NBTTagCompound entityTag = new NBTTagCompound();
-			target.writeToNBT(entityTag);
-			tag.setTag("KahurEntity", entityTag);
-			target.setDead();
-			player.worldObj.playSoundAtEntity(player, "tile.piston.in", 1.0F, (itemRand.nextFloat() * 0.4F + 1.2F));
+			MineralColor pumpColor = MineralColor.IRON;
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurPumpMaterial")) {
+				pumpColor = MineralColor.valueOf(stack.getTagCompound().getString("KahurPumpMaterial"));
+			}
+			if (pumpColor.ordinal() <= MineralColor.LAPIS.ordinal()) return true;
+			if (stack.getMaxDamage()-stack.getItemDamage() < 12) {
+				stack.damageItem(2000, player);
+			} else {
+				NBTTagCompound tag = stack.getTagCompound();
+				if (tag == null) {
+					tag = new NBTTagCompound();
+					stack.setTagCompound(tag);
+				}
+				tag.setInteger("KahurEntityId", EntityList.getEntityID(target));
+				NBTTagCompound entityTag = new NBTTagCompound();
+				target.writeToNBT(entityTag);
+				tag.setTag("KahurEntity", entityTag);
+				target.setDead();
+				player.worldObj.playSoundAtEntity(player, "tile.piston.in", 1.0F, (itemRand.nextFloat() * 0.4F + 1.2F));
+				stack.damageItem(10, player);
+			}
 			return true;
 		}
 		return false;
@@ -212,6 +230,7 @@ public class ItemKahur extends Item {
 				}
 				gun.getTagCompound().removeTag("KahurEntityId");
 				gun.getTagCompound().removeTag("KahurEntity");
+				gun.damageItem(5, player);
 				ent.setLocationAndAngles(player.posX, player.posY + (double)player.getEyeHeight(), player.posZ, player.rotationYaw, player.rotationPitch);
 		        ent.posX -= (double)(MathHelper.cos(ent.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
 		        ent.posY -= 0.10000000149011612D;
@@ -279,11 +298,11 @@ public class ItemKahur extends Item {
 		ItemStack item = player.inventory.getStackInSlot(slot);
 		ItemStack copy = player.inventory.decrStackSize(slot, 1);
 		proj.setItem(copy);
-		proj.setDamage(KahurMod.getMass(copy)+(KahurMod.getMagic(copy)*2f));
+		proj.setDamage(KahurIota.getMass(copy)+(KahurIota.getMagic(copy)*2f));
 		world.playSoundAtEntity(player, "mob.enderdragon.hit", 1.0F, (itemRand.nextFloat() * 0.4F + 1.2F));
 		gun.damageItem(1, player);
 		if (!world.isRemote) {
-			gun.damageItem((int)KahurMod.getMagic(copy), player);
+			gun.damageItem((int)KahurIota.getMagic(copy), player);
 			if (item.getItem() == Items.gunpowder) {
 				world.createExplosion(null, player.posX, player.posY, player.posZ, 0.4f, false);
 				gun.damageItem(12, player);

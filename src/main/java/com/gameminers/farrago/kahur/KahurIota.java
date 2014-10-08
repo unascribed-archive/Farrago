@@ -1,10 +1,16 @@
-package com.gameminers.kahur;
+package com.gameminers.farrago.kahur;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.gameminers.farrago.Iota;
+import com.gameminers.farrago.Proxy;
+import com.gameminers.farrago.kahur.client.InitScreen;
+import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
+import com.gameminers.farrago.kahur.entity.render.RenderKahurProjectile;
+import com.gameminers.farrago.kahur.item.ItemKahur;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -44,8 +50,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Mod(modid="kahur",name="Kahur",version="0.2",dependencies="required-after:KitchenSink;after:GlassPane;after:*")
-public class KahurMod {
+public class KahurIota implements Iota {
 	/*
 	 * Damage is calculated based off of two values: Mass and Magic.
 	 * 
@@ -76,8 +81,6 @@ public class KahurMod {
 	static boolean baked = false;
 	public static List<Runnable> tasks = Lists.newArrayList();
 	public static ItemKahur KAHUR;
-	@SidedProxy(clientSide="com.gameminers.kahur.ClientProxy",serverSide="com.gameminers.kahur.ServerProxy")
-	public static Proxy proxy;
 	public static CreativeTabs creativeTab = new CreativeTabs("kahur") {
 		
 		@Override
@@ -85,43 +88,6 @@ public class KahurMod {
 			return KAHUR;
 		}
 	};
-	@EventHandler
-	public void onInit(FMLInitializationEvent e) {
-		KAHUR = new ItemKahur();
-		GameRegistry.registerItem(KAHUR, "kahur");
-		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, this, 64, 12, true);
-		RenderingRegistry.registerEntityRenderingHandler(EntityKahurProjectile.class, new RenderKahurProjectile());
-		for (WoodColor body : WoodColor.values()) {
-			for (WoodColor drum : WoodColor.values()) {
-				for (MineralColor pump : MineralColor.values()) {
-					ItemStack kahur = new ItemStack(KAHUR);
-					NBTTagCompound tag = new NBTTagCompound();
-					tag.setString("KahurBodyMaterial", body.name());
-					tag.setString("KahurDrumMaterial", drum.name());
-					tag.setString("KahurPumpMaterial", pump.name());
-					kahur.setTagCompound(tag);
-					GameRegistry.addRecipe(kahur,
-							"B  ",
-							"PD ",
-							" /B",
-							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
-							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-							'P', pump.getMaterial(),
-							'/', Items.stick);
-					GameRegistry.addRecipe(kahur,
-							"  B",
-							" DP",
-							"B/ ",
-							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
-							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-							'P', pump.getMaterial(),
-							'/', Items.stick);
-				}
-			}
-		}
-		FMLCommonHandler.instance().bus().register(this);
-		MinecraftForge.EVENT_BUS.register(this);
-	}
 	
 	@SubscribeEvent
 	public void onInformation(ItemTooltipEvent e) {
@@ -150,11 +116,6 @@ public class KahurMod {
 		}
 	}
 	
-	@EventHandler
-	public void onPostInit(FMLPostInitializationEvent e) {
-		proxy.init();
-	}
-	
 	public static long hashItemStack(ItemStack toHash) {
 		long hash = 0;
 		hash |= (toHash.getItemDamage() & Short.MAX_VALUE) << Short.SIZE;
@@ -169,7 +130,7 @@ public class KahurMod {
 	}
 	
 	@SuppressWarnings("unchecked")
-	static void calculateMass(Item i, int depth, int durability) {
+	public static void calculateMass(Item i, int depth, int durability) {
 		if (depth > 100) {
 			throw new StackOverflowError();
 		}
@@ -298,6 +259,8 @@ public class KahurMod {
 			bakedMass.put(en.getKey(), average(en.getValue()));
 			System.out.println("Baked mass of "+protoStacks.get(en.getKey())+" is "+bakedMass.get(en.getKey()));
 		}
+		mass.clear();
+		protoStacks.clear();
 		baked = true;
 	}
 
@@ -418,5 +381,72 @@ public class KahurMod {
 			magic += ((ItemFood)stack.getItem()).func_150906_h(stack);
 		}
 		return magic;
+	}
+
+	@Override
+	public void init() {
+		KAHUR = new ItemKahur();
+		GameRegistry.registerItem(KAHUR, "kahur");
+		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, this, 64, 12, true);
+		RenderingRegistry.registerEntityRenderingHandler(EntityKahurProjectile.class, new RenderKahurProjectile());
+		for (WoodColor body : WoodColor.values()) {
+			for (WoodColor drum : WoodColor.values()) {
+				for (MineralColor pump : MineralColor.values()) {
+					ItemStack kahur = new ItemStack(KAHUR);
+					NBTTagCompound tag = new NBTTagCompound();
+					tag.setString("KahurBodyMaterial", body.name());
+					tag.setString("KahurDrumMaterial", drum.name());
+					tag.setString("KahurPumpMaterial", pump.name());
+					kahur.setTagCompound(tag);
+					GameRegistry.addRecipe(kahur,
+							"B  ",
+							"PD ",
+							" /B",
+							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
+							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
+							'P', pump.getMaterial(),
+							'/', Items.stick);
+					GameRegistry.addRecipe(kahur,
+							"  B",
+							" DP",
+							"B/ ",
+							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
+							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
+							'P', pump.getMaterial(),
+							'/', Items.stick);
+				}
+			}
+		}
+		FMLCommonHandler.instance().bus().register(this);
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	@Override
+	public void postInit() {}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void clientPostInit() {
+		InitScreen.init();
+	}
+
+	@Override
+	@SideOnly(Side.SERVER)
+	public void serverPostInit() {
+		for (Object o : GameData.getItemRegistry()) {
+			if (o instanceof Item) { // should always be true, but just to be sure
+				Item i = (Item) o;
+				try {
+					KahurIota.calculateMass(i, 0, 32767);
+				} catch (StackOverflowError error) {
+					continue;
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.err.println("Dazed and confused, but trying to continue");
+					continue;
+				}
+			}
+		}
+		KahurIota.bake();
 	}
 }
