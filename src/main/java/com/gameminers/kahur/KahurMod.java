@@ -7,25 +7,31 @@ import java.util.UUID;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.item.EntityEnderPearl;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -33,9 +39,12 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-@Mod(modid="kahur",name="Kahur",version="0.1")
+@Mod(modid="kahur",name="Kahur",version="0.1",dependencies="required-after:KitchenSink;after:GlassPane;after:*")
 public class KahurMod {
 	/*
 	 * Damage is calculated based off of two values: Mass and Magic.
@@ -61,9 +70,14 @@ public class KahurMod {
 	 * For a given item, it's chance of dropping is 1 in max(1, 50-(mass+magic)).
 	 * Probably not the best method. Needs research.
 	 */
-	public static Map<Item, Integer> mass = Maps.newHashMap();
+	public static Map<Long, ItemStack> protoStacks = Maps.newHashMap();
+	public static Map<Long, List<Float>> mass = Maps.newHashMap();
+	public static Map<Long, Float> bakedMass = Maps.newHashMap();
+	static boolean baked = false;
 	public static List<Runnable> tasks = Lists.newArrayList();
 	public static ItemKahur KAHUR;
+	@SidedProxy(clientSide="com.gameminers.kahur.ClientProxy",serverSide="com.gameminers.kahur.ServerProxy")
+	public static Proxy proxy;
 	public static CreativeTabs creativeTab = new CreativeTabs("kahur") {
 		
 		@Override
@@ -106,6 +120,24 @@ public class KahurMod {
 			}
 		}
 		FMLCommonHandler.instance().bus().register(this);
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+	
+	@SubscribeEvent
+	public void onInformation(ItemTooltipEvent e) {
+		if (e.showAdvancedItemTooltips) {
+			float massF = getMass(e.itemStack);
+			String massS = (massF <= 0 ? "\u00A7cERROR\u00A79" : ""+massF);
+			float magic = getMagic(e.itemStack);
+			if (magic > 0) {
+				e.toolTip.add("\u00A79"+magic+" Kahur Magic");
+			}
+			e.toolTip.add("\u00A79"+massS+" Kahur Mass");
+			e.toolTip.add("\u00A79All Kahur Masses:");
+			for (float f : getMasses(e.itemStack, false)) {
+				e.toolTip.add("\u00A79- "+f);
+			}
+		}
 	}
 	
 	@SubscribeEvent
@@ -120,11 +152,233 @@ public class KahurMod {
 	
 	@EventHandler
 	public void onPostInit(FMLPostInitializationEvent e) {
-		
+		proxy.init();
 	}
 	
+	public static long hashItemStack(ItemStack toHash) {
+		long hash = 0;
+		hash |= (toHash.getItemDamage() & Short.MAX_VALUE) << Short.SIZE;
+		hash |= (Item.getIdFromItem(toHash.getItem()) & Short.MAX_VALUE);
+		if (toHash.hasTagCompound()) {
+			hash |= (toHash.getTagCompound().hashCode() << 32);
+		}
+		if (!baked) {
+			protoStacks.put(hash, toHash);
+		}
+		return hash;
+	}
+	
+	@SuppressWarnings("unchecked")
+	static void calculateMass(Item i, int depth, int durability) {
+		if (depth > 100) {
+			throw new StackOverflowError();
+		}
+		for (IRecipe r : (List<IRecipe>)CraftingManager.getInstance().getRecipeList()) {
+			if (r == null) continue;
+			if (r.getRecipeOutput() == null) continue;
+			if (r.getRecipeOutput().getItem() == i && (durability == 32767 || r.getRecipeOutput().getItemDamage() == durability)) {
+				float mass = 0f;
+				try {
+					if (r instanceof ShapedRecipes) {
+						ShapedRecipes shaped = (ShapedRecipes) r;
+						/*int count = 0;
+						for (ItemStack is : shaped.recipeItems) {
+							if (is == null || is.getItem() == null || is.stackSize == 0) continue;
+							count++;
+						}
+						if (count <= 1) continue;*/
+						for (ItemStack is : shaped.recipeItems) {
+							if (is == null) continue;
+							mass += getProtoMass(is, depth);
+						}
+					} else if (r instanceof ShapelessRecipes) {
+						ShapelessRecipes shapeless = (ShapelessRecipes) r;
+						/*int count = 0;
+						for (ItemStack is : (List<ItemStack>)shapeless.recipeItems) {
+							if (is == null || is.getItem() == null || is.stackSize == 0) continue;
+							count++;
+						}
+						if (count <= 1) continue;*/
+						for (ItemStack is : (List<ItemStack>)shapeless.recipeItems) {
+							if (is == null) continue;
+							mass += getProtoMass(is, depth);
+						}
+					} else if (r instanceof ShapedOreRecipe) {
+						ShapedOreRecipe shaped = (ShapedOreRecipe) r;
+						mass += processOreRecipe(shaped.getInput(), depth);
+					} else if (r instanceof ShapelessOreRecipe) {
+						ShapelessOreRecipe shapeless = (ShapelessOreRecipe) r;
+						mass += processOreRecipe(shapeless.getInput().toArray(), depth);
+					}
+				} finally {
+					// commit what information we managed to get
+					mass /= r.getRecipeOutput().stackSize;
+					ItemStack copy = r.getRecipeOutput().copy();
+					copy.stackSize = 1;
+					updateMass(copy, mass);
+				}
+			}
+		}
+		for (Map.Entry<ItemStack, ItemStack> en : ((Map<ItemStack, ItemStack>)FurnaceRecipes.smelting().getSmeltingList()).entrySet()) {
+			if (en.getValue().getItem() == i && (durability == 32767 || en.getValue().getItemDamage() == durability)) {
+				ItemStack copy = en.getValue().copy();
+				copy.stackSize = 1;
+				updateMass(copy, getProtoMass(en.getKey(), depth)*0.75f);
+			}
+		}
+		updateMass(new ItemStack(i, 1, 32767), 1.0f);
+	}
+
+	@SuppressWarnings("unchecked")
+	static float processOreRecipe(Object[] input, int depth) {
+		float mass = 0f;
+		/*int count = 0;
+		for (Object o : input) {
+			if (o == null) continue;
+			count++;
+		}
+		if (count <= 1) return 0f;*/
+		for (Object o : input) {
+			if (o instanceof String) {
+				float totalMass = 0f;
+				float divisor = 0f;
+				for (ItemStack is : OreDictionary.getOres((String)o)) {
+					if (is == null) continue;
+					mass += getProtoMass(is, depth);
+					divisor++;
+				}
+				if (divisor > 0 && totalMass > 0) {
+					mass += totalMass / divisor;
+				}
+			} else if (o instanceof ItemStack) {
+				mass += getProtoMass((ItemStack)o, depth);
+			} else if (o instanceof List) {
+				for (ItemStack is : (List<ItemStack>)o) {
+					if (is == null) continue;
+					mass += getProtoMass(is, depth);
+				}
+			} else if (o != null) {
+				System.err.println("Unknown object "+o+" ("+o.getClass()+") found in ore recipe");
+			}
+		}
+		return mass;
+	}
+
+	static float getProtoMass(ItemStack is, int depth) {
+		float isMass = getMass(is);
+		if (isMass <= 0f) {
+			System.out.println();
+			calculateMass(is.getItem(), depth+1, is.getItemDamage());
+			isMass = getMass(is);
+		}
+		if (isMass <= 0f) {
+			isMass = 1f;
+		}
+		return isMass;
+	}
+
+	static void updateMass(ItemStack is, float newMass) {
+		if (Float.isInfinite(newMass) || Float.isNaN(newMass) || newMass <= 0) {
+			newMass = 0;
+		}
+		List<Float> list = mass.get(is);
+		if (list == null) {
+			list = Lists.newArrayList();
+			mass.put(hashItemStack(is), list);
+		}
+		if (newMass <= 0) {
+			newMass = 1;
+		}
+		list.add(newMass);
+	}
+	
+	public static void bake() {
+		bakedMass.clear();
+		for (Map.Entry<Long, List<Float>> en : mass.entrySet()) {
+			bakedMass.put(en.getKey(), average(en.getValue()));
+			System.out.println("Baked mass of "+protoStacks.get(en.getKey())+" is "+bakedMass.get(en.getKey()));
+		}
+		baked = true;
+	}
+
 	private static final UUID field_111210_e = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
 	
+	private static final ItemStack goat = new ItemStack(Items.apple);
+	
+	public static float getMass(ItemStack stack) {
+		if (baked) {
+			return getMasses(stack, true)[0];
+		} else {
+			return average(getMasses(stack, true));
+		}
+	}
+	
+	public static float[] getMasses(ItemStack stack, boolean allowBaked) {
+		goat.func_150996_a(stack.getItem());
+		goat.setItemDamage(stack.getItemDamage());
+		goat.setTagCompound(stack.getTagCompound());
+		goat.stackSize = 1;
+		long hash = hashItemStack(goat);
+		if (baked && allowBaked) {
+			if (bakedMass.containsKey(hash)) {
+				return new float[] {bakedMass.get(hash)};
+			}
+		} else {
+			if (mass.containsKey(hash)) {
+				return array(mass.get(hash));
+			}
+		}
+		goat.setTagCompound(null);
+		hash = hashItemStack(goat);
+		if (baked && allowBaked) {
+			if (bakedMass.containsKey(hash)) {
+				return new float[] {bakedMass.get(hash)};
+			}
+		} else {
+			if (mass.containsKey(hash)) {
+				return array(mass.get(hash));
+			}
+		}
+		goat.setItemDamage(32767);
+		hash = hashItemStack(goat);
+		if (baked && allowBaked) {
+			if (bakedMass.containsKey(hash)) {
+				return new float[] {bakedMass.get(hash)};
+			}
+		} else {
+			if (mass.containsKey(hash)) {
+				return array(mass.get(hash));
+			}
+		}
+		return new float[] { 0f };
+	}
+	
+	private static float[] array(List<Float> list) {
+		float[] array = new float[list.size()];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = list.get(i);
+		}
+		return array;
+	}
+
+	private static float average(float[] array) {
+		float total = 0f;
+		for (Float f : array) {
+			total += f;
+		}
+		float avg = total / array.length;
+		return avg == Float.NaN || avg == Float.NEGATIVE_INFINITY || avg == Float.POSITIVE_INFINITY ? 0f : avg;
+	}
+	
+	private static float average(List<Float> list) {
+		float total = 0f;
+		for (Float f : list) {
+			total += f;
+		}
+		float avg = total / list.size();
+		return avg == Float.NaN || avg == Float.NEGATIVE_INFINITY || avg == Float.POSITIVE_INFINITY ? 0f : avg;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static float getMagic(ItemStack stack) {
 		float magic = 0;
@@ -154,7 +408,6 @@ public class KahurMod {
             } else {
                 amt2 = amt * 100.0D;
             }
-            System.out.println(attr+": "+amt2);
             if (attr.equals("generic.attackDamage")) {
             	magic += amt2/2f;
             } else {
@@ -164,7 +417,6 @@ public class KahurMod {
 		if (stack.getItem() instanceof ItemFood) {
 			magic += ((ItemFood)stack.getItem()).func_150906_h(stack);
 		}
-		System.out.println("magic "+magic);
 		return magic;
 	}
 }
