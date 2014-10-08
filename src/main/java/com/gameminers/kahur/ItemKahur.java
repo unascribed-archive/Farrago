@@ -279,7 +279,7 @@ public class ItemKahur extends Item {
 		ItemStack item = player.inventory.getStackInSlot(slot);
 		ItemStack copy = player.inventory.decrStackSize(slot, 1);
 		proj.setItem(copy);
-		proj.setDamage((int)(KahurMod.getMass(copy)+(KahurMod.getMagic(copy)*2f)));
+		proj.setDamage(KahurMod.getMass(copy)+(KahurMod.getMagic(copy)*2f));
 		world.playSoundAtEntity(player, "mob.enderdragon.hit", 1.0F, (itemRand.nextFloat() * 0.4F + 1.2F));
 		gun.damageItem(1, player);
 		if (!world.isRemote) {

@@ -44,7 +44,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Mod(modid="kahur",name="Kahur",version="0.1",dependencies="required-after:KitchenSink;after:GlassPane;after:*")
+@Mod(modid="kahur",name="Kahur",version="0.2",dependencies="required-after:KitchenSink;after:GlassPane;after:*")
 public class KahurMod {
 	/*
 	 * Damage is calculated based off of two values: Mass and Magic.

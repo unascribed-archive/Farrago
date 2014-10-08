@@ -20,7 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
 public class EntityKahurProjectile extends EntityThrowable {
-	private int damage = 2;
+	private float damage = 2;
 	
 	public EntityKahurProjectile(World p_i1773_1_) {
         super(p_i1773_1_);
@@ -39,7 +39,7 @@ public class EntityKahurProjectile extends EntityThrowable {
     	dataWatcher.addObjectByDataType(12, 5);
     }
     
-    public int getDamage() {
+    public float getDamage() {
 		return damage;
 	}
     
@@ -47,7 +47,7 @@ public class EntityKahurProjectile extends EntityThrowable {
     	return dataWatcher.getWatchableObjectItemStack(12);
 	}
     
-    public void setDamage(int damage) {
+    public void setDamage(float damage) {
 		this.damage = damage;
 	}
     

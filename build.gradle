@@ -17,9 +17,9 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.0"
-group= "com.yourname.modid" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "modid"
+version = "0.2"
+group= "com.gameminers.kahur" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "Kahur"
 
 minecraft {
     version = "1.7.10-10.13.1.1219"
@@ -35,6 +35,11 @@ dependencies {
     // real examples
     //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
     //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
+    
+    compile files (
+        "../KitchenSink/latest-dev.jar",
+        "../GlassPane/latest-dev.jar"
+    )
 
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
