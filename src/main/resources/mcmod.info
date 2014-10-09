@@ -1,14 +1,14 @@
 [
 {
-  "modid": "kahur",
-  "name": "Kahur",
-  "description": "Adds the Kahur, a gun which can shoot arbitrary items.",
+  "modid": "farrago",
+  "name": "Farrago",
+  "description": "farrago, n. 1. A collection containing a confused variety of miscellaneous things. 2. A mod for Minecraft containing a collection of random ideas from Aesen and his friends.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
   "authorList": ["Aesen"],
-  "credits": "FourTwentyBlazeIt for the idea, Aesen for all code and art",
+  "credits": "Aesen for code, art, and some ideas; the Mumble crowd for other ideas",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

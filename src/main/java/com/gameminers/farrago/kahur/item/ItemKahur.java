@@ -130,6 +130,7 @@ public class ItemKahur extends Item {
 			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityId")) {
 				int entityId = stack.getTagCompound().getInteger("KahurEntityId");
 				EntityEggInfo eggInfo = (EntityEggInfo) EntityList.entityEggs.get(entityId);
+				if (eggInfo == null) return -1;
 				return eggInfo.primaryColor;
 			} else {
 				WoodColor drumColor = WoodColor.SPRUCE;
@@ -148,6 +149,7 @@ public class ItemKahur extends Item {
 			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityId")) {
 				int entityId = stack.getTagCompound().getInteger("KahurEntityId");
 				EntityEggInfo eggInfo = (EntityEggInfo) EntityList.entityEggs.get(entityId);
+				if (eggInfo == null) return -1;
 				return eggInfo.secondaryColor;
 			} else {
 				return -1;

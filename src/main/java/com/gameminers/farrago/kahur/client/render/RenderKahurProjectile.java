@@ -1,4 +1,4 @@
-package com.gameminers.farrago.kahur.entity.render;
+package com.gameminers.farrago.kahur.client.render;
 
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;

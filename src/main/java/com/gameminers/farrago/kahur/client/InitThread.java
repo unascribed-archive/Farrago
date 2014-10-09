@@ -7,7 +7,10 @@ import net.minecraft.item.Item;
 import com.gameminers.farrago.kahur.KahurIota;
 
 import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class InitThread extends Thread {
 	private final PaneLabel			infoLabel;
 	private final PaneProgressRing	progress;

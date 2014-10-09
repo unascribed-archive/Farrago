@@ -26,10 +26,11 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.Iota;
 import com.gameminers.farrago.kahur.client.InitScreen;
+import com.gameminers.farrago.kahur.client.render.RenderKahurProjectile;
 import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
-import com.gameminers.farrago.kahur.entity.render.RenderKahurProjectile;
 import com.gameminers.farrago.kahur.item.ItemKahur;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -382,8 +383,7 @@ public class KahurIota implements Iota {
 	public void init() {
 		KAHUR = new ItemKahur();
 		GameRegistry.registerItem(KAHUR, "kahur");
-		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, this, 64, 12, true);
-		RenderingRegistry.registerEntityRenderingHandler(EntityKahurProjectile.class, new RenderKahurProjectile());
+		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, FarragoMod.inst, 64, 12, true);
 		for (WoodColor body : WoodColor.values()) {
 			for (WoodColor drum : WoodColor.values()) {
 				for (MineralColor pump : MineralColor.values()) {
@@ -422,6 +422,7 @@ public class KahurIota implements Iota {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void clientPostInit() {
+		RenderingRegistry.registerEntityRenderingHandler(EntityKahurProjectile.class, new RenderKahurProjectile());
 		InitScreen.init();
 	}
 
