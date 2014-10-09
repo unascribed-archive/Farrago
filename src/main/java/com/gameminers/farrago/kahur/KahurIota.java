@@ -5,14 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.gameminers.farrago.Iota;
-import com.gameminers.farrago.kahur.client.InitScreen;
-import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
-import com.gameminers.farrago.kahur.entity.render.RenderKahurProjectile;
-import com.gameminers.farrago.kahur.item.ItemKahur;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -33,13 +25,17 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+
+import com.gameminers.farrago.Iota;
+import com.gameminers.farrago.kahur.client.InitScreen;
+import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
+import com.gameminers.farrago.kahur.entity.render.RenderKahurProjectile;
+import com.gameminers.farrago.kahur.item.ItemKahur;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;

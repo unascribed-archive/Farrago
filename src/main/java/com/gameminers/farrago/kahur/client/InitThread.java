@@ -1,11 +1,12 @@
 package com.gameminers.farrago.kahur.client;
 
+import gminers.glasspane.component.progress.PaneProgressRing;
+import gminers.glasspane.component.text.PaneLabel;
+import net.minecraft.item.Item;
+
 import com.gameminers.farrago.kahur.KahurIota;
 
 import cpw.mods.fml.common.registry.GameData;
-import net.minecraft.item.Item;
-import gminers.glasspane.component.progress.PaneProgressRing;
-import gminers.glasspane.component.text.PaneLabel;
 
 public class InitThread extends Thread {
 	private final PaneLabel			infoLabel;

@@ -4,29 +4,26 @@ import gminers.kitchensink.RandomPool;
 
 import java.util.List;
 
-import com.gameminers.farrago.kahur.KahurIota;
-import com.gameminers.farrago.kahur.MineralColor;
-import com.gameminers.farrago.kahur.WoodColor;
-import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
-
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityList.EntityEggInfo;
-import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBow;
-import net.minecraft.item.ItemSnowball;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
+import com.gameminers.farrago.kahur.KahurIota;
+import com.gameminers.farrago.kahur.MineralColor;
+import com.gameminers.farrago.kahur.WoodColor;
+import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
 
 public class ItemKahur extends Item {
 	private IIcon body;

@@ -1,10 +1,10 @@
 package com.gameminers.farrago.kahur.entity.render;
 
-import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
-
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
+
+import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
 
 public class RenderKahurProjectile extends Render {
 
