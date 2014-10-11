@@ -35,6 +35,7 @@ public class BlockCombustor extends BlockFurnace {
 
 	@SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta) {
+		meta = meta & 0x7;
         return side == 1 ? this.top : (side == 0 ? this.bottom : (side != meta ? this.blockIcon : this.front));
     }
 

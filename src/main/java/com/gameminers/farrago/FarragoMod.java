@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.gameminers.farrago.block.BlockCombustor;
 import com.gameminers.farrago.kahur.KahurIota;
+import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.google.common.collect.Lists;
 
 import cpw.mods.fml.common.Mod;
@@ -45,6 +46,7 @@ public class FarragoMod {
 		proxy.init();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new FarragoGuiHandler());
 		COMBUSTOR = new BlockCombustor();
+		GameRegistry.registerTileEntity(TileEntityCombustor.class, "FarragoCombustor");
 		GameRegistry.registerBlock(COMBUSTOR, "combustor");
 		GameRegistry.addRecipe(new ShapedOreRecipe(COMBUSTOR, 
 				"III",
