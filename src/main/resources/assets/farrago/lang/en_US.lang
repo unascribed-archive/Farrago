@@ -4,3 +4,6 @@ language.code=en_US
 
 item.kahur.name=Kahur
 itemGroup.kahur=Kahur
+
+tile.combustor.name=Combustor
+container.combustor=Combustor

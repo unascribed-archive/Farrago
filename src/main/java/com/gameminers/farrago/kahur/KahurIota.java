@@ -28,14 +28,11 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.Iota;
-import com.gameminers.farrago.kahur.client.InitScreen;
-import com.gameminers.farrago.kahur.client.render.RenderKahurProjectile;
 import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
 import com.gameminers.farrago.kahur.item.ItemKahur;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -342,7 +339,7 @@ public class KahurIota implements Iota {
 	public static float getMagic(ItemStack stack) {
 		float magic = 0;
 		Collection<Integer> enchantLevels = EnchantmentHelper.getEnchantments(stack).values();
-		if (stack.hasEffect(0) && enchantLevels.isEmpty()) {
+		if ((stack.getItem() == Items.golden_apple && stack.getItemDamage() == 1) || stack.getItem() == Items.nether_star) {
 			magic += 12;
 		}
 		magic += enchantLevels.size();
@@ -422,8 +419,6 @@ public class KahurIota implements Iota {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void clientPostInit() {
-		RenderingRegistry.registerEntityRenderingHandler(EntityKahurProjectile.class, new RenderKahurProjectile());
-		InitScreen.init();
 	}
 
 	@Override

@@ -2,9 +2,14 @@ package com.gameminers.farrago;
 
 import java.util.List;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.gameminers.farrago.block.BlockCombustor;
 import com.gameminers.farrago.kahur.KahurIota;
 import com.google.common.collect.Lists;
 
@@ -16,6 +21,8 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="${version}")
 public class FarragoMod {
@@ -25,6 +32,7 @@ public class FarragoMod {
 	public static Proxy proxy;
 	@Instance("farrago")
 	public static FarragoMod inst;
+	public static BlockCombustor COMBUSTOR;
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
 		subMods.add(new KahurIota());
@@ -34,6 +42,19 @@ public class FarragoMod {
 		for (Iota iota : subMods) {
 			iota.init();
 		}
+		proxy.init();
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, new FarragoGuiHandler());
+		COMBUSTOR = new BlockCombustor();
+		GameRegistry.registerBlock(COMBUSTOR, "combustor");
+		GameRegistry.addRecipe(new ShapedOreRecipe(COMBUSTOR, 
+				"III",
+				"IBI",
+				"IGI",
+				'I', "ingotIron",
+				'B', Blocks.iron_bars,
+				'G', Items.gunpowder
+				));
+		
 	}
 	@EventHandler
 	public void onPostInit(FMLPostInitializationEvent e) {

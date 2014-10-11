@@ -5,7 +5,10 @@ import gminers.glasspane.component.text.PaneLabel;
 import net.minecraft.item.Item;
 
 import com.gameminers.farrago.kahur.KahurIota;
+import com.gameminers.farrago.kahur.client.render.RenderKahurProjectile;
+import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
 
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -57,6 +60,7 @@ public class InitThread extends Thread {
 		}
 		setText("Baking item masses");
 		KahurIota.bake();
+		RenderingRegistry.registerEntityRenderingHandler(EntityKahurProjectile.class, new RenderKahurProjectile());
 		while (progress.getLagPercentage() < 0.95) {
 			try {
 				sleep(100);
