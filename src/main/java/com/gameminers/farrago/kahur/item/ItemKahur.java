@@ -1,21 +1,20 @@
 package com.gameminers.farrago.kahur.item;
 
-import gminers.kitchensink.RandomPool;
-
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityList.EntityEggInfo;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -63,8 +62,8 @@ public class ItemKahur extends Item {
 		list.add("\u00A77Body: "+bodyColor.getFriendlyName());
 		list.add("\u00A77Drum: "+drumColor.getFriendlyName());
 		list.add("\u00A77Pump: "+pumpColor.getFriendlyName());
-		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityId")) {
-			list.add("\u00A77Contains: "+EntityList.getStringFromID(stack.getTagCompound().getInteger("KahurEntityId")));
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityName")) {
+			list.add("\u00A77Contains: "+stack.getTagCompound().getString("KahurEntityName"));
 		}
 	}
 	
@@ -102,14 +101,14 @@ public class ItemKahur extends Item {
 		if (pass == 0) {
 			return body;
 		} else if (pass == 1) {
-			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityId")) {
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityName")) {
 				return drumBulge;
 			}
 			return drum;
 		} else if (pass == 2) {
 			return pump;
 		} else if (pass == 3) {
-			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityId")) {
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityName")) {
 				return entitySpeckles;
 			}
 			return blank;
@@ -127,11 +126,8 @@ public class ItemKahur extends Item {
 			}
 			return bodyColor.getColor();
 		} else if (pass == 1) {
-			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityId")) {
-				int entityId = stack.getTagCompound().getInteger("KahurEntityId");
-				EntityEggInfo eggInfo = (EntityEggInfo) EntityList.entityEggs.get(entityId);
-				if (eggInfo == null) return -1;
-				return eggInfo.primaryColor;
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityName")) {
+				return -1;
 			} else {
 				WoodColor drumColor = WoodColor.SPRUCE;
 				if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurDrumMaterial")) {
@@ -146,11 +142,8 @@ public class ItemKahur extends Item {
 			}
 			return pumpColor.getColor();
 		} else if (pass == 3) {
-			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityId")) {
-				int entityId = stack.getTagCompound().getInteger("KahurEntityId");
-				EntityEggInfo eggInfo = (EntityEggInfo) EntityList.entityEggs.get(entityId);
-				if (eggInfo == null) return -1;
-				return eggInfo.secondaryColor;
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityName")) {
+				return -1;
 			} else {
 				return -1;
 			}
@@ -189,7 +182,7 @@ public class ItemKahur extends Item {
 	@Override
 	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target) {
 		if (player.isSneaking()) {
-			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityId")) {
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityName")) {
 				return true;
 			}
 			MineralColor pumpColor = MineralColor.IRON;
@@ -197,6 +190,7 @@ public class ItemKahur extends Item {
 				pumpColor = MineralColor.valueOf(stack.getTagCompound().getString("KahurPumpMaterial"));
 			}
 			if (pumpColor.ordinal() <= MineralColor.LAPIS.ordinal()) return true;
+			if (target instanceof EntityPlayer) return true;
 			if (stack.getMaxDamage()-stack.getItemDamage() < 12) {
 				stack.damageItem(2000, player);
 			} else {
@@ -205,7 +199,8 @@ public class ItemKahur extends Item {
 					tag = new NBTTagCompound();
 					stack.setTagCompound(tag);
 				}
-				tag.setInteger("KahurEntityId", EntityList.getEntityID(target));
+				
+				tag.setString("KahurEntityName", EntityList.getEntityString(target));
 				NBTTagCompound entityTag = new NBTTagCompound();
 				target.writeToNBT(entityTag);
 				tag.setTag("KahurEntity", entityTag);
@@ -220,14 +215,14 @@ public class ItemKahur extends Item {
 	
 	@Override
 	public ItemStack onItemRightClick(final ItemStack gun, final World world, final EntityPlayer player) {
-		if (gun.hasTagCompound() && gun.getTagCompound().hasKey("KahurEntityId")) {
+		if (gun.hasTagCompound() && gun.getTagCompound().hasKey("KahurEntityName")) {
 			if (!world.isRemote) {
 				world.playSoundAtEntity(player, "tile.piston.out", 1.0F, (itemRand.nextFloat() * 0.4F + 1.2F));
-				Entity ent = EntityList.createEntityByID(gun.getTagCompound().getInteger("KahurEntityId"), world);
+				Entity ent = EntityList.createEntityByName(gun.getTagCompound().getString("KahurEntityName"), world);
 				if (gun.getTagCompound().hasKey("KahurEntity")) {
 					ent.readFromNBT(gun.getTagCompound().getCompoundTag("KahurEntity"));
 				}
-				gun.getTagCompound().removeTag("KahurEntityId");
+				gun.getTagCompound().removeTag("KahurEntityName");
 				gun.getTagCompound().removeTag("KahurEntity");
 				gun.damageItem(5, player);
 				ent.setLocationAndAngles(player.posX, player.posY + (double)player.getEyeHeight(), player.posZ, player.rotationYaw, player.rotationPitch);
@@ -244,9 +239,9 @@ public class ItemKahur extends Item {
 		        ent.motionX /= (double)f2;
 		        ent.motionY /= (double)f2;
 		        ent.motionZ /= (double)f2;
-		        ent.motionX += RandomPool.nextGaussian() * 0.007499999832361937D * (double)1.0f;
-		        ent.motionY += RandomPool.nextGaussian() * 0.007499999832361937D * (double)1.0f;
-		        ent.motionZ += RandomPool.nextGaussian() * 0.007499999832361937D * (double)1.0f;
+		        ent.motionX += ent.worldObj.rand.nextGaussian() * 0.007499999832361937D * (double)1.0f;
+		        ent.motionY += ent.worldObj.rand.nextGaussian() * 0.007499999832361937D * (double)1.0f;
+		        ent.motionZ += ent.worldObj.rand.nextGaussian() * 0.007499999832361937D * (double)1.0f;
 		        ent.motionX *= (double)1.5f;
 		        ent.motionY *= (double)1.5f;
 		        ent.motionZ *= (double)1.5f;
@@ -273,10 +268,45 @@ public class ItemKahur extends Item {
 						break;
 					}
 				}
-				if (item == null) return gun;
+				if (item == null) {
+					world.playSoundAtEntity(player, "random.click", 1.0F, 2.0f);
+					if (!world.isRemote) {
+						player.addChatMessage(new ChatComponentText("\u00A7cCan't find any ammo in the 3rd inventory row."));
+					}
+					return gun;
+				}
+			} else if (pumpColor == MineralColor.OBSIDIAN) {
+				if (player.inventory.consumeInventoryItem(Items.gunpowder)) {
+					world.playSoundAtEntity(player, "mob.enderdragon.hit", 1.0F, (itemRand.nextFloat() * 0.4F + 1.2F));
+					if (!world.isRemote) {
+						Entity owner = null;
+						world.createExplosion(owner, player.posX, player.posY, player.posZ, 0.4f, false);
+						gun.damageItem(6, player);
+					}
+				} else {
+					world.playSoundAtEntity(player, "random.click", 1.0F, 2.0f);
+					if (!world.isRemote) {
+						player.addChatMessage(new ChatComponentText("\u00A7cCan't find any gunpowder."));
+					}
+				}
+				return gun;
+			} else if (pumpColor == MineralColor.GLOW) {
+				if (player.inventory.consumeInventoryItem(Item.getItemFromBlock(Blocks.torch))) {
+					fire(gun, -5, world, player);
+				} else {
+					world.playSoundAtEntity(player, "random.click", 1.0F, 2.0f);
+					if (!world.isRemote) {
+						player.addChatMessage(new ChatComponentText("\u00A7cCan't find any torches."));
+					}
+				}
+				return gun;
 			} else {
 				while (item == null || item.getItem() == null || item.stackSize == 0 || item == gun) {
 					if (iter++ > 2000) {
+						world.playSoundAtEntity(player, "random.click", 1.0F, 2.0f);
+						if (!world.isRemote) {
+							player.addChatMessage(new ChatComponentText("\u00A7cCan't find any ammo."));
+						}
 						return gun;
 					}
 					slot = itemRand.nextInt(player.inventory.mainInventory.length+player.inventory.armorInventory.length);
@@ -293,23 +323,26 @@ public class ItemKahur extends Item {
 	}
 
 	private void fire(ItemStack gun, int slot, World world, EntityPlayer player) {
+		world.playSoundAtEntity(player, "mob.enderdragon.hit", 1.0F, (itemRand.nextFloat() * 0.4F + 1.2F));
+		if (world.isRemote) return;
 		EntityKahurProjectile proj = new EntityKahurProjectile(world, player);
-		ItemStack item = player.inventory.getStackInSlot(slot);
-		ItemStack copy = player.inventory.decrStackSize(slot, 1);
+		ItemStack copy;
+		if (slot != -5) {
+			copy = player.inventory.decrStackSize(slot, 1);
+		} else {
+			copy = new ItemStack(Blocks.torch);
+		}
 		proj.setItem(copy);
 		proj.setDamage(KahurIota.getMass(copy)+(KahurIota.getMagic(copy)*2f));
-		world.playSoundAtEntity(player, "mob.enderdragon.hit", 1.0F, (itemRand.nextFloat() * 0.4F + 1.2F));
-		gun.damageItem(1, player);
-		if (!world.isRemote) {
-			gun.damageItem((int)KahurIota.getMagic(copy), player);
-			if (item.getItem() == Items.gunpowder) {
-				world.createExplosion(null, player.posX, player.posY, player.posZ, 0.4f, false);
-				gun.damageItem(12, player);
-			} else if (item.getItem() == Items.arrow) {
-				world.spawnEntityInWorld(new EntityArrow(world, player, 0.8f));
-			} else {
-				world.spawnEntityInWorld(proj);
-			}
+		gun.damageItem((int)KahurIota.getMagic(copy)+1, player);
+		if (copy.getItem() == Items.gunpowder) {
+			Entity owner = null;
+			world.createExplosion(owner, player.posX, player.posY, player.posZ, 0.4f, false);
+			gun.damageItem(12, player);
+		} else if (copy.getItem() == Items.arrow) {
+			world.spawnEntityInWorld(new EntityArrow(world, player, 0.8f));
+		} else {
+			world.spawnEntityInWorld(proj);
 		}
 	}
 }

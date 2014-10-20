@@ -3,7 +3,13 @@ language.region=US
 language.code=en_US
 
 item.kahur.name=Kahur
+item.blast_suppressor.name=Blast Suppressor
 itemGroup.kahur=Kahur
 
 tile.combustor.name=Combustor
 container.combustor=Combustor
+
+item.caquelon.name=Caquelon
+item.cheese_fondue.name=Cheese Fondue
+item.chinese_fondue.name=Chinese Fondue
+item.chocolate_fondue.name=Chocolate Fondue

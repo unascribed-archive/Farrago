@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -96,6 +97,51 @@ public class EntityKahurProjectile extends EntityThrowable {
 		if (Block.getBlockFromItem(getItem().getItem()) == Blocks.tnt) {
 			worldObj.createExplosion(this, posX, posY, posZ, 2.7f, true);
 			return;
+		}
+		if (getItem().getItem() == Item.getItemFromBlock(Blocks.torch)) {
+			int posX = pos.blockX;
+			int posY = pos.blockY;
+			int posZ = pos.blockZ;
+			int meta = 0;
+			switch (pos.sideHit) {
+			case -1:
+				// none
+				return;
+			case 0:
+				// bottom
+				return;
+			case 1:
+				// top
+				posY += 1;
+				meta = 5;
+				break;
+			case 2:
+				// east
+				posZ -= 1;
+				meta = 4;
+				break;
+			case 3:
+				// west
+				posZ += 1;
+				meta = 3;
+				break;
+			case 4:
+				// north
+				posX -= 1;
+				meta = 2;
+				break;
+			case 5:
+				// south
+				posX += 1;
+				meta = 1;
+				break;
+			}
+			Block block = worldObj.getBlock(posX, posY, posZ);
+			if (block == null || block.isAir(worldObj, posX, posY, posZ) || !block.isCollidable()) {
+				worldObj.setBlock(posX, posY, posZ, Blocks.torch);
+				worldObj.setBlockMetadataWithNotify(posX, posY, posZ, meta, 3);
+				return;
+			}
 		}
 		if (getItem().isItemStackDamageable()) {
 			if (getThrower() != null) {

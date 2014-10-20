@@ -19,6 +19,7 @@ public class TileEntityCombustor extends TileEntityFurnace {
 	private static final int[] slotsSides = new int[] { 1 };
 	private ItemStack[] furnaceItemStacks = new ItemStack[3];
 	private String field_145958_o;
+	private boolean quick = false;
 
 	@Override
 	public int getSizeInventory() {
@@ -108,7 +109,7 @@ public class TileEntityCombustor extends TileEntityFurnace {
 
 		this.furnaceBurnTime = p_145839_1_.getShort("BurnTime");
 		this.furnaceCookTime = p_145839_1_.getShort("CookTime");
-		this.currentItemBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
+		this.currentItemBurnTime = getTheItemBurnTime(this.furnaceItemStacks[1]);
 
 		if (p_145839_1_.hasKey("CustomName", 8)) {
 			this.field_145958_o = p_145839_1_.getString("CustomName");
@@ -146,7 +147,7 @@ public class TileEntityCombustor extends TileEntityFurnace {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public int getCookProgressScaled(int p_145953_1_) {
-		return this.furnaceCookTime * p_145953_1_ / (furnaceBurnTime > 10 ? 2 : 7);
+		return this.furnaceCookTime * p_145953_1_ / (quick ? 2 : 7);
 	}
 
 	@Override
@@ -177,7 +178,7 @@ public class TileEntityCombustor extends TileEntityFurnace {
 			if (this.furnaceBurnTime != 0 || this.furnaceItemStacks[1] != null
 					&& this.furnaceItemStacks[0] != null) {
 				if (this.furnaceBurnTime == 0 && this.canSmelt()) {
-					this.currentItemBurnTime = this.furnaceBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
+					this.currentItemBurnTime = this.furnaceBurnTime = getTheItemBurnTime(this.furnaceItemStacks[1]);
 
 					if (this.furnaceBurnTime > 0) {
 						flag1 = true;
@@ -197,9 +198,15 @@ public class TileEntityCombustor extends TileEntityFurnace {
 				if (this.isBurning() && this.canSmelt()) {
 					++this.furnaceCookTime;
 
-					if (this.furnaceCookTime >= (furnaceBurnTime > 10 ? 2 : 7)) {
+					if (this.furnaceCookTime >= (quick ? 2 : 7)) {
 						this.furnaceCookTime = 0;
 						this.smeltItem();
+						if (worldObj.rand.nextBoolean()) {
+							smeltItem();
+							if (worldObj.rand.nextBoolean()) {
+								smeltItem();
+							}
+						}
 						flag1 = true;
 					}
 				} else {
@@ -297,22 +304,24 @@ public class TileEntityCombustor extends TileEntityFurnace {
 	 * Returns the number of ticks that the supplied fuel item will keep the
 	 * furnace burning, or 0 if the item isn't fuel
 	 */
-	public static int getItemBurnTime(ItemStack p_145952_0_) {
+	public int getTheItemBurnTime(ItemStack p_145952_0_) {
+		quick = false;
 		if (p_145952_0_ == null) {
 			return 0;
 		} else {
 			Item item = p_145952_0_.getItem();
 			if (item == Items.gunpowder)
-				return 10;
-			if (item == Item.getItemFromBlock(Blocks.tnt)) {
 				return 20;
+			if (item == Item.getItemFromBlock(Blocks.tnt)) {
+				quick = true;
+				return 40;
 			}
 			return 0;
 		}
 	}
 
-	public static boolean isItemFuel(ItemStack p_145954_0_) {
-		return getItemBurnTime(p_145954_0_) > 0;
+	public boolean isTheItemFuel(ItemStack p_145954_0_) {
+		return getTheItemBurnTime(p_145954_0_) > 0;
 	}
 
 	@Override
@@ -334,7 +343,7 @@ public class TileEntityCombustor extends TileEntityFurnace {
 	@Override
 	public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
 		return p_94041_1_ == 2 ? false
-				: (p_94041_1_ == 1 ? isItemFuel(p_94041_2_) : true);
+				: (p_94041_1_ == 1 ? isTheItemFuel(p_94041_2_) : true);
 	}
 
 	@Override
