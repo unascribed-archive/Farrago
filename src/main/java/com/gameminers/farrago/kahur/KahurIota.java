@@ -68,7 +68,6 @@ public class KahurIota implements Iota {
 	 * For a given item, it's chance of dropping is 1 in max(1, 50-(mass+magic)).
 	 * Probably not the best method. Needs research.
 	 */
-	public static Map<Long, ItemStack> protoStacks = Maps.newHashMap();
 	public static Map<Long, List<Float>> mass = Maps.newHashMap();
 	public static Map<Long, Float> bakedMass = Maps.newHashMap();
 	static boolean baked = false;
@@ -92,10 +91,6 @@ public class KahurIota implements Iota {
 				e.toolTip.add("\u00A79"+magic+" Kahur Magic");
 			}
 			e.toolTip.add("\u00A79"+massS+" Kahur Mass");
-			e.toolTip.add("\u00A79All Kahur Masses:");
-			for (float f : getMasses(e.itemStack, false)) {
-				e.toolTip.add("\u00A79- "+f);
-			}
 		}
 	}
 	
@@ -107,19 +102,6 @@ public class KahurIota implements Iota {
 				tasks.remove(0);
 			}
 		}
-	}
-	
-	public static long hashItemStack(ItemStack toHash) {
-		long hash = 0;
-		hash |= (toHash.getItemDamage() & Short.MAX_VALUE) << Short.SIZE;
-		hash |= (Item.getIdFromItem(toHash.getItem()) & Short.MAX_VALUE);
-		if (toHash.hasTagCompound()) {
-			hash |= (toHash.getTagCompound().hashCode() << 32);
-		}
-		if (!baked) {
-			protoStacks.put(hash, toHash);
-		}
-		return hash;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -238,7 +220,7 @@ public class KahurIota implements Iota {
 		List<Float> list = mass.get(is);
 		if (list == null) {
 			list = Lists.newArrayList();
-			mass.put(hashItemStack(is), list);
+			mass.put(FarragoMod.hashItemStack(is), list);
 		}
 		if (newMass <= 0) {
 			newMass = 1;
@@ -250,10 +232,8 @@ public class KahurIota implements Iota {
 		bakedMass.clear();
 		for (Map.Entry<Long, List<Float>> en : mass.entrySet()) {
 			bakedMass.put(en.getKey(), average(en.getValue()));
-			System.out.println("Baked mass of "+protoStacks.get(en.getKey())+" is "+bakedMass.get(en.getKey()));
 		}
 		mass.clear();
-		protoStacks.clear();
 		baked = true;
 	}
 
@@ -274,10 +254,10 @@ public class KahurIota implements Iota {
 		goat.setItemDamage(stack.getItemDamage());
 		goat.setTagCompound(stack.getTagCompound());
 		goat.stackSize = 1;
-		long hash = hashItemStack(goat);
+		long hash = FarragoMod.hashItemStack(goat);
 		if (baked && allowBaked) {
 			if (bakedMass.containsKey(hash)) {
-				return new float[] {bakedMass.get(hash)};
+				return dummy(bakedMass.get(hash));
 			}
 		} else {
 			if (mass.containsKey(hash)) {
@@ -285,10 +265,10 @@ public class KahurIota implements Iota {
 			}
 		}
 		goat.setTagCompound(null);
-		hash = hashItemStack(goat);
+		hash = FarragoMod.hashItemStack(goat);
 		if (baked && allowBaked) {
 			if (bakedMass.containsKey(hash)) {
-				return new float[] {bakedMass.get(hash)};
+				return dummy(bakedMass.get(hash));
 			}
 		} else {
 			if (mass.containsKey(hash)) {
@@ -296,19 +276,30 @@ public class KahurIota implements Iota {
 			}
 		}
 		goat.setItemDamage(32767);
-		hash = hashItemStack(goat);
+		hash = FarragoMod.hashItemStack(goat);
 		if (baked && allowBaked) {
 			if (bakedMass.containsKey(hash)) {
-				return new float[] {bakedMass.get(hash)};
+				return dummy(bakedMass.get(hash));
 			}
 		} else {
 			if (mass.containsKey(hash)) {
 				return array(mass.get(hash));
 			}
 		}
-		return new float[] { 0f };
+		if (baked) {
+			return dummy(0.25f);
+		} else {
+			return dummy(0f);
+		}
 	}
 	
+	private final static float[] dummyFloatArray = new float[1];
+	
+	private static float[] dummy(float f) {
+		dummyFloatArray[0] = f;
+		return dummyFloatArray;
+	}
+
 	private static float[] array(List<Float> list) {
 		float[] array = new float[list.size()];
 		for (int i = 0; i < array.length; i++) {

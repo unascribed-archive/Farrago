@@ -1,8 +1,11 @@
 package com.gameminers.farrago.item;
 
+import java.util.List;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -59,5 +62,11 @@ public class ItemFondue extends ItemFood {
 				r.registerIcon("farrago:chinese_fondue"),
 				r.registerIcon("farrago:chocolate_fondue")
 		};
+	}
+	@Override
+	public void getSubItems(Item item, CreativeTabs tab, List list) {
+		list.add(new ItemStack(item, 1, 0));
+		list.add(new ItemStack(item, 1, 1));
+		list.add(new ItemStack(item, 1, 2));
 	}
 }

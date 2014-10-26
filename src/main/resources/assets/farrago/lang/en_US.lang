@@ -3,11 +3,28 @@ language.region=US
 language.code=en_US
 
 item.kahur.name=Kahur
-item.blast_suppressor.name=Blast Suppressor
 itemGroup.kahur=Kahur
 
 tile.combustor.name=Combustor
 container.combustor=Combustor
+
+tile.scrapper.name=Scrapper
+container.scrapper=Scrapper
+
+item.rubble_1.name=Feckless Rubble
+item.rubble_2.name=Vain Debris
+item.rubble_3.name=Inutile Scrap
+item.rubble_4.name=Pointless Rubbish
+item.rubble_5.name=Useless Trash
+item.rubble_6.name=Unusable Pile
+
+item.dust_iron.name=Iron Dust
+item.dust_gold.name=Gold Dust
+item.dust_emerald.name=Emerald Dust
+item.dust_diamond.name=Diamond Dust
+item.dust_dorito.name=Dorito dust
+item.dust_dorito.description=In honor of the track by Coda! :D
+
 
 item.caquelon.name=Caquelon
 item.cheese_fondue.name=Cheese Fondue
