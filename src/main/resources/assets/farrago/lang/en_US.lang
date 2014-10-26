@@ -11,6 +11,8 @@ container.combustor=Combustor
 tile.scrapper.name=Scrapper
 container.scrapper=Scrapper
 
+tile.nether_star_block.name=Nether Star Block
+
 item.rubble_1.name=Feckless Rubble
 item.rubble_2.name=Vain Debris
 item.rubble_3.name=Inutile Scrap
@@ -30,3 +32,6 @@ item.caquelon.name=Caquelon
 item.cheese_fondue.name=Cheese Fondue
 item.chinese_fondue.name=Chinese Fondue
 item.chocolate_fondue.name=Chocolate Fondue
+
+enchantment.level.12=XII
+enchantment.level.2149=MMCXLIX

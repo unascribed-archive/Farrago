@@ -4,13 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockCompressed;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -27,6 +34,7 @@ import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
 import com.google.common.collect.Lists;
 
+import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -48,6 +56,7 @@ public class FarragoMod {
 	public static FarragoMod inst;
 	public static BlockCombustor COMBUSTOR;
 	public static BlockScrapper SCRAPPER;
+	public static Block NETHER_STAR_BLOCK;
 	public static Item CAQUELON;
 	public static ItemRubble RUBBLE;
 	public static ItemVanillaDust DUST;
@@ -62,14 +71,30 @@ public class FarragoMod {
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new FarragoGuiHandler());
 		COMBUSTOR = new BlockCombustor();
 		SCRAPPER = new BlockScrapper();
+		NETHER_STAR_BLOCK = new BlockCompressed(MapColor.adobeColor).setBlockTextureName("farrago:nether_star_block").setHardness(20f).setLightLevel(0.5f).setBlockName("nether_star_block");
+		NETHER_STAR_BLOCK.setHarvestLevel("pickaxe", 2);
 		CAQUELON = new Item().setTextureName("farrago:caquelon").setMaxStackSize(1).setUnlocalizedName("caquelon");
 		RUBBLE = new ItemRubble();
 		DUST = new ItemVanillaDust();
 		FONDUE = new ItemFondue();
+		GameRegistry.registerFuelHandler(new IFuelHandler() {
+			private Random rand = new Random();
+			@Override
+			public int getBurnTime(ItemStack fuel) {
+				if (fuel != null && fuel.getItem() == RUBBLE && fuel.getItemDamage() < 5) {
+					if (fuel.stackSize/3 == rand.nextInt(16)) {
+						fuel.setItemDamage(5);
+					}
+					return rand.nextInt(30)+5;
+				}
+				return 0;
+			}
+		});
 		GameRegistry.registerTileEntity(TileEntityCombustor.class, "FarragoCombustor");
 		GameRegistry.registerTileEntity(TileEntityScrapper.class, "FarragoScrapper");
 		GameRegistry.registerBlock(COMBUSTOR, "combustor");
 		GameRegistry.registerBlock(SCRAPPER, "scrapper");
+		GameRegistry.registerBlock(NETHER_STAR_BLOCK, "netherStarBlock");
 		GameRegistry.registerItem(CAQUELON, "caquelon");
 		GameRegistry.registerItem(RUBBLE, "rubble");
 		GameRegistry.registerItem(DUST, "dust");
@@ -95,6 +120,45 @@ public class FarragoMod {
 				'6', new ItemStack(RUBBLE, 1, 5),
 				'D', new ItemStack(DUST, 1, 4),
 				'd', new ItemStack(Blocks.diamond_block)
+				);
+		ItemStack eow = new ItemStack(Items.diamond_sword);
+		NBTTagCompound compound = new NBTTagCompound();
+		NBTTagList ench = new NBTTagList();
+		{
+	        NBTTagCompound enchCompound = new NBTTagCompound();
+	        enchCompound.setShort("id", (short)Enchantment.sharpness.effectId);
+	        enchCompound.setShort("lvl", (short)2149);
+	        ench.appendTag(enchCompound);
+		}
+		{
+	        NBTTagCompound enchCompound = new NBTTagCompound();
+	        enchCompound.setShort("id", (short)Enchantment.looting.effectId);
+	        enchCompound.setShort("lvl", (short)10);
+	        ench.appendTag(enchCompound);
+		}
+		{
+	        NBTTagCompound enchCompound = new NBTTagCompound();
+	        enchCompound.setShort("id", (short)Enchantment.knockback.effectId);
+	        enchCompound.setShort("lvl", (short)12);
+	        ench.appendTag(enchCompound);
+		}
+        compound.setTag("ench", ench);
+		compound.setBoolean("Unbreakable", true);
+		eow.setTagCompound(compound);
+		eow.setStackDisplayName("\u00A7cEater of Worlds");
+		GameRegistry.addRecipe(eow,
+				" D ",
+				"+d+",
+				" + ",
+				'D', new ItemStack(DUST, 1, 4),
+				'd', new ItemStack(Blocks.diamond_block),
+				'+', new ItemStack(NETHER_STAR_BLOCK)
+				);
+		GameRegistry.addRecipe(new ItemStack(NETHER_STAR_BLOCK),
+				"+++",
+				"+++",
+				"+++",
+				'+', Items.nether_star
 				);
 		GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 0),
 				"M",

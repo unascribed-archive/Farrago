@@ -160,10 +160,10 @@ public class ContainerScrapper extends Container {
             else if (p_82846_2_ != 1 && p_82846_2_ != 0)
             {
             	if (TileEntityFurnace.isItemFuel(itemstack1)) {
-                    if (!this.mergeItemStack(itemstack1, 1, 11, false)) {
+                    if (!this.mergeItemStack(itemstack1, 1, 2, false)) {
                         return null;
                     }
-                } else if (!this.mergeItemStack(itemstack1, 0, 2, false)) {
+                } else if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
                     return null;
                 } else if (p_82846_2_ >= 12 && p_82846_2_ < 30) {
                     if (!this.mergeItemStack(itemstack1, 30, 39, false)) {

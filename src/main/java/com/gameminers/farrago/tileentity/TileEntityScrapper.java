@@ -41,7 +41,7 @@ public class TileEntityScrapper extends TileEntity implements ISidedInventory {
 	public int furnaceBurnTime;
     public int currentItemBurnTime;
     public int furnaceCookTime;
-    public int operationLength = 40;
+    public int operationLength = 400;
 	private String inventoryName;
 
 	@Override
@@ -267,7 +267,6 @@ public class TileEntityScrapper extends TileEntity implements ISidedInventory {
 				copy.setTagCompound(null);
 				scrappable = FarragoMod.recipes.containsKey(FarragoMod.hashItemStack(copy));
 			}
-			System.out.println(scrappable);
 			return scrappable &&
 					result <= getInventoryStackLimit()
 					&& (furnaceItemStacks[2] == null || result <= this.furnaceItemStacks[2].getMaxStackSize())
@@ -284,98 +283,7 @@ public class TileEntityScrapper extends TileEntity implements ISidedInventory {
 		if (this.canScrap()) {
 			ItemStack itemstack = this.furnaceItemStacks[0];
 
-			List<IRecipe> recipes = FarragoMod.recipes.get(FarragoMod.hashItemStack(itemstack));
-			if (recipes == null) {
-				ItemStack copy = itemstack.copy();
-				copy.setTagCompound(null);
-				recipes = FarragoMod.recipes.get(FarragoMod.hashItemStack(copy));
-			}
-			
-			int rubbleCount = worldObj.rand.nextInt(3);
-			
-			if (recipes != null && !recipes.isEmpty()) {
-				List<IRecipe> copy = new ArrayList<IRecipe>(recipes);
-				Iterator<IRecipe> iter = copy.iterator();
-				while (iter.hasNext()) {
-					IRecipe r = iter.next();
-					List<Object> ingredients = new ArrayList<Object>();
-					if (r instanceof ShapedRecipes) {
-						for (ItemStack is : ((ShapedRecipes) r).recipeItems) {
-							ingredients.add(is);
-						}
-					} else if (r instanceof ShapelessRecipes) {
-						ingredients.addAll(((ShapelessRecipes) r).recipeItems);
-					} else if (r instanceof ShapedOreRecipe) {
-						for (Object o : ((ShapedOreRecipe) r).getInput()) {
-							ingredients.add(o);
-						}
-					} else if (r instanceof ShapelessOreRecipe) {
-						ingredients.addAll(((ShapelessOreRecipe) r).getInput());
-					} else {
-						continue;
-					}
-					for (Object o : ingredients) {
-						if (o == null) continue;
-						String[] dictionaryNames;
-						if (o instanceof String) {
-							dictionaryNames = new String[]{(String) o};
-						} else if (o instanceof List) {
-							List<String> names = new ArrayList<String>();
-							for (ItemStack is : (List<ItemStack>)o) {
-								int[] ids = OreDictionary.getOreIDs(is);
-								for (int id : ids) {
-									names.add(OreDictionary.getOreName(id));
-								}
-							}
-							dictionaryNames = names.toArray(new String[names.size()]);
-						} else if (o instanceof ItemStack) {
-							int[] ids = OreDictionary.getOreIDs((ItemStack)o);
-							String[] names = new String[ids.length];
-							for (int i = 0; i < ids.length; i++) {
-								names[i] = OreDictionary.getOreName(ids[i]);
-							}
-							dictionaryNames = names;
-						} else if (o instanceof Item) {
-							int[] ids = OreDictionary.getOreIDs(new ItemStack((Item)o));
-							String[] names = new String[ids.length];
-							for (int i = 0; i < ids.length; i++) {
-								names[i] = OreDictionary.getOreName(ids[i]);
-							}
-							dictionaryNames = names;
-						} else if (o instanceof Block) {
-							int[] ids = OreDictionary.getOreIDs(new ItemStack((Block)o));
-							String[] names = new String[ids.length];
-							for (int i = 0; i < ids.length; i++) {
-								names[i] = OreDictionary.getOreName(ids[i]);
-							}
-							dictionaryNames = names;
-						} else {
-							continue;
-						}
-						for (String s : dictionaryNames) {
-							String material;
-							if (s.startsWith("gem")) {
-								material = s.substring(3);
-							} else if (s.startsWith("ingot")) {
-								material = s.substring(5);
-							} else {
-								continue;
-							}
-							List<ItemStack> dusts = OreDictionary.getOres("dust"+material);
-							if (dusts == null || dusts.isEmpty()) continue;
-							if (worldObj.rand.nextInt(r.getRecipeOutput().stackSize*2) == 0) {
-								ItemStack stack = dusts.get(0).copy();
-								stack.stackSize = 1;
-								addItem(stack);
-							} else {
-								if (worldObj.rand.nextInt(r.getRecipeOutput().stackSize) == 0) {
-									rubbleCount++;
-								}
-							}
-						}
-					}
-				}
-			}
+			int rubbleCount = worldObj.rand.nextInt(3) * processRecipes(itemstack, null, null, 0);
 			
 			if (rubbleCount > 0) {
 				if (this.furnaceItemStacks[2] == null) {
@@ -392,6 +300,113 @@ public class TileEntityScrapper extends TileEntity implements ISidedInventory {
 			}
 			
 		}
+	}
+
+	private int processRecipes(ItemStack itemstack, IRecipe cause, IRecipe previousCause, int depth) {
+		if (depth >= 14) return 0;
+		List<IRecipe> recipes = FarragoMod.recipes.get(FarragoMod.hashItemStack(itemstack));
+		if (recipes == null) {
+			ItemStack copy = itemstack.copy();
+			copy.setTagCompound(null);
+			recipes = FarragoMod.recipes.get(FarragoMod.hashItemStack(copy));
+		}
+		
+		int rubbleCount = 0;
+		
+		if (recipes != null && !recipes.isEmpty()) {
+			List<IRecipe> copy = new ArrayList<IRecipe>(recipes);
+			Iterator<IRecipe> iter = copy.iterator();
+			while (iter.hasNext()) {
+				IRecipe r = iter.next();
+				if (r == cause || r == previousCause) continue;
+				List<Object> ingredients = new ArrayList<Object>();
+				if (r instanceof ShapedRecipes) {
+					for (ItemStack is : ((ShapedRecipes) r).recipeItems) {
+						ingredients.add(is);
+					}
+				} else if (r instanceof ShapelessRecipes) {
+					ingredients.addAll(((ShapelessRecipes) r).recipeItems);
+				} else if (r instanceof ShapedOreRecipe) {
+					for (Object o : ((ShapedOreRecipe) r).getInput()) {
+						ingredients.add(o);
+					}
+				} else if (r instanceof ShapelessOreRecipe) {
+					ingredients.addAll(((ShapelessOreRecipe) r).getInput());
+				} else {
+					continue;
+				}
+				for (Object o : ingredients) {
+					if (o == null) continue;
+					String[] dictionaryNames;
+					ItemStack prototype;
+					if (o instanceof String) {
+						dictionaryNames = new String[]{(String) o};
+						List<ItemStack> ores = OreDictionary.getOres(dictionaryNames[0]);
+						prototype = ores == null || ores.isEmpty() ? null : ores.get(0);
+					} else if (o instanceof List) {
+						List<String> names = new ArrayList<String>();
+						List<ItemStack> list = (List<ItemStack>)o;
+						for (ItemStack is : list) {
+							int[] ids = OreDictionary.getOreIDs(is);
+							for (int id : ids) {
+								names.add(OreDictionary.getOreName(id));
+							}
+						}
+						prototype = list.isEmpty() ? null : list.get(0);
+						dictionaryNames = names.toArray(new String[names.size()]);
+					} else if (o instanceof ItemStack) {
+						int[] ids = OreDictionary.getOreIDs(prototype = (ItemStack)o);
+						String[] names = new String[ids.length];
+						for (int i = 0; i < ids.length; i++) {
+							names[i] = OreDictionary.getOreName(ids[i]);
+						}
+						dictionaryNames = names;
+					} else if (o instanceof Item) {
+						int[] ids = OreDictionary.getOreIDs(prototype = new ItemStack((Item)o));
+						String[] names = new String[ids.length];
+						for (int i = 0; i < ids.length; i++) {
+							names[i] = OreDictionary.getOreName(ids[i]);
+						}
+						dictionaryNames = names;
+					} else if (o instanceof Block) {
+						int[] ids = OreDictionary.getOreIDs(prototype = new ItemStack((Block)o));
+						String[] names = new String[ids.length];
+						for (int i = 0; i < ids.length; i++) {
+							names[i] = OreDictionary.getOreName(ids[i]);
+						}
+						dictionaryNames = names;
+					} else {
+						continue;
+					}
+					rubbleCount += processRecipes(prototype, r, cause, depth+1);
+					for (String s : dictionaryNames) {
+						String material;
+						if (s.startsWith("gem")) {
+							material = s.substring(3);
+						} else if (s.startsWith("ingot")) {
+							material = s.substring(5);
+						} else {
+							continue;
+						}
+						List<ItemStack> dusts = OreDictionary.getOres("dust"+material);
+						if (dusts == null || dusts.isEmpty()) continue;
+						if (worldObj.rand.nextInt(r.getRecipeOutput().stackSize*2) == 0) {
+							ItemStack stack = dusts.get(0).copy();
+							stack.stackSize = 1;
+							addItem(stack);
+							if (worldObj.rand.nextInt(4000) == 0) {
+								addItem(new ItemStack(FarragoMod.DUST, 1, 4));
+							}
+						} else {
+							if (worldObj.rand.nextInt(r.getRecipeOutput().stackSize*2) == 0) {
+								rubbleCount++;
+							}
+						}
+					}
+				}
+			}
+		}
+		return rubbleCount;
 	}
 
 	
