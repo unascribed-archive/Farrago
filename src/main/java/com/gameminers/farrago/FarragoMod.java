@@ -18,6 +18,8 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -29,6 +31,7 @@ import com.gameminers.farrago.block.BlockScrapper;
 import com.gameminers.farrago.item.ItemFondue;
 import com.gameminers.farrago.item.ItemRubble;
 import com.gameminers.farrago.item.ItemVanillaDust;
+import com.gameminers.farrago.item.ItemVividOrb;
 import com.gameminers.farrago.kahur.KahurIota;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
@@ -46,7 +49,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="0.7")
+@Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="0.7.1")
 public class FarragoMod {
 	private static final List<Iota> subMods = Lists.newArrayList();
 	private static final Logger log = LogManager.getLogger("Farrago");
@@ -57,6 +60,7 @@ public class FarragoMod {
 	public static BlockCombustor COMBUSTOR;
 	public static BlockScrapper SCRAPPER;
 	public static Block NETHER_STAR_BLOCK;
+	public static ItemVividOrb VIVID_ORB;
 	public static Item CAQUELON;
 	public static ItemRubble RUBBLE;
 	public static ItemVanillaDust DUST;
@@ -74,6 +78,7 @@ public class FarragoMod {
 		NETHER_STAR_BLOCK = new BlockCompressed(MapColor.adobeColor).setBlockTextureName("farrago:nether_star_block").setHardness(20f).setLightLevel(0.5f).setBlockName("nether_star_block");
 		NETHER_STAR_BLOCK.setHarvestLevel("pickaxe", 2);
 		CAQUELON = new Item().setTextureName("farrago:caquelon").setMaxStackSize(1).setUnlocalizedName("caquelon");
+		VIVID_ORB = new ItemVividOrb();
 		RUBBLE = new ItemRubble();
 		DUST = new ItemVanillaDust();
 		FONDUE = new ItemFondue();
@@ -99,15 +104,27 @@ public class FarragoMod {
 		GameRegistry.registerItem(RUBBLE, "rubble");
 		GameRegistry.registerItem(DUST, "dust");
 		GameRegistry.registerItem(FONDUE, "fondue");
+		GameRegistry.registerItem(VIVID_ORB, "vividOrb");
 		OreDictionary.registerOre("dustIron", new ItemStack(DUST, 1, 0));
 		OreDictionary.registerOre("dustGold", new ItemStack(DUST, 1, 1));
 		OreDictionary.registerOre("dustEmerald", new ItemStack(DUST, 1, 2));
 		OreDictionary.registerOre("dustDiamond", new ItemStack(DUST, 1, 3));
 		OreDictionary.registerOre("dustDorito", new ItemStack(DUST, 1, 4));
+		for (String s : new String[] {ChestGenHooks.DUNGEON_CHEST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, ChestGenHooks.PYRAMID_DESERT_CHEST, ChestGenHooks.STRONGHOLD_LIBRARY, ChestGenHooks.MINESHAFT_CORRIDOR}) {
+			for (int color : new int[] {0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFAA00}) {
+				ItemStack orb = new ItemStack(VIVID_ORB);
+				VIVID_ORB.setColor(orb, color);
+				ChestGenHooks.addItem(s, new WeightedRandomChestContent(orb, 0, 2, 25));
+			}
+		}
+		GameRegistry.addRecipe(new RecipesVividOrbDyes());
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 0), new ItemStack(Items.iron_ingot), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 1), new ItemStack(Items.gold_ingot), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 2), new ItemStack(Items.emerald), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 3), new ItemStack(Items.diamond), 0);
+		GameRegistry.addRecipe(new ItemStack(Items.nether_star, 9),
+				"B",
+				'B', NETHER_STAR_BLOCK);
 		GameRegistry.addRecipe(new ItemStack(Items.nether_star),
 				"123",
 				"4D5",
@@ -160,6 +177,14 @@ public class FarragoMod {
 				"+++",
 				'+', Items.nether_star
 				);
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(VIVID_ORB),
+				"WIW",
+				"IQI",
+				"WIW",
+				'W', new ItemStack(Blocks.wool, 1, 0),
+				'I', "ingotIron",
+				'Q', "blockQuartz"
+				));
 		GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 0),
 				"M",
 				"C",
