@@ -10,6 +10,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockCompressed;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -20,6 +22,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -37,6 +42,7 @@ import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
 import com.google.common.collect.Lists;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -46,6 +52,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -111,7 +118,7 @@ public class FarragoMod {
 		OreDictionary.registerOre("dustDiamond", new ItemStack(DUST, 1, 3));
 		OreDictionary.registerOre("dustDorito", new ItemStack(DUST, 1, 4));
 		for (String s : new String[] {ChestGenHooks.DUNGEON_CHEST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, ChestGenHooks.PYRAMID_DESERT_CHEST, ChestGenHooks.STRONGHOLD_LIBRARY, ChestGenHooks.MINESHAFT_CORRIDOR}) {
-			for (int color : new int[] {0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFAA00}) {
+			for (int color : new int[] {0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF}) {
 				ItemStack orb = new ItemStack(VIVID_ORB);
 				VIVID_ORB.setColor(orb, color);
 				ChestGenHooks.addItem(s, new WeightedRandomChestContent(orb, 0, 2, 25));
@@ -185,6 +192,12 @@ public class FarragoMod {
 				'I', "ingotIron",
 				'Q', "blockQuartz"
 				));
+		GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 3),
+				"A",
+				"C",
+				'A', Items.apple,
+				'C', CAQUELON
+				);
 		GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 0),
 				"M",
 				"C",
@@ -244,10 +257,39 @@ public class FarragoMod {
 			}
 			list.add(recipe);
 		}
+		FMLCommonHandler.instance().bus().register(this);
+		MinecraftForge.EVENT_BUS.register(this);
 		for (Iota iota : subMods) {
 			iota.init();
 		}
 		proxy.init();
+	}
+	@SubscribeEvent
+	public void onLightning(EntityStruckByLightningEvent e) {
+		if (e.entity.worldObj.isRemote) return;
+		if (e.entity instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer) e.entity;
+			boolean sting = false;
+			for (ItemStack is : player.inventory.mainInventory) {
+				if (is == null) continue;
+				if (is.getItem() == FONDUE) {
+					if (is.getItemDamage() == 3) {
+						is.setItemDamage(4);
+						sting = true;
+					}
+				}
+			}
+			if (sting) {
+				System.out.println("hi");
+				player.worldObj.playSoundAtEntity(player, "farrago:cyber_sting", 0.5f, 1.0f);
+			}
+		}
+	}
+	@SubscribeEvent
+	public void onChat(ServerChatEvent e) {
+		if (e.message.equals("cyber")) {
+			e.player.worldObj.spawnEntityInWorld(new EntityLightningBolt(e.player.worldObj, e.player.posX, e.player.posY, e.player.posZ));
+		}
 	}
 	@EventHandler
 	public void onPostInit(FMLPostInitializationEvent e) {

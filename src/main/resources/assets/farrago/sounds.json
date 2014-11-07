@@ -1,0 +1,20 @@
+{
+	"cyber_cider": {
+		"category": "master",
+		"sounds":  [
+			{
+				"name": "cyber_cider",
+				"stream": false
+			}
+		]
+	},
+	"cyber_sting": {
+		"category": "master",
+		"sounds":  [
+			{
+				"name": "cyber_sting",
+				"stream": false
+			}
+		]
+	}
+}

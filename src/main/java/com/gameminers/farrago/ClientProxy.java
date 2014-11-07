@@ -1,11 +1,9 @@
 package com.gameminers.farrago;
 
 import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.inventory.GuiInventory;
 
 import com.gameminers.farrago.kahur.client.InitScreen;
 import com.gameminers.farrago.pane.PaneOrbGlow;
-import com.gameminers.farrago.pane.PaneVanityArmor;
 
 
 public class ClientProxy implements Proxy {
@@ -20,7 +18,7 @@ public class ClientProxy implements Proxy {
 
 	@Override
 	public void init() {
-		new PaneVanityArmor().autoOverlay(GuiInventory.class);
+		//new PaneVanityArmor().autoOverlay(GuiInventory.class);
 		new PaneOrbGlow().autoOverlay(GuiIngame.class);
 	}
 

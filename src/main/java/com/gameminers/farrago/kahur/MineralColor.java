@@ -7,7 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public enum MineralColor {
-	GLOW	(Blocks.glowstone, 0xF2CF21, "Glowstone [Torches]", 6000),
+	GLOW	(Blocks.glowstone, 0xF2CF21, "Glowstone [Torches]", 2400),
 	STONE	(Blocks.cobblestone, 0x898989, "Stone", 130),
 	COAL	(Items.coal, 0x454545, "Coal", 180),
 	IRON	(Items.iron_ingot, 0xD8AF93, "Iron", 250),
