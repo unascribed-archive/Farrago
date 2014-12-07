@@ -8,6 +8,10 @@ I know it's kind of a mess; this used to be just one mod that added the Kahur an
 
 I may clean this up at some point in the future. Right now it's not a priority. It's a mod I make for fun.
 
+Modpacks
+========
+Yes, you can go ahead and include Farrago in modpacks. It's open source. MIT, even.
+
 Compiling
 =========
 `./gradlew build`. Your file is at ./build/libs/Farrago-&lt;version&gt;.jar
