@@ -22,3 +22,5 @@
 /augment/
 *.log
 *.log.[0-99]
+.classpath
+.project

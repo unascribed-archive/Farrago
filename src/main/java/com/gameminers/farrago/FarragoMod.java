@@ -10,7 +10,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockCompressed;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -23,7 +22,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -283,12 +281,6 @@ public class FarragoMod {
 				System.out.println("hi");
 				player.worldObj.playSoundAtEntity(player, "farrago:cyber_sting", 0.5f, 1.0f);
 			}
-		}
-	}
-	@SubscribeEvent
-	public void onChat(ServerChatEvent e) {
-		if (e.message.equals("cyber")) {
-			e.player.worldObj.spawnEntityInWorld(new EntityLightningBolt(e.player.worldObj, e.player.posX, e.player.posY, e.player.posZ));
 		}
 	}
 	@EventHandler
