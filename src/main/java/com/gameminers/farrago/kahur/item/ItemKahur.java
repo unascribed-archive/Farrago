@@ -165,17 +165,13 @@ public class ItemKahur extends Item {
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
 		for (MineralColor pump : MineralColor.values()) {
-			for (WoodColor body : WoodColor.values()) {
-				for (WoodColor drum : WoodColor.values()) {
-					ItemStack kahur = new ItemStack(item);
-					NBTTagCompound tag = new NBTTagCompound();
-					tag.setString("KahurBodyMaterial", body.name());
-					tag.setString("KahurDrumMaterial", drum.name());
-					tag.setString("KahurPumpMaterial", pump.name());
-					kahur.setTagCompound(tag);
-					list.add(kahur);
-				}
-			}
+				ItemStack kahur = new ItemStack(item);
+				NBTTagCompound tag = new NBTTagCompound();
+				tag.setString("KahurBodyMaterial", "CREATIVE");
+				tag.setString("KahurDrumMaterial", "CREATIVE");
+				tag.setString("KahurPumpMaterial", pump.name());
+				kahur.setTagCompound(tag);
+				list.add(kahur);
 		}
 	}
 	

@@ -372,7 +372,9 @@ public class KahurIota implements Iota {
 		GameRegistry.registerItem(KAHUR, "kahur");
 		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, FarragoMod.inst, 64, 12, true);
 		for (WoodColor body : WoodColor.values()) {
+			if (body == WoodColor.CREATIVE) continue;
 			for (WoodColor drum : WoodColor.values()) {
+				if (drum == WoodColor.CREATIVE) continue;
 				for (MineralColor pump : MineralColor.values()) {
 					ItemStack kahur = new ItemStack(KAHUR);
 					NBTTagCompound tag = new NBTTagCompound();

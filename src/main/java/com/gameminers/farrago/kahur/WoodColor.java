@@ -7,6 +7,7 @@ public enum WoodColor {
 	JUNGLE	(0xB88764, "Jungle"),
 	ACACIA	(0xBA683B, "Acacia"),
 	BIG_OAK	(0x492F17, "Dark Oak"),
+	CREATIVE(0xE91E63, "Creative")
 	;
 	private final int color;
 	private final String friendlyName;

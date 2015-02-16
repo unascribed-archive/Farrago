@@ -44,6 +44,7 @@ dependencies {
     //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
     
     compile 'com.gameminers:glasspane:1.0:dev'
+    compile 'com.gameminers:kitchensink:1.0:dev'
 
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
