@@ -54,7 +54,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="0.7.1")
+@Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="0.7.2")
 public class FarragoMod {
 	private static final List<Iota> subMods = Lists.newArrayList();
 	private static final Logger log = LogManager.getLogger("Farrago");

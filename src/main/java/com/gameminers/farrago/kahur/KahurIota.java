@@ -203,7 +203,6 @@ public class KahurIota implements Iota {
 	static float getProtoMass(ItemStack is, int depth) {
 		float isMass = getMass(is);
 		if (isMass <= 0f) {
-			System.out.println();
 			calculateMass(is.getItem(), depth+1, is.getItemDamage());
 			isMass = getMass(is);
 		}
