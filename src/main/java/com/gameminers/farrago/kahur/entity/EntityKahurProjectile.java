@@ -184,7 +184,7 @@ public class EntityKahurProjectile extends EntityThrowable {
 			}
 		}
 		if (!worldObj.isRemote && !kill) {
-			if (rand.nextFloat() < 0.8f) {
+			if (getItem().getItem().isItemTool(getItem()) || rand.nextFloat() < 0.8f) {
 				entityDropItem(getItem(), 0.2f);
 				worldObj.playSoundAtEntity(this, "step.stone", 1.5f, 2.0f);
 			} else {
