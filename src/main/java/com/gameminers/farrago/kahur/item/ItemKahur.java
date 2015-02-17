@@ -83,6 +83,11 @@ public class ItemKahur extends Item {
 	}
 	
 	@Override
+	public boolean isDamageable() {
+		return true;
+	}
+	
+	@Override
 	public boolean getHasSubtypes() {
 		return true;
 	}
