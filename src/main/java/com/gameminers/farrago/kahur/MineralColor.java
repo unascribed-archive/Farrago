@@ -7,9 +7,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public enum MineralColor {
+	// Special Types
 	GLASS	(Blocks.glass, 0xDDDDFF, "Glass [Potions]", 800),
 	POTATO	(Items.potato, 0xEDC77C, "Potato [Spud]", 300),
 	GLOW	(Blocks.glowstone, 0xF2CF21, "Glowstone [Torches]", 2400),
+	OBSIDIAN(Blocks.obsidian, 0x1E001B, "Obsidian [Rocket]", 1200),
+	
+	// Regular Tiers
 	STONE	(Blocks.cobblestone, 0x898989, "Stone", 130),
 	COAL	(Items.coal, 0x454545, "Coal", 180),
 	QUARTZ	(Items.quartz, 0xDACEC1, "Nether Quartz", 200),
@@ -18,8 +22,7 @@ public enum MineralColor {
 	GOLD	(Items.gold_ingot, 0xFCEE4B, "Gold [Mobs]", 300),
 	EMERALD	(Items.emerald, 0x17DD62, "Emerald [Mobs]", 450),
 	DIAMOND	(Items.diamond, 0x5DECF5, "Diamond [Mobs]", 850),
-	ENDER	(Items.ender_pearl, 0x258474, "Ender Pearl [Mobs, Predictable]", 140),
-	OBSIDIAN(Blocks.obsidian, 0x1E001B, "Obsidian [Mobs, Rocket]", 1200),
+	ENDER	(Items.ender_pearl, 0x258474, "Ender Pearl [Mobs, Predictable]", 200),
 	;
 	private final ItemStack material;
 	private final int color;
