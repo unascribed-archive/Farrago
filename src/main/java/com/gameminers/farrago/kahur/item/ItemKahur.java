@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -315,6 +316,17 @@ public class ItemKahur extends Item {
 					}
 				}
 				return gun;
+			} else if (pumpColor == MineralColor.GLASS) {
+				int leSlot = find(player.inventory, Items.potionitem);
+				if (leSlot != -1) {
+					fire(gun, leSlot, world, player);
+				} else {
+					world.playSoundAtEntity(player, "random.click", 1.0F, 2.0f);
+					if (!world.isRemote) {
+						player.addChatMessage(new ChatComponentText("\u00A7cCan't find any potions."));
+					}
+				}
+				return gun;
 			} else {
 				while (item == null || item.getItem() == null || item.stackSize == 0 || item == gun) {
 					if (iter++ > 2000) {
@@ -335,6 +347,17 @@ public class ItemKahur extends Item {
 			fire(gun, slot, world, player);
 		}
 		return gun;
+	}
+
+	private int find(InventoryPlayer inventory, Item item) {
+		for (int i = 0; i < inventory.mainInventory.length; ++i) {
+			if (inventory.mainInventory[i] != null
+					&& inventory.mainInventory[i].getItem() == item) {
+				return i;
+			}
+		}
+
+		return -1;
 	}
 
 	private void fire(ItemStack gun, int slot, World world, EntityPlayer player) {

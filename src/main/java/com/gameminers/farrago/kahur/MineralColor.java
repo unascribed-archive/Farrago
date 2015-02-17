@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public enum MineralColor {
+	GLASS	(Blocks.glass, 0xDDDDFF, "Glass [Potions]", 800),
 	POTATO	(Items.potato, 0xEDC77C, "Potato [Spud]", 300),
 	GLOW	(Blocks.glowstone, 0xF2CF21, "Glowstone [Torches]", 2400),
 	STONE	(Blocks.cobblestone, 0x898989, "Stone", 130),

@@ -1,5 +1,8 @@
 package com.gameminers.farrago.kahur.entity;
 
+import java.util.Iterator;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -13,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -90,6 +94,74 @@ public class EntityKahurProjectile extends EntityThrowable {
 	@Override
 	protected void onImpact(MovingObjectPosition pos) {
 		boolean kill = false;
+		setDead();
+		if (getItem().getItem() == Items.potionitem) {
+			if (!this.worldObj.isRemote) {
+				List list = Items.potionitem.getEffects(getItem());
+
+				if (list != null && !list.isEmpty()) {
+					AxisAlignedBB axisalignedbb = this.boundingBox.expand(4.0D,
+							2.0D, 4.0D);
+					List list1 = this.worldObj.getEntitiesWithinAABB(
+							EntityLivingBase.class, axisalignedbb);
+
+					if (list1 != null && !list1.isEmpty()) {
+						Iterator iterator = list1.iterator();
+
+						while (iterator.hasNext()) {
+							EntityLivingBase entitylivingbase = (EntityLivingBase) iterator
+									.next();
+							double d0 = this
+									.getDistanceSqToEntity(entitylivingbase);
+
+							if (d0 < 16.0D) {
+								double d1 = 1.0D - Math.sqrt(d0) / 4.0D;
+
+								if (entitylivingbase == pos.entityHit) {
+									d1 = 1.0D;
+								}
+
+								Iterator iterator1 = list.iterator();
+
+								while (iterator1.hasNext()) {
+									PotionEffect potioneffect = (PotionEffect) iterator1
+											.next();
+									int i = potioneffect.getPotionID();
+
+									if (Potion.potionTypes[i].isInstant()) {
+										Potion.potionTypes[i]
+												.affectEntity(
+														this.getThrower(),
+														entitylivingbase,
+														potioneffect
+																.getAmplifier(),
+														d1);
+									} else {
+										int j = (int) (d1
+												* (double) potioneffect
+														.getDuration() + 0.5D);
+
+										if (j > 20) {
+											entitylivingbase
+													.addPotionEffect(new PotionEffect(
+															i,
+															j,
+															potioneffect
+																	.getAmplifier()));
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				this.worldObj.playAuxSFX(2002, (int) Math.round(this.posX),
+						(int) Math.round(this.posY),
+						(int) Math.round(this.posZ), getItem().getItemDamage());
+				kill = true;
+			}
+		}
 		if (pos.entityHit != null) {
 			if (pos.entityHit instanceof EntityLivingBase) {
 				EntityLivingBase living = ((EntityLivingBase)pos.entityHit);
@@ -108,12 +180,12 @@ public class EntityKahurProjectile extends EntityThrowable {
 				}
 			}
 		}
-		setDead();
 		if (Block.getBlockFromItem(getItem().getItem()) == Blocks.tnt) {
 			worldObj.createExplosion(this, posX, posY, posZ, 2.7f, true);
 			return;
 		}
 		if (getItem().getItem() == Item.getItemFromBlock(Blocks.torch)) {
+			if (worldObj.isRemote) return;
 			int posX = pos.blockX;
 			int posY = pos.blockY;
 			int posZ = pos.blockZ;
@@ -161,6 +233,10 @@ public class EntityKahurProjectile extends EntityThrowable {
 		if (getItem().isItemStackDamageable()) {
 			if (getThrower() != null) {
 				getItem().damageItem(20, getThrower());
+				if (getItem().stackSize == 0) {
+					playSound("random.break", 0.8F, 0.8F + this.worldObj.rand.nextFloat() * 0.4F);
+					return;
+				}
 			}
 		}
 		if (getItem().getItem() == Items.ender_pearl) {
