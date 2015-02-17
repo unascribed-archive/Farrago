@@ -22,7 +22,9 @@ public class ClientProxy implements Proxy {
 	public void init() {
 		//new PaneVanityArmor().autoOverlay(GuiInventory.class);
 		new PaneOrbGlow().autoOverlay(GuiIngame.class);
-		new PaneBranding().autoOverlay(GuiMainMenu.class);
+		if (FarragoMod.brand != null) {
+			new PaneBranding().autoOverlay(GuiMainMenu.class);
+		}
 	}
 
 }
