@@ -82,9 +82,9 @@ public class FarragoMod {
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
-		File branding = new File(Minecraft.getMinecraft().mcDataDir, "branding");
-		if (branding.exists() && branding.isDirectory()) {
-			File brandFile = new File(branding, "brand.txt");
+		File config = new File(Minecraft.getMinecraft().mcDataDir, "config");
+		if (config.exists() && config.isDirectory()) {
+			File brandFile = new File(config, "farrago-brand.txt");
 			if (brandFile.exists()) {
 				try {
 					brand = StringEscapeUtils.unescapeJava(FileUtils.readFileToString(brandFile, Charsets.UTF_8));
