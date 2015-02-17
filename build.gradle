@@ -24,7 +24,7 @@ repositories {
 
 apply plugin: 'forge'
 
-version = "0.7.2"
+version = "0.8"
 group= "com.gameminers.farrago" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Farrago"
 
