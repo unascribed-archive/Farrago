@@ -1,7 +1,5 @@
 package com.gameminers.farrago;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCompressed;
 import net.minecraft.block.material.MapColor;
-import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -29,8 +26,6 @@ import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,7 +38,6 @@ import com.gameminers.farrago.item.ItemVividOrb;
 import com.gameminers.farrago.kahur.KahurIota;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -63,7 +57,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="0.8.1")
 public class FarragoMod {
 	private static final List<Iota> subMods = Lists.newArrayList();
-	private static final Logger log = LogManager.getLogger("Farrago");
+	public static final Logger log = LogManager.getLogger("Farrago");
 	@SidedProxy(clientSide="com.gameminers.farrago.ClientProxy", serverSide="com.gameminers.farrago.ServerProxy")
 	public static Proxy proxy;
 	@Instance("farrago")
@@ -82,18 +76,7 @@ public class FarragoMod {
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
-		File config = new File(Minecraft.getMinecraft().mcDataDir, "config");
-		if (config.exists() && config.isDirectory()) {
-			File brandFile = new File(config, "farrago-brand.txt");
-			if (brandFile.exists()) {
-				try {
-					brand = StringEscapeUtils.unescapeJava(FileUtils.readFileToString(brandFile, Charsets.UTF_8));
-					log.info("Brand loaded: "+brand);
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
+		proxy.preInit();
 		subMods.add(new KahurIota());
 	}
 	@EventHandler
