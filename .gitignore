@@ -24,3 +24,4 @@
 *.log.[0-99]
 .classpath
 .project
+/branding/

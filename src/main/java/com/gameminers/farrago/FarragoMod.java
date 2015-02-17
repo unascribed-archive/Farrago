@@ -1,5 +1,7 @@
 package com.gameminers.farrago;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCompressed;
 import net.minecraft.block.material.MapColor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -26,6 +29,8 @@ import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,6 +43,7 @@ import com.gameminers.farrago.item.ItemVividOrb;
 import com.gameminers.farrago.kahur.KahurIota;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -71,8 +77,23 @@ public class FarragoMod {
 	public static ItemVanillaDust DUST;
 	public static ItemFondue FONDUE;
 	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
+	
+	public static String brand;
+	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
+		File branding = new File(Minecraft.getMinecraft().mcDataDir, "branding");
+		if (branding.exists() && branding.isDirectory()) {
+			File brandFile = new File(branding, "brand.txt");
+			if (brandFile.exists()) {
+				try {
+					brand = StringEscapeUtils.unescapeJava(FileUtils.readFileToString(brandFile, Charsets.UTF_8));
+					log.info("Brand loaded: "+brand);
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
 		subMods.add(new KahurIota());
 	}
 	@EventHandler
