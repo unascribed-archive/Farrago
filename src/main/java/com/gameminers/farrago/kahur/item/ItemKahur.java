@@ -296,6 +296,20 @@ public class ItemKahur extends Item {
 					}
 				}
 				return gun;
+			} else if (pumpColor == MineralColor.POTATO) { // POTATO IS A MINERAL. DO NOT QUESTION.
+				if (player.inventory.consumeInventoryItem(Items.poisonous_potato)) {
+					fire(gun, -6, world, player);
+				} else if (player.inventory.consumeInventoryItem(Items.potato)) {
+					fire(gun, -8, world, player);
+				} else if (player.inventory.consumeInventoryItem(Items.baked_potato)) {
+					fire(gun, -7, world, player);
+				} else {
+					world.playSoundAtEntity(player, "random.click", 1.0F, 2.0f);
+					if (!world.isRemote) {
+						player.addChatMessage(new ChatComponentText("\u00A7cCan't potate without any potatoes."));
+					}
+				}
+				return gun;
 			} else {
 				while (item == null || item.getItem() == null || item.stackSize == 0 || item == gun) {
 					if (iter++ > 2000) {
@@ -323,10 +337,16 @@ public class ItemKahur extends Item {
 		if (world.isRemote) return;
 		EntityKahurProjectile proj = new EntityKahurProjectile(world, player);
 		ItemStack copy;
-		if (slot != -5) {
-			copy = player.inventory.decrStackSize(slot, 1);
-		} else {
+		if (slot == -5) {
 			copy = new ItemStack(Blocks.torch);
+		} else if (slot == -6) {
+			copy = new ItemStack(Items.poisonous_potato);
+		} else if (slot == -7) {
+			copy = new ItemStack(Items.baked_potato);
+		} else if (slot == -8) {
+			copy = new ItemStack(Items.potato);
+		} else {
+			copy = player.inventory.decrStackSize(slot, 1);
 		}
 		proj.setItem(copy);
 		proj.setDamage(KahurIota.getMass(copy)+(KahurIota.getMagic(copy)*2f));

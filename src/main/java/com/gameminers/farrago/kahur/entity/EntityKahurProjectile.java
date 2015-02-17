@@ -2,7 +2,6 @@ package com.gameminers.farrago.kahur.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -12,6 +11,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -88,9 +89,23 @@ public class EntityKahurProjectile extends EntityThrowable {
     
 	@Override
 	protected void onImpact(MovingObjectPosition pos) {
+		boolean kill = false;
 		if (pos.entityHit != null) {
-			if (pos.entityHit instanceof EntityLiving) {
-				((EntityLiving)pos.entityHit).attackEntityFrom(DamageSource.causeThrownDamage(getThrower(), this), damage);
+			if (pos.entityHit instanceof EntityLivingBase) {
+				EntityLivingBase living = ((EntityLivingBase)pos.entityHit);
+				if (getItem().getItem() == Items.potato && living instanceof EntityPlayerMP) {
+					((EntityPlayerMP)living).getFoodStats().addStats(1, 0.2f);
+					worldObj.playSoundAtEntity(living, "random.burp", 0.8f, 1.0f);
+					kill = true;
+				} else {
+					living.attackEntityFrom(DamageSource.causeThrownDamage(getThrower(), this), damage);
+					kill = true;
+					if (getItem().getItem() == Items.poisonous_potato) {
+						living.addPotionEffect(new PotionEffect(Potion.poison.getId(), 100, 1));
+					} else if (getItem().getItem() == Items.baked_potato) {
+						living.setFire(5);
+					}
+				}
 			}
 		}
 		setDead();
@@ -168,8 +183,13 @@ public class EntityKahurProjectile extends EntityThrowable {
 	            }
 			}
 		}
-		if (!worldObj.isRemote) {
-			entityDropItem(getItem(), 0.2f);
+		if (!worldObj.isRemote && !kill) {
+			if (rand.nextFloat() < 0.8f) {
+				entityDropItem(getItem(), 0.2f);
+				worldObj.playSoundAtEntity(this, "step.stone", 1.5f, 2.0f);
+			} else {
+				worldObj.playSoundAtEntity(this, "random.break", 0.8f, 2.0f);
+			}
 		}
 	}
 
