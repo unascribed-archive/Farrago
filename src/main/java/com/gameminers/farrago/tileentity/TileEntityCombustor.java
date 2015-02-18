@@ -275,7 +275,6 @@ public class TileEntityCombustor extends TileEntityFurnace {
 			if (worldObj.isRemote) {
 				EnumFacing p_82488_1_ = EnumFacing.values()[worldObj.getBlockMetadata(xCoord, yCoord, zCoord)];
 				int meta = p_82488_1_.getFrontOffsetX() + 1 + (p_82488_1_.getFrontOffsetZ() + 1) * 3;
-				System.out.println(meta);
 				int j2 = meta % 3 - 1;
                 int j1 = meta / 3 % 3 - 1;
                 double d1 = (double)xCoord + (double)j2 * 0.6D + 0.5D;

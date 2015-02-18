@@ -4,6 +4,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 
 import com.gameminers.farrago.selector.ItemSelector;
+import com.gameminers.farrago.selector.NullSelector;
 import com.gameminers.farrago.selector.OreSelector;
 import com.gameminers.farrago.selector.Selector;
 
@@ -40,6 +41,7 @@ public enum MineralColor {
 			 new ItemSelector(Items.ender_pearl)), 	0x258474, 200, "Ender Pearl [Mobs, Predictable]"),
 	PLATINUM(new OreSelector("ingotPlatinum"), 		0x67D4F6, 450, "Platinum [Mobs, Predictable]"),
 	IRIDIUM (new OreSelector("ingotIridium"), 		0xAAAAAA, 650, "Iridium [Mobs, Predictable]"),
+	CREATIVE(new NullSelector(),					0xFF00FF,32767,"Creative [Mobs, Predictable, Virtually Indestructible]"),
 	;
 	private final Selector selector;
 	private final int color;

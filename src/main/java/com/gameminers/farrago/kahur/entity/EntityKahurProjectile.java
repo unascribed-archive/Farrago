@@ -181,7 +181,9 @@ public class EntityKahurProjectile extends EntityThrowable {
 			}
 		}
 		if (Block.getBlockFromItem(getItem().getItem()) == Blocks.tnt) {
-			worldObj.createExplosion(this, posX, posY, posZ, 2.7f, true);
+			if (!this.worldObj.isRemote) {
+				worldObj.createExplosion(this, posX, posY, posZ, 2.7f, true);
+			}
 			return;
 		}
 		if (getItem().getItem() == Item.getItemFromBlock(Blocks.torch)) {
