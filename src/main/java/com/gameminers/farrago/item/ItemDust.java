@@ -1,5 +1,7 @@
 package com.gameminers.farrago.item;
 
+import gminers.kitchensink.Strings;
+
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -9,21 +11,22 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraftforge.oredict.OreDictionary;
 
-public class ItemVanillaDust extends Item {
+public class ItemDust extends Item {
 	private String[] dustTypes = {
 		"iron",
 		"gold",
 		"emerald",
 		"diamond",
-		"dorito"
+		"dorito",
+		"yttrium",
+		"yttrium_copper",
+		"copper"
 	};
-	private IIcon[] iconsByDamage = new IIcon[5];
+	private IIcon[] iconsByDamage = new IIcon[dustTypes.length];
 	private IIcon iron;
-	private IIcon gold;
-	private IIcon emerald;
-	private IIcon diamond;
-	public ItemVanillaDust() {
+	public ItemDust() {
 		setUnlocalizedName("dust");
 		setTextureName("farrago:dust");
 		setCreativeTab(CreativeTabs.tabMaterials);
@@ -32,16 +35,16 @@ public class ItemVanillaDust extends Item {
 	}
 	@Override
 	public IIcon getIconFromDamage(int damage) {
-		return damage >= 5 ? iron : iconsByDamage[damage];
+		return damage >= dustTypes.length ? iron : iconsByDamage[damage];
 	}
 	@Override
 	public String getUnlocalizedName(ItemStack p_77667_1_) {
 		int damage = p_77667_1_.getItemDamage();
-		return "item.dust_"+(damage >= 5 ? "iron" : dustTypes[damage]);
+		return "item.dust_"+(damage >= dustTypes.length ? "iron" : dustTypes[damage]);
 	}
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < dustTypes.length; i++) {
 			list.add(new ItemStack(item, 1, i));
 		}
 	}
@@ -59,11 +62,15 @@ public class ItemVanillaDust extends Item {
 	}
 	@Override
 	public void registerIcons(IIconRegister registry) {
-		iconsByDamage[0] = iron = registry.registerIcon("farrago:dust_iron");
-		iconsByDamage[1] = gold = registry.registerIcon("farrago:dust_gold");
-		iconsByDamage[2] = emerald = registry.registerIcon("farrago:dust_emerald");
-		iconsByDamage[3] = diamond = registry.registerIcon("farrago:dust_diamond");
-		iconsByDamage[4] = registry.registerIcon("farrago:dust_dorito");
+		for (int i = 0; i < dustTypes.length; i++) {
+			iconsByDamage[i] = registry.registerIcon("farrago:dust_"+dustTypes[i]);
+		}
+		iron = iconsByDamage[0];
+	}
+	public void registerOres() {
+		for (int i = 0; i < dustTypes.length; i++) {
+			OreDictionary.registerOre("dust"+Strings.formatTitleCase(dustTypes[i]), new ItemStack(this, 1, i));
+		}
 	}
 	
 }

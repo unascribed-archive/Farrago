@@ -6,6 +6,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.gameminers.farrago.FarragoMod;
+
 public enum MineralColor {
 	// Special Types
 	GLASS	(Blocks.glass, 0xDDDDFF, "Glass [Potions]", 800),
@@ -20,6 +22,7 @@ public enum MineralColor {
 	IRON	(Items.iron_ingot, 0xD8AF93, "Iron", 250),
 	LAPIS	(new ItemStack(Items.dye, 1, 4), 0x1846B2, "Lapis Lazuli", 280),
 	GOLD	(Items.gold_ingot, 0xFCEE4B, "Gold [Mobs]", 300),
+	YTTRIUM (new ItemStack(FarragoMod.INGOT, 1, 1), 0x000000, "Yttrium [Mobs]", 320),
 	EMERALD	(Items.emerald, 0x17DD62, "Emerald [Mobs]", 450),
 	DIAMOND	(Items.diamond, 0x5DECF5, "Diamond [Mobs]", 850),
 	ENDER	(Items.ender_pearl, 0x258474, "Ender Pearl [Mobs, Predictable]", 200),

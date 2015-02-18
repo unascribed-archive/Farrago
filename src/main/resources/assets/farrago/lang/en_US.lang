@@ -26,6 +26,14 @@ item.dust_emerald.name=Emerald Dust
 item.dust_diamond.name=Diamond Dust
 item.dust_dorito.name=Dorito dust
 item.dust_dorito.description=In honor of the track by Coda! :D
+item.dust_yttrium.name=Yttrium Dust
+item.dust_yttrium_copper.name=Yttrium-Copper Blend
+item.dust_copper.name=Copper Dust
+
+item.ingot_yttrium.name=Yttrium Ingot
+item.ingot_yttrium_copper.name=Yttric Copper Ingot
+item.ingot_yttrium_steel.name=Yttric Steel Ingot
+item.ingot_copper.name=Copper Ingot
 
 item.vivid_orb.name=Vivid Orb
 

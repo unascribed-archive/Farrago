@@ -1,7 +1,5 @@
 package com.gameminers.farrago;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCompressed;
 import net.minecraft.block.material.MapColor;
-import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -29,21 +26,20 @@ import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.gameminers.farrago.block.BlockCombustor;
+import com.gameminers.farrago.block.BlockOre;
 import com.gameminers.farrago.block.BlockScrapper;
+import com.gameminers.farrago.item.ItemDust;
 import com.gameminers.farrago.item.ItemFondue;
+import com.gameminers.farrago.item.ItemIngot;
 import com.gameminers.farrago.item.ItemRubble;
-import com.gameminers.farrago.item.ItemVanillaDust;
 import com.gameminers.farrago.item.ItemVividOrb;
 import com.gameminers.farrago.kahur.KahurIota;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -63,7 +59,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="0.9")
 public class FarragoMod {
 	private static final List<Iota> subMods = Lists.newArrayList();
-	private static final Logger log = LogManager.getLogger("Farrago");
+	public static final Logger log = LogManager.getLogger("Farrago");
 	@SidedProxy(clientSide="com.gameminers.farrago.ClientProxy", serverSide="com.gameminers.farrago.ServerProxy")
 	public static Proxy proxy;
 	@Instance("farrago")
@@ -71,29 +67,22 @@ public class FarragoMod {
 	public static BlockCombustor COMBUSTOR;
 	public static BlockScrapper SCRAPPER;
 	public static Block NETHER_STAR_BLOCK;
+	public static BlockOre ORE;
+	
 	public static ItemVividOrb VIVID_ORB;
 	public static Item CAQUELON;
 	public static ItemRubble RUBBLE;
-	public static ItemVanillaDust DUST;
+	public static ItemDust DUST;
+	public static ItemIngot INGOT;
 	public static ItemFondue FONDUE;
 	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
 	
 	public static String brand;
+	public static boolean copperlessEnvironment;
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
-		File config = new File(Minecraft.getMinecraft().mcDataDir, "config");
-		if (config.exists() && config.isDirectory()) {
-			File brandFile = new File(config, "farrago-brand.txt");
-			if (brandFile.exists()) {
-				try {
-					brand = StringEscapeUtils.unescapeJava(FileUtils.readFileToString(brandFile, Charsets.UTF_8));
-					log.info("Brand loaded: "+brand);
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
+		proxy.preInit();
 		subMods.add(new KahurIota());
 	}
 	@EventHandler
@@ -101,12 +90,14 @@ public class FarragoMod {
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new FarragoGuiHandler());
 		COMBUSTOR = new BlockCombustor();
 		SCRAPPER = new BlockScrapper();
+		ORE = new BlockOre();
 		NETHER_STAR_BLOCK = new BlockCompressed(MapColor.adobeColor).setBlockTextureName("farrago:nether_star_block").setHardness(20f).setLightLevel(0.5f).setBlockName("nether_star_block");
 		NETHER_STAR_BLOCK.setHarvestLevel("pickaxe", 2);
 		CAQUELON = new Item().setTextureName("farrago:caquelon").setMaxStackSize(1).setUnlocalizedName("caquelon");
 		VIVID_ORB = new ItemVividOrb();
 		RUBBLE = new ItemRubble();
-		DUST = new ItemVanillaDust();
+		DUST = new ItemDust();
+		INGOT = new ItemIngot();
 		FONDUE = new ItemFondue();
 		GameRegistry.registerFuelHandler(new IFuelHandler() {
 			private Random rand = new Random();
@@ -126,16 +117,16 @@ public class FarragoMod {
 		GameRegistry.registerBlock(COMBUSTOR, "combustor");
 		GameRegistry.registerBlock(SCRAPPER, "scrapper");
 		GameRegistry.registerBlock(NETHER_STAR_BLOCK, "netherStarBlock");
+		GameRegistry.registerBlock(ORE, "watashi");
 		GameRegistry.registerItem(CAQUELON, "caquelon");
 		GameRegistry.registerItem(RUBBLE, "rubble");
 		GameRegistry.registerItem(DUST, "dust");
+		GameRegistry.registerItem(INGOT, "ingot");
 		GameRegistry.registerItem(FONDUE, "fondue");
 		GameRegistry.registerItem(VIVID_ORB, "vividOrb");
-		OreDictionary.registerOre("dustIron", new ItemStack(DUST, 1, 0));
-		OreDictionary.registerOre("dustGold", new ItemStack(DUST, 1, 1));
-		OreDictionary.registerOre("dustEmerald", new ItemStack(DUST, 1, 2));
-		OreDictionary.registerOre("dustDiamond", new ItemStack(DUST, 1, 3));
-		OreDictionary.registerOre("dustDorito", new ItemStack(DUST, 1, 4));
+		ORE.registerOres();
+		DUST.registerOres();
+		INGOT.registerOres();
 		for (String s : new String[] {ChestGenHooks.DUNGEON_CHEST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, ChestGenHooks.PYRAMID_DESERT_CHEST, ChestGenHooks.STRONGHOLD_LIBRARY, ChestGenHooks.MINESHAFT_CORRIDOR}) {
 			for (int color : new int[] {0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF}) {
 				ItemStack orb = new ItemStack(VIVID_ORB);
@@ -148,6 +139,9 @@ public class FarragoMod {
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 1), new ItemStack(Items.gold_ingot), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 2), new ItemStack(Items.emerald), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 3), new ItemStack(Items.diamond), 0);
+		GameRegistry.addSmelting(new ItemStack(DUST, 1, 5), new ItemStack(INGOT, 1, 0), 0);
+		GameRegistry.addSmelting(new ItemStack(DUST, 1, 6), new ItemStack(INGOT, 1, 1), 0);
+		GameRegistry.addSmelting(new ItemStack(DUST, 1, 7), new ItemStack(INGOT, 1, 3), 0);
 		GameRegistry.addRecipe(new ItemStack(Items.nether_star, 9),
 				"B",
 				'B', NETHER_STAR_BLOCK);
@@ -248,7 +242,7 @@ public class FarragoMod {
 				"III",
 				"IBI",
 				"IGI",
-				'I', "ingotIron",
+				'I', "ingotYttriumSteel",
 				'B', Blocks.iron_bars,
 				'G', Items.gunpowder
 				));
@@ -310,6 +304,10 @@ public class FarragoMod {
 			iota.postInit();
 		}
 		proxy.postInit();
+		if (OreDictionary.getOres("ingotCopper").size() <= 1) {
+			copperlessEnvironment = true;
+			log.warn("We are running in a copperless environment; enabling fallback copper dust drops from Yttrium ore");
+		}
 	}
 	@EventHandler
 	public void onAvailable(FMLLoadCompleteEvent e) {
