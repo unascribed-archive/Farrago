@@ -54,8 +54,4 @@ public class ItemIngot extends Item {
 			OreDictionary.registerOre("ingot"+Strings.formatTitleCase(ingotTypes[i]).replace(" ", ""), new ItemStack(this, 1, i));
 		}
 	}
-	public static void main(String[] args) {
-		System.out.println("ingot"+Strings.formatTitleCase("yttrium_steel"));
-	}
-	
 }
