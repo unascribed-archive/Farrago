@@ -3,7 +3,7 @@ language.region=US
 language.code=en_US
 
 item.kahur.name=Kahur
-itemGroup.kahur=Kahur
+itemGroup.farrago=Farrago
 
 tile.combustor.name=Combustor
 container.combustor=Combustor

@@ -13,6 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.oredict.OreDictionary;
 
+import com.gameminers.farrago.FarragoMod;
+
 public class ItemDust extends Item {
 	private String[] dustTypes = {
 		"iron",
@@ -29,7 +31,7 @@ public class ItemDust extends Item {
 	public ItemDust() {
 		setUnlocalizedName("dust");
 		setTextureName("farrago:dust");
-		setCreativeTab(CreativeTabs.tabMaterials);
+		setCreativeTab(FarragoMod.creativeTab);
 		setHasSubtypes(true);
 		setMaxStackSize(64);
 	}
@@ -69,7 +71,7 @@ public class ItemDust extends Item {
 	}
 	public void registerOres() {
 		for (int i = 0; i < dustTypes.length; i++) {
-			OreDictionary.registerOre("dust"+Strings.formatTitleCase(dustTypes[i]), new ItemStack(this, 1, i));
+			OreDictionary.registerOre("dust"+Strings.formatTitleCase(dustTypes[i]).replace(" ", ""), new ItemStack(this, 1, i));
 		}
 	}
 	

@@ -9,6 +9,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCompressed;
 import net.minecraft.block.material.MapColor;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -80,6 +81,13 @@ public class FarragoMod {
 	
 	public static String brand;
 	public static boolean copperlessEnvironment;
+	public static CreativeTabs creativeTab = new CreativeTabs("farrago") {
+		
+		@Override
+		public Item getTabIconItem() {
+			return Item.getItemFromBlock(COMBUSTOR);
+		}
+	};
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {

@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Locale;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+
+import com.gameminers.farrago.FarragoMod;
 
 public class ItemVividOrb extends Item {
 	private IIcon orb;
@@ -18,7 +19,7 @@ public class ItemVividOrb extends Item {
 	public ItemVividOrb() {
 		setUnlocalizedName("vivid_orb");
 		setTextureName("farrago:vivid_orb");
-		setCreativeTab(CreativeTabs.tabMisc);
+		setCreativeTab(FarragoMod.creativeTab);
 		setMaxStackSize(16);
 	}
 	@Override

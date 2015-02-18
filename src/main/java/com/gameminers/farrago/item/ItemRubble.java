@@ -8,13 +8,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
+import com.gameminers.farrago.FarragoMod;
+
 public class ItemRubble extends Item {
 	public static final int typeCount = 6;
 	private IIcon[] icons = new IIcon[typeCount];
 	public ItemRubble() {
 		setUnlocalizedName("rubble");
 		setTextureName("farrago:rubble");
-		setCreativeTab(CreativeTabs.tabMisc);
+		setCreativeTab(FarragoMod.creativeTab);
 		setHasSubtypes(true);
 		setMaxStackSize(64);
 	}

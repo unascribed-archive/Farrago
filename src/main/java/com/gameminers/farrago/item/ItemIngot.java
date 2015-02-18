@@ -11,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.oredict.OreDictionary;
 
+import com.gameminers.farrago.FarragoMod;
+
 public class ItemIngot extends Item {
 	private String[] ingotTypes = {
 		"yttrium",
@@ -23,7 +25,7 @@ public class ItemIngot extends Item {
 	public ItemIngot() {
 		setUnlocalizedName("ingot");
 		setTextureName("farrago:ingot");
-		setCreativeTab(CreativeTabs.tabMaterials);
+		setCreativeTab(FarragoMod.creativeTab);
 		setHasSubtypes(true);
 		setMaxStackSize(64);
 	}

@@ -20,6 +20,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.kahur.KahurIota;
 import com.gameminers.farrago.kahur.MineralColor;
 import com.gameminers.farrago.kahur.WoodColor;
@@ -35,7 +36,7 @@ public class ItemKahur extends Item {
 	public ItemKahur() {
 		setUnlocalizedName("kahur");
 		setTextureName("kahur:kahur");
-		setCreativeTab(KahurIota.creativeTab);
+		setCreativeTab(FarragoMod.creativeTab);
 	}
 	
 	@Override

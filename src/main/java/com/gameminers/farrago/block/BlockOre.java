@@ -16,6 +16,7 @@ public class BlockOre extends Block {
 	public BlockOre() {
 		super(Material.rock);
 		setBlockTextureName("farrago:watashi");
+		setCreativeTab(FarragoMod.creativeTab);
 		setHardness(3.0f);
 		setResistance(5.0f);
 		setStepSound(soundTypePiston);

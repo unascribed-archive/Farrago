@@ -4,7 +4,6 @@ import java.util.Random;
 
 import net.minecraft.block.BlockFurnace;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -26,7 +25,7 @@ public class BlockCombustor extends BlockFurnace {
 	public BlockCombustor() {
 		super(false);
 		setHarvestLevel("pickaxe", 1);
-		setCreativeTab(CreativeTabs.tabDecorations);
+		setCreativeTab(FarragoMod.creativeTab);
 		setBlockName("combustor");
 		setHardness(5.0f);
 		setStepSound(soundTypeMetal);

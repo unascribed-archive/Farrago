@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,7 +38,7 @@ public class BlockScrapper extends BlockContainer {
 	public BlockScrapper() {
 		super(Material.iron);
 		setHarvestLevel("pickaxe", 1);
-		setCreativeTab(CreativeTabs.tabDecorations);
+		setCreativeTab(FarragoMod.creativeTab);
 		setBlockName("scrapper");
 		setHardness(5.0f);
 		setStepSound(soundTypeMetal);
@@ -152,11 +151,11 @@ public class BlockScrapper extends BlockContainer {
 	
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister p_149651_1_) {
-        blockIcon = p_149651_1_.registerIcon("farrago:combustor_side");
+        blockIcon = p_149651_1_.registerIcon("farrago:scrapper_side");
         front = p_149651_1_.registerIcon("farrago:scrapper_front");
         frontOn = p_149651_1_.registerIcon("farrago:scrapper_front_on");
         top = p_149651_1_.registerIcon("farrago:scrapper_top");
-        bottom = p_149651_1_.registerIcon("farrago:combustor_bottom");
+        bottom = p_149651_1_.registerIcon("farrago:scrapper_bottom");
     }
     
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float xOfs, float yOfs, float zOfs) {

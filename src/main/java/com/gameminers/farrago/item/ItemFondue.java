@@ -35,7 +35,7 @@ public class ItemFondue extends ItemFood {
 		super(0, false);
 		setUnlocalizedName("fondue");
 		setTextureName("farrago:fondue");
-		setCreativeTab(CreativeTabs.tabFood);
+		setCreativeTab(FarragoMod.creativeTab);
 		setHasSubtypes(true);
 		setMaxStackSize(1);
 	}

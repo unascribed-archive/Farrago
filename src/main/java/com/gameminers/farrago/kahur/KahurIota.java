@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -73,14 +72,6 @@ public class KahurIota implements Iota {
 	static boolean baked = false;
 	public static List<Runnable> tasks = Lists.newArrayList();
 	public static ItemKahur KAHUR;
-	public static CreativeTabs creativeTab = new CreativeTabs("kahur") {
-		
-		@Override
-		public Item getTabIconItem() {
-			return KAHUR;
-		}
-	};
-	
 	@SubscribeEvent
 	public void onInformation(ItemTooltipEvent e) {
 		if (e.showAdvancedItemTooltips) {
