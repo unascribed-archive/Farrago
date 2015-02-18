@@ -1,6 +1,8 @@
 package com.gameminers.farrago;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +23,11 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
+import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -34,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 import com.gameminers.farrago.block.BlockCombustor;
 import com.gameminers.farrago.block.BlockOre;
 import com.gameminers.farrago.block.BlockScrapper;
+import com.gameminers.farrago.gen.YttriumGenerator;
 import com.gameminers.farrago.item.ItemDust;
 import com.gameminers.farrago.item.ItemFondue;
 import com.gameminers.farrago.item.ItemIngot;
@@ -55,6 +60,8 @@ import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -88,6 +95,7 @@ public class FarragoMod {
 			return Item.getItemFromBlock(COMBUSTOR);
 		}
 	};
+	private YttriumGenerator yttrGen;
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
@@ -151,6 +159,8 @@ public class FarragoMod {
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 5), new ItemStack(INGOT, 1, 0), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 6), new ItemStack(INGOT, 1, 1), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 7), new ItemStack(INGOT, 1, 3), 0);
+		GameRegistry.addSmelting(new ItemStack(ORE, 1, 0), new ItemStack(INGOT, 1, 0), 0);
+		GameRegistry.registerWorldGenerator(yttrGen = new YttriumGenerator(), 0);
 		GameRegistry.addRecipe(new ItemStack(Items.nether_star, 9),
 				"B",
 				'B', NETHER_STAR_BLOCK);
@@ -266,6 +276,7 @@ public class FarragoMod {
 				'P', Blocks.heavy_weighted_pressure_plate
 				));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
+		OreDictionary.registerOre("dyeRed", new ItemStack(DUST, 1, 5));
 		for (Iota iota : subMods) {
 			iota.init();
 		}
@@ -303,8 +314,33 @@ public class FarragoMod {
 				}
 			}
 			if (sting) {
-				System.out.println("hi");
 				player.worldObj.playSoundAtEntity(player, "farrago:cyber_sting", 0.5f, 1.0f);
+			}
+		}
+	}
+	@SubscribeEvent
+	public void onDataSave(ChunkDataEvent.Save e) {
+		if (!"yttrium".equals(e.getData().getString("farrago:RetroGenKey"))) {
+			log.info("Marking "+e.getChunk().xPosition+", "+e.getChunk().zPosition+" as retrogenerated");
+			e.getData().setString("farrago:RetroGenKey", "yttrium");
+		}
+	}
+	private Deque<Chunk> chunksToGen = new ArrayDeque<Chunk>();
+	@SubscribeEvent
+	public void onDataLoad(ChunkDataEvent.Load e) {
+		// TODO: Incremental retrogen
+		if (!"yttrium".equals(e.getData().getString("farrago:RetroGenKey"))) {
+			chunksToGen.addLast(e.getChunk());
+		}
+	}
+	@SubscribeEvent
+	public void onTick(ServerTickEvent e) {
+		if (e.phase == Phase.END) {
+			if (!chunksToGen.isEmpty()) {
+				Chunk chunk = chunksToGen.pop();
+				yttrGen.generate(chunk.worldObj.rand, chunk.xPosition, chunk.zPosition, chunk.worldObj, null, null);
+				chunk.setChunkModified();
+				log.info("Retrogenerating "+chunk.xPosition+", "+chunk.zPosition);
 			}
 		}
 	}

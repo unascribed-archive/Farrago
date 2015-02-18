@@ -11,6 +11,8 @@ container.combustor=Combustor
 tile.scrapper.name=Scrapper
 container.scrapper=Scrapper
 
+tile.oreYttrium.name=Yttrium Ore
+
 tile.nether_star_block.name=Nether Star Block
 
 item.rubble_1.name=Feckless Rubble
