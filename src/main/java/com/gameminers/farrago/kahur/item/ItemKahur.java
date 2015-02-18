@@ -263,7 +263,7 @@ public class ItemKahur extends Item {
 			if (gun.hasTagCompound() && gun.getTagCompound().hasKey("KahurPumpMaterial")) {
 				pumpColor = MineralColor.valueOf(gun.getTagCompound().getString("KahurPumpMaterial"));
 			}
-			if (pumpColor == MineralColor.ENDER) {
+			if (pumpColor.ordinal() >= MineralColor.ENDER.ordinal()) {
 				for (slot = 27; slot < 36; slot++) {
 					item = player.inventory.mainInventory[slot];
 					if (item != null && item.getItem() != null && item.stackSize > 0 && item != gun) {

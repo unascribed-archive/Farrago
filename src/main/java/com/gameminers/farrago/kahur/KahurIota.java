@@ -376,6 +376,7 @@ public class KahurIota implements Iota {
 			for (WoodColor drum : WoodColor.values()) {
 				if (drum == WoodColor.CREATIVE) continue;
 				for (MineralColor pump : MineralColor.values()) {
+					if (pump.getSelector().getRepresentation() == null) continue;
 					ItemStack kahur = new ItemStack(KAHUR);
 					NBTTagCompound tag = new NBTTagCompound();
 					tag.setString("KahurBodyMaterial", body.name());

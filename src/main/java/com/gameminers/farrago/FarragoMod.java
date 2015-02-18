@@ -25,6 +25,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -256,6 +257,10 @@ public class FarragoMod {
 				'D', "gemDiamond",
 				'P', Blocks.heavy_weighted_pressure_plate
 				));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
+		for (Iota iota : subMods) {
+			iota.init();
+		}
 		for (IRecipe recipe : (List<IRecipe>)CraftingManager.getInstance().getRecipeList()) {
 			if (recipe == null) continue;
 			ItemStack out = recipe.getRecipeOutput();
@@ -272,9 +277,6 @@ public class FarragoMod {
 		}
 		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(this);
-		for (Iota iota : subMods) {
-			iota.init();
-		}
 		proxy.init();
 	}
 	@SubscribeEvent
