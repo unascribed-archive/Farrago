@@ -382,22 +382,22 @@ public class KahurIota implements Iota {
 					tag.setString("KahurDrumMaterial", drum.name());
 					tag.setString("KahurPumpMaterial", pump.name());
 					kahur.setTagCompound(tag);
-					GameRegistry.addRecipe(kahur,
+					GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
 							"B  ",
 							"PD ",
 							" /B",
 							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
 							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-							'P', pump.getMaterial(),
-							'/', Items.stick);
-					GameRegistry.addRecipe(kahur,
+							'P', pump.getSelector().getRepresentation(),
+							'/', "stickWood"));
+					GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
 							"  B",
 							" DP",
 							"B/ ",
 							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
 							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-							'P', pump.getMaterial(),
-							'/', Items.stick);
+							'P', pump.getSelector().getRepresentation(),
+							'/', "stickWood"));
 				}
 			}
 		}

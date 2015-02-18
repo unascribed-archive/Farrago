@@ -1,56 +1,48 @@
 package com.gameminers.farrago.kahur;
 
-import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 
-import com.gameminers.farrago.FarragoMod;
+import com.gameminers.farrago.selector.ItemSelector;
+import com.gameminers.farrago.selector.OreSelector;
+import com.gameminers.farrago.selector.Selector;
 
 public enum MineralColor {
 	// Special Types
-	GLASS	(Blocks.glass, 0xDDDDFF, "Glass [Potions]", 800),
-	POTATO	(Items.potato, 0xEDC77C, "Potato [Spud]", 300),
-	GLOW	(Blocks.glowstone, 0xF2CF21, "Glowstone [Torches]", 2400),
-	OBSIDIAN(Blocks.obsidian, 0x1E001B, "Obsidian [Rocket]", 1200),
+	GLASS	(new OreSelector("blockGlass"), 0xDDDDFF, 800, "Glass [Potions]"),
+	POTATO	(new ItemSelector(Items.potato), 0xEDC77C, 300, "Potato [Spud]"),
+	GLOW	(new OreSelector("glowstone"), 0xF2CF21, 2400, "Glowstone [Torches]"),
+	OBSIDIAN(new OreSelector("ingotObsidian",
+			 new ItemSelector(Blocks.obsidian)), 0x1E001B, 1200, "Obsidian [Rocket]"),
 	
 	// Regular Tiers
-	STONE	(Blocks.cobblestone, 0x898989, "Stone", 130),
-	COAL	(Items.coal, 0x454545, "Coal", 180),
-	QUARTZ	(Items.quartz, 0xDACEC1, "Nether Quartz", 200),
-	IRON	(Items.iron_ingot, 0xD8AF93, "Iron", 250),
-	LAPIS	(new ItemStack(Items.dye, 1, 4), 0x1846B2, "Lapis Lazuli", 280),
-	GOLD	(Items.gold_ingot, 0xFCEE4B, "Gold [Mobs]", 300),
-	YTTRIUM (new ItemStack(FarragoMod.INGOT, 1, 1), 0x000000, "Yttrium [Mobs]", 320),
-	EMERALD	(Items.emerald, 0x17DD62, "Emerald [Mobs]", 450),
-	DIAMOND	(Items.diamond, 0x5DECF5, "Diamond [Mobs]", 850),
-	ENDER	(Items.ender_pearl, 0x258474, "Ender Pearl [Mobs, Predictable]", 200),
+	STONE	(new OreSelector("cobblestone"), 		0x898989, 130, "Stone"),
+	COAL	(new OreSelector("coal",
+			 new ItemSelector(Items.coal)), 	0x454545, 180, "Coal"),
+	QUARTZ	(new OreSelector("gemQuartz"), 			0xDACEC1, 200, "Nether Quartz"),
+	IRON	(new OreSelector("ingotIron"), 			0xD8AF93, 250, "Iron"),
+	LAPIS	(new OreSelector("gemLapis"), 			0x1846B2, 280, "Lapis Lazuli"),
+	GOLD	(new OreSelector("ingotGold"), 			0xFCEE4B, 300, "Gold [Mobs]"),
+	YTTRIUM (new OreSelector("ingotYttrium"), 		0xB1B1B1, 320, "Yttrium [Mobs]"),
+	EMERALD	(new OreSelector("gemEmerald"), 		0x17DD62, 450, "Emerald [Mobs]"),
+	SYTTRIUM(new OreSelector("ingotYttriumSteel"), 	0x9D9D9D, 600, "Yttric Steel [Mobs]"),
+	DIAMOND	(new OreSelector("gemDiamond"), 		0x5DECF5, 850, "Diamond [Mobs]"),
+	ENDER	(new OreSelector("enderPearl",
+			 new ItemSelector(Items.ender_pearl)), 	0x258474, 200, "Ender Pearl [Mobs, Predictable]"),
 	;
-	private final ItemStack material;
+	private final Selector selector;
 	private final int color;
 	private final String friendlyName;
 	private final int durability;
-	private MineralColor(Block block, int color, String friendlyName, int durability) {
-		material = new ItemStack(block, 1, 32767);
+	private MineralColor(Selector selector, int color, int durability, String friendlyName) {
+		this.selector = selector;
 		this.color = color;
 		this.friendlyName = friendlyName;
 		this.durability = durability;
 	}
-	private MineralColor(Item item, int color, String friendlyName, int durability) {
-		material = new ItemStack(item, 1, 32767);
-		this.color = color;
-		this.friendlyName = friendlyName;
-		this.durability = durability;
-	}
-	private MineralColor(ItemStack item, int color, String friendlyName, int durability) {
-		material = item;
-		this.color = color;
-		this.friendlyName = friendlyName;
-		this.durability = durability;
-	}
-	public ItemStack getMaterial() {
-		return material;
+	
+	public Selector getSelector() {
+		return selector;
 	}
 	public int getColor() {
 		return color;
