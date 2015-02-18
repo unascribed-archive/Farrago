@@ -168,6 +168,7 @@ public class TileEntityScrapper extends TileEntity implements ISidedInventory {
 
 	@SideOnly(Side.CLIENT)
 	public int getCookProgressScaled(int p_145953_1_) {
+		canScrap();
 		return this.furnaceCookTime * p_145953_1_ / operationLength;
 	}
 
@@ -192,7 +193,6 @@ public class TileEntityScrapper extends TileEntity implements ISidedInventory {
 		if (this.furnaceBurnTime > 0) {
 			--this.furnaceBurnTime;
 		}
-
 		if (!this.worldObj.isRemote) {
 			if (this.furnaceBurnTime != 0 || this.furnaceItemStacks[1] != null
 					&& this.furnaceItemStacks[0] != null) {
@@ -261,7 +261,28 @@ public class TileEntityScrapper extends TileEntity implements ISidedInventory {
 					break;
 				}
 			}
-			boolean scrappable = FarragoMod.recipes.containsKey(FarragoMod.hashItemStack(furnaceItemStacks[0]));
+			boolean dustable = false;
+			int[] ids = OreDictionary.getOreIDs(furnaceItemStacks[0]);
+			for (int id : ids) {
+				String nm = OreDictionary.getOreName(id);
+				String bare = null;
+				if (nm.startsWith("ingot")) {
+					bare = nm.substring(5);
+				} else if (nm.startsWith("gem")) {
+					bare = nm.substring(3);
+				}
+				if (bare != null) {
+					String dnm = "dust"+bare;
+					List<ItemStack> dustos = OreDictionary.getOres(dnm);
+					if (!dustos.isEmpty()) {
+						dustable = true;
+						break;
+					}
+				}
+			}
+			operationLength = dustable ? 100 : 400;
+			if (worldObj.isRemote) return false;
+			boolean scrappable = dustable || FarragoMod.recipes.containsKey(FarragoMod.hashItemStack(furnaceItemStacks[0]));
 			if (!scrappable) {
 				ItemStack copy = furnaceItemStacks[0].copy();
 				copy.setTagCompound(null);
@@ -278,7 +299,6 @@ public class TileEntityScrapper extends TileEntity implements ISidedInventory {
 	 * Turn one item from the furnace source stack into the appropriate smelted
 	 * item in the furnace result stack
 	 */
-	@SuppressWarnings("unchecked")
 	public void scrapItem() {
 		if (this.canScrap()) {
 			ItemStack itemstack = this.furnaceItemStacks[0];
@@ -304,6 +324,33 @@ public class TileEntityScrapper extends TileEntity implements ISidedInventory {
 
 	private int processRecipes(ItemStack itemstack, IRecipe cause, IRecipe previousCause, int depth) {
 		if (depth >= 14) return 0;
+		
+		{
+			int[] ids = OreDictionary.getOreIDs(itemstack);
+			ItemStack dust = null;
+			for (int id : ids) {
+				String nm = OreDictionary.getOreName(id);
+				String bare = null;
+				if (nm.startsWith("ingot")) {
+					bare = nm.substring(5);
+				} else if (nm.startsWith("gem")) {
+					bare = nm.substring(3);
+				}
+				if (bare != null) {
+					String dnm = "dust"+bare;
+					List<ItemStack> dustos = OreDictionary.getOres(dnm);
+					if (!dustos.isEmpty()) {
+						dust = dustos.get(0);
+						break;
+					}
+				}
+			}
+			if (dust != null) {
+				addItem(dust.copy());
+				return 0;
+			}
+		}
+		
 		List<IRecipe> recipes = FarragoMod.recipes.get(FarragoMod.hashItemStack(itemstack));
 		if (recipes == null) {
 			ItemStack copy = itemstack.copy();
