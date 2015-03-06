@@ -10,10 +10,14 @@ import net.minecraft.client.gui.GuiMainMenu;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import com.gameminers.farrago.client.render.RenderBlunderbussProjectile;
+import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.kahur.client.InitScreen;
 import com.gameminers.farrago.pane.PaneBranding;
 import com.gameminers.farrago.pane.PaneOrbGlow;
 import com.google.common.base.Charsets;
+
+import cpw.mods.fml.client.registry.RenderingRegistry;
 
 
 public class ClientProxy implements Proxy {
@@ -33,6 +37,7 @@ public class ClientProxy implements Proxy {
 		if (FarragoMod.brand != null) {
 			new PaneBranding().autoOverlay(GuiMainMenu.class);
 		}
+		RenderingRegistry.registerEntityRenderingHandler(EntityBlunderbussProjectile.class, new RenderBlunderbussProjectile());
 	}
 
 	@Override

@@ -39,7 +39,6 @@ import org.apache.logging.log4j.Logger;
 import com.gameminers.farrago.block.BlockCombustor;
 import com.gameminers.farrago.block.BlockOre;
 import com.gameminers.farrago.block.BlockScrapper;
-import com.gameminers.farrago.client.render.RenderBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.gen.YttriumGenerator;
 import com.gameminers.farrago.item.ItemBlunderbuss;
@@ -53,7 +52,6 @@ import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.Mod;
@@ -151,7 +149,6 @@ public class FarragoMod {
 		GameRegistry.registerItem(FONDUE, "fondue");
 		GameRegistry.registerItem(VIVID_ORB, "vividOrb");
 		EntityRegistry.registerModEntity(EntityBlunderbussProjectile.class, "blunderbussShot", 5, this, 64, 12, true);
-		RenderingRegistry.registerEntityRenderingHandler(EntityBlunderbussProjectile.class, new RenderBlunderbussProjectile());
 		ORE.registerOres();
 		DUST.registerOres();
 		INGOT.registerOres();
