@@ -17,7 +17,6 @@ public class ItemIngot extends Item {
 	private String[] ingotTypes = {
 		"yttrium",
 		"yttrium_copper",
-		"yttrium_steel",
 		"copper"
 	};
 	private IIcon[] iconsByDamage = new IIcon[ingotTypes.length];

@@ -27,6 +27,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -38,7 +39,10 @@ import org.apache.logging.log4j.Logger;
 import com.gameminers.farrago.block.BlockCombustor;
 import com.gameminers.farrago.block.BlockOre;
 import com.gameminers.farrago.block.BlockScrapper;
+import com.gameminers.farrago.client.render.RenderBlunderbussProjectile;
+import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.gen.YttriumGenerator;
+import com.gameminers.farrago.item.ItemBlunderbuss;
 import com.gameminers.farrago.item.ItemDust;
 import com.gameminers.farrago.item.ItemFondue;
 import com.gameminers.farrago.item.ItemIngot;
@@ -49,6 +53,7 @@ import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
 import com.google.common.collect.Lists;
 
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.Mod;
@@ -63,6 +68,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="0.9")
@@ -83,6 +89,7 @@ public class FarragoMod {
 	public static ItemRubble RUBBLE;
 	public static ItemDust DUST;
 	public static ItemIngot INGOT;
+	public static ItemBlunderbuss BLUNDERBUSS;
 	public static ItemFondue FONDUE;
 	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
 	
@@ -108,11 +115,12 @@ public class FarragoMod {
 		COMBUSTOR = new BlockCombustor();
 		SCRAPPER = new BlockScrapper();
 		ORE = new BlockOre();
-		NETHER_STAR_BLOCK = new BlockCompressed(MapColor.adobeColor).setBlockTextureName("farrago:nether_star_block").setHardness(20f).setLightLevel(0.5f).setBlockName("nether_star_block");
+		NETHER_STAR_BLOCK = new BlockCompressed(MapColor.adobeColor).setBlockTextureName("farrago:nether_star_block").setHardness(20f).setLightLevel(0.5f).setBlockName("nether_star_block").setCreativeTab(creativeTab);
 		NETHER_STAR_BLOCK.setHarvestLevel("pickaxe", 2);
 		CAQUELON = new Item().setTextureName("farrago:caquelon").setMaxStackSize(1).setUnlocalizedName("caquelon");
 		VIVID_ORB = new ItemVividOrb();
 		RUBBLE = new ItemRubble();
+		BLUNDERBUSS = new ItemBlunderbuss();
 		DUST = new ItemDust();
 		INGOT = new ItemIngot();
 		FONDUE = new ItemFondue();
@@ -135,12 +143,15 @@ public class FarragoMod {
 		GameRegistry.registerBlock(SCRAPPER, "scrapper");
 		GameRegistry.registerBlock(NETHER_STAR_BLOCK, "netherStarBlock");
 		GameRegistry.registerBlock(ORE, "watashi");
+		GameRegistry.registerItem(BLUNDERBUSS, "blunderbuss");
 		GameRegistry.registerItem(CAQUELON, "caquelon");
 		GameRegistry.registerItem(RUBBLE, "rubble");
 		GameRegistry.registerItem(DUST, "dust");
 		GameRegistry.registerItem(INGOT, "ingot");
 		GameRegistry.registerItem(FONDUE, "fondue");
 		GameRegistry.registerItem(VIVID_ORB, "vividOrb");
+		EntityRegistry.registerModEntity(EntityBlunderbussProjectile.class, "blunderbussShot", 5, this, 64, 12, true);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBlunderbussProjectile.class, new RenderBlunderbussProjectile());
 		ORE.registerOres();
 		DUST.registerOres();
 		INGOT.registerOres();
@@ -158,7 +169,7 @@ public class FarragoMod {
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 3), new ItemStack(Items.diamond), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 5), new ItemStack(INGOT, 1, 0), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 6), new ItemStack(INGOT, 1, 1), 0);
-		GameRegistry.addSmelting(new ItemStack(DUST, 1, 7), new ItemStack(INGOT, 1, 3), 0);
+		GameRegistry.addSmelting(new ItemStack(DUST, 1, 7), new ItemStack(INGOT, 1, 2), 0);
 		GameRegistry.addSmelting(new ItemStack(ORE, 1, 0), new ItemStack(INGOT, 1, 0), 0);
 		GameRegistry.registerWorldGenerator(yttrGen = new YttriumGenerator(), 0);
 		GameRegistry.addRecipe(new ItemStack(Items.nether_star, 9),
@@ -261,7 +272,7 @@ public class FarragoMod {
 				"III",
 				"IBI",
 				"IGI",
-				'I', "ingotYttriumSteel",
+				'I', "ingotYttrium",
 				'B', Blocks.iron_bars,
 				'G', Items.gunpowder
 				));
@@ -269,11 +280,21 @@ public class FarragoMod {
 				"III",
 				"QPQ",
 				"BDB",
-				'I', "ingotIron",
+				'I', "ingotYttrium",
 				'Q', Items.quartz,
 				'B', "blockIron",
 				'D', "gemDiamond",
 				'P', Blocks.heavy_weighted_pressure_plate
+				));
+		GameRegistry.addRecipe(new ShapedOreRecipe(BLUNDERBUSS, 
+				" I ",
+				"IYG",
+				" BC",
+				'I', "ingotIron",
+				'Y', "ingotYttrium",
+				'C', "ingotYttriumCopper",
+				'G', Items.gunpowder,
+				'B', Items.blaze_rod
 				));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
 		OreDictionary.registerOre("dyeRed", new ItemStack(DUST, 1, 5));
@@ -327,6 +348,10 @@ public class FarragoMod {
 	}
 	private Deque<Chunk> chunksToGen = new ArrayDeque<Chunk>();
 	@SubscribeEvent
+	public void onTooltip(ItemTooltipEvent e) {
+		Encyclopedia.process(e.itemStack, e.entityPlayer, e.toolTip, e.showAdvancedItemTooltips);
+	}
+	@SubscribeEvent
 	public void onDataLoad(ChunkDataEvent.Load e) {
 		// TODO: Incremental retrogen
 		if (!"yttrium".equals(e.getData().getString("farrago:RetroGenKey"))) {
@@ -354,6 +379,7 @@ public class FarragoMod {
 			copperlessEnvironment = true;
 			log.warn("We are running in a copperless environment; enabling fallback copper dust drops from Yttrium ore");
 		}
+		Encyclopedia.init();
 	}
 	@EventHandler
 	public void onAvailable(FMLLoadCompleteEvent e) {

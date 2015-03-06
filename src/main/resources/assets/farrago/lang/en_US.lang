@@ -2,8 +2,10 @@ language.name=English
 language.region=US
 language.code=en_US
 
-item.kahur.name=Kahur
 itemGroup.farrago=Farrago
+
+item.kahur.name=Kahur
+item.blunderbuss.name=Blunderbuss
 
 tile.combustor.name=Combustor
 container.combustor=Combustor
