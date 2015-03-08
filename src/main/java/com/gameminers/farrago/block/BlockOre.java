@@ -28,8 +28,13 @@ public class BlockOre extends Block {
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
 		ArrayList<ItemStack> drops = Lists.newArrayList();
-		drops.add(new ItemStack(this, 1, metadata));
 		if (metadata == 0) {
+			for (int i = 0; i < world.rand.nextInt(fortune+3)+1; i++) {
+				drops.add(new ItemStack(FarragoMod.DUST, 1, 5));
+			}
+			if (world.rand.nextInt(8) == 0) {
+				drops.add(new ItemStack(FarragoMod.DUST, 1, 6));
+			}
 			if (FarragoMod.copperlessEnvironment) {
 				for (int i = 0; i < world.rand.nextInt(fortune+2); i++) {
 					drops.add(new ItemStack(FarragoMod.DUST, 1, 7));
