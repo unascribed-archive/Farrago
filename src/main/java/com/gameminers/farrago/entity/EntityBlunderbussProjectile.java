@@ -51,7 +51,7 @@ public class EntityBlunderbussProjectile extends EntityThrowable {
 			}
 			if (worldObj instanceof WorldServer) {
 				((WorldServer)worldObj).func_147487_a("smoke", pos.hitVec.xCoord, pos.hitVec.yCoord, pos.hitVec.zCoord, 1, 0.2f, 0.2f, 0.2f, 0f);
-				((WorldServer)worldObj).playSoundAtEntity(this, "step.stone", 1.0f, 0.3f);
+				((WorldServer)worldObj).playSoundAtEntity(this, "step.stone", 0.5f, 0.3f);
 			}
 		}
 	}

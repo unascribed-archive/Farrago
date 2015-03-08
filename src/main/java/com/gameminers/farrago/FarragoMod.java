@@ -165,7 +165,7 @@ public class FarragoMod {
 		GameRegistry.registerItem(CELL, "cell");
 		GameRegistry.registerItem(RIFLE, "rifle");
 		EntityRegistry.registerModEntity(EntityRifleProjectile.class, "rifleShot", 5, this, 64, 12, true);
-		EntityRegistry.registerModEntity(EntityBlunderbussProjectile.class, "blunderbussShot", 5, this, 64, 12, true);
+		EntityRegistry.registerModEntity(EntityBlunderbussProjectile.class, "blunderbussShot", 6, this, 64, 12, true);
 		ORE.registerOres();
 		DUST.registerOres();
 		INGOT.registerOres();
