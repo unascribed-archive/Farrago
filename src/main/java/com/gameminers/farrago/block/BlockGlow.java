@@ -5,8 +5,6 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -119,17 +117,7 @@ public class BlockGlow extends Block {
 	
 	@Override
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
-		setBlockBoundsBasedOnState(world, x, y, z);
-		float x1 = (float) getBlockBoundsMinX();
-		float y1 = (float) getBlockBoundsMinY();
-		float z1 = (float) getBlockBoundsMinZ();
-		float x2 = (float) getBlockBoundsMaxX();
-		float y2 = (float) getBlockBoundsMaxY();
-		float z2 = (float) getBlockBoundsMaxZ();
-		for (int i = 0; i < rand.nextInt(10)+5; i++) {
-			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityReddustFX(world, x+(x1+(rand.nextFloat()*x2)),
-					y+(y1+(rand.nextFloat()*y2)), z+(z1+(rand.nextFloat()*z2)), 0.6f, 1.0f, 1.0f, 0.0f));
-		}
+		FarragoMod.proxy.glowRandomDisplayTick(world, x, y, z, rand);
 	}
 
 }

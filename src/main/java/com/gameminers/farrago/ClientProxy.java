@@ -3,10 +3,13 @@ package com.gameminers.farrago;
 import java.io.File;
 import java.io.IOException;
 import java.util.ConcurrentModificationException;
+import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.particle.EntityReddustFX;
+import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.apache.commons.io.FileUtils;
@@ -82,6 +85,21 @@ public class ClientProxy implements Proxy {
 		try {
 			Minecraft.getMinecraft().getSoundHandler().stopSounds();
 		} catch (ConcurrentModificationException e) {}
+	}
+
+	@Override
+	public void glowRandomDisplayTick(World world, int x, int y, int z, Random rand) {
+		FarragoMod.GLOW.setBlockBoundsBasedOnState(world, x, y, z);
+		float x1 = (float) FarragoMod.GLOW.getBlockBoundsMinX();
+		float y1 = (float) FarragoMod.GLOW.getBlockBoundsMinY();
+		float z1 = (float) FarragoMod.GLOW.getBlockBoundsMinZ();
+		float x2 = (float) FarragoMod.GLOW.getBlockBoundsMaxX();
+		float y2 = (float) FarragoMod.GLOW.getBlockBoundsMaxY();
+		float z2 = (float) FarragoMod.GLOW.getBlockBoundsMaxZ();
+		for (int i = 0; i < rand.nextInt(10)+5; i++) {
+			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityReddustFX(world, x+(x1+(rand.nextFloat()*x2)),
+					y+(y1+(rand.nextFloat()*y2)), z+(z1+(rand.nextFloat()*z2)), 0.6f, 1.0f, 1.0f, 0.0f));
+		}
 	}
 
 }
