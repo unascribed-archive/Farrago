@@ -83,13 +83,18 @@ public class ItemRifle extends Item {
 					world.playSoundAtEntity(player, "farrago:laser_fire", 1.0f, 1.0f);
 					RifleMode mode = getMode(gun);
 					float spread = 0.0f;
+					float speed = 4f;
 					int count = 1;
 					if (mode == RifleMode.SCATTER) {
 						spread = 10f;
 						count = itemRand.nextInt(10)+5;
+					} else if (mode == RifleMode.TELEPORT) {
+						speed = 3f;
+					} else if (mode == RifleMode.PRECISION_MINING || mode == RifleMode.MINING) {
+						speed = 0.9f;
 					}
 					for (int i = 0; i < count; i++) {
-						EntityRifleProjectile proj = new EntityRifleProjectile(world, player, spread);
+						EntityRifleProjectile proj = new EntityRifleProjectile(world, player, speed, spread);
 						proj.setMode(mode);
 						world.spawnEntityInWorld(proj);
 					}
