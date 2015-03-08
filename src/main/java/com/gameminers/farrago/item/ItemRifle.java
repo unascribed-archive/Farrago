@@ -85,7 +85,7 @@ public class ItemRifle extends Item {
 					float spread = 0.0f;
 					int count = 1;
 					if (mode == RifleMode.SCATTER) {
-						spread = 5f;
+						spread = 10f;
 						count = itemRand.nextInt(10)+5;
 					}
 					for (int i = 0; i < count; i++) {
