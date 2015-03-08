@@ -37,14 +37,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.gameminers.farrago.block.BlockCombustor;
+import com.gameminers.farrago.block.BlockGlow;
 import com.gameminers.farrago.block.BlockOre;
 import com.gameminers.farrago.block.BlockScrapper;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
+import com.gameminers.farrago.entity.EntityRifleProjectile;
 import com.gameminers.farrago.gen.YttriumGenerator;
 import com.gameminers.farrago.item.ItemBlunderbuss;
+import com.gameminers.farrago.item.ItemCell;
 import com.gameminers.farrago.item.ItemDust;
 import com.gameminers.farrago.item.ItemFondue;
 import com.gameminers.farrago.item.ItemIngot;
+import com.gameminers.farrago.item.ItemRifle;
 import com.gameminers.farrago.item.ItemRubble;
 import com.gameminers.farrago.item.ItemVividOrb;
 import com.gameminers.farrago.kahur.KahurIota;
@@ -77,20 +81,24 @@ public class FarragoMod {
 	public static Proxy proxy;
 	@Instance("farrago")
 	public static FarragoMod inst;
+	
 	public static BlockCombustor COMBUSTOR;
 	public static BlockScrapper SCRAPPER;
 	public static Block NETHER_STAR_BLOCK;
 	public static BlockOre ORE;
+	public static BlockGlow GLOW;
 	
 	public static ItemVividOrb VIVID_ORB;
 	public static Item CAQUELON;
+	public static ItemCell CELL;
 	public static ItemRubble RUBBLE;
 	public static ItemDust DUST;
 	public static ItemIngot INGOT;
 	public static ItemBlunderbuss BLUNDERBUSS;
 	public static ItemFondue FONDUE;
-	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
+	public static ItemRifle RIFLE;
 	
+	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
 	public static String brand;
 	public static boolean copperlessEnvironment;
 	public static CreativeTabs creativeTab = new CreativeTabs("farrago") {
@@ -107,21 +115,26 @@ public class FarragoMod {
 		proxy.preInit();
 		subMods.add(new KahurIota());
 	}
+	
 	@EventHandler
 	public void onInit(FMLInitializationEvent e) {
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new FarragoGuiHandler());
 		COMBUSTOR = new BlockCombustor();
 		SCRAPPER = new BlockScrapper();
 		ORE = new BlockOre();
+		GLOW = new BlockGlow();
 		NETHER_STAR_BLOCK = new BlockCompressed(MapColor.adobeColor).setBlockTextureName("farrago:nether_star_block").setHardness(20f).setLightLevel(0.5f).setBlockName("nether_star_block").setCreativeTab(creativeTab);
 		NETHER_STAR_BLOCK.setHarvestLevel("pickaxe", 2);
-		CAQUELON = new Item().setTextureName("farrago:caquelon").setMaxStackSize(1).setUnlocalizedName("caquelon");
+		
+		CAQUELON = new Item().setTextureName("farrago:caquelon").setMaxStackSize(1).setUnlocalizedName("caquelon").setCreativeTab(creativeTab);
 		VIVID_ORB = new ItemVividOrb();
 		RUBBLE = new ItemRubble();
 		BLUNDERBUSS = new ItemBlunderbuss();
 		DUST = new ItemDust();
 		INGOT = new ItemIngot();
 		FONDUE = new ItemFondue();
+		RIFLE = new ItemRifle();
+		CELL = new ItemCell();
 		GameRegistry.registerFuelHandler(new IFuelHandler() {
 			private Random rand = new Random();
 			@Override
@@ -137,6 +150,7 @@ public class FarragoMod {
 		});
 		GameRegistry.registerTileEntity(TileEntityCombustor.class, "FarragoCombustor");
 		GameRegistry.registerTileEntity(TileEntityScrapper.class, "FarragoScrapper");
+		GameRegistry.registerBlock(GLOW, "glow");
 		GameRegistry.registerBlock(COMBUSTOR, "combustor");
 		GameRegistry.registerBlock(SCRAPPER, "scrapper");
 		GameRegistry.registerBlock(NETHER_STAR_BLOCK, "netherStarBlock");
@@ -148,6 +162,9 @@ public class FarragoMod {
 		GameRegistry.registerItem(INGOT, "ingot");
 		GameRegistry.registerItem(FONDUE, "fondue");
 		GameRegistry.registerItem(VIVID_ORB, "vividOrb");
+		GameRegistry.registerItem(CELL, "cell");
+		GameRegistry.registerItem(RIFLE, "rifle");
+		EntityRegistry.registerModEntity(EntityRifleProjectile.class, "rifleShot", 5, this, 64, 12, true);
 		EntityRegistry.registerModEntity(EntityBlunderbussProjectile.class, "blunderbussShot", 5, this, 64, 12, true);
 		ORE.registerOres();
 		DUST.registerOres();
@@ -225,10 +242,10 @@ public class FarragoMod {
 				'+', Items.nether_star
 				);
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(VIVID_ORB),
-				"WIW",
-				"IQI",
-				"WIW",
-				'W', new ItemStack(Blocks.wool, 1, 0),
+				"QIQ",
+				"IEI",
+				"QIQ",
+				'E', Items.ender_pearl,
 				'I', "ingotIron",
 				'Q', "blockQuartz"
 				));
@@ -293,6 +310,25 @@ public class FarragoMod {
 				'G', Items.gunpowder,
 				'B', Items.blaze_rod
 				));
+		GameRegistry.addRecipe(new ShapedOreRecipe(RIFLE, 
+				"D  ",
+				" C ",
+				" BC",
+				'D', "gemDiamond",
+				'C', "ingotYttriumCopper",
+				'B', Items.blaze_rod
+				));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(CELL, 4, 0), 
+				"Y Y",
+				"Y Y",
+				"YCY",
+				'Y', "ingotYttrium",
+				'C', "ingotYttriumCopper"
+				));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 1),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 2),  new ItemStack(CELL, 1, 0), "dustYttrium", "dustGlowstone"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 2, 3),  new ItemStack(CELL, 1, 0), new ItemStack(CELL, 1, 0), "dustGold", "dustGold", "dustDiamond"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 4),  new ItemStack(CELL, 1, 0), "dustIron", Items.gunpowder));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
 		OreDictionary.registerOre("dyeRed", new ItemStack(DUST, 1, 5));
 		for (Iota iota : subMods) {

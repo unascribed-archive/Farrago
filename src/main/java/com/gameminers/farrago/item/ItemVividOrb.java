@@ -74,6 +74,7 @@ public class ItemVividOrb extends Item {
 		orb = registry.registerIcon("farrago:vivid_orb");
 		shine = registry.registerIcon("farrago:vivid_orb_shine");
 	}
+	
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean advanced) {
 		super.addInformation(stack, player, list, advanced);

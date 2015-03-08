@@ -44,12 +44,14 @@ public class ItemDust extends Item {
 		int damage = p_77667_1_.getItemDamage();
 		return "item.dust_"+(damage >= dustTypes.length ? "iron" : dustTypes[damage]);
 	}
+	
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
 		for (int i = 0; i < dustTypes.length; i++) {
 			list.add(new ItemStack(item, 1, i));
 		}
 	}
+	
 	@Override
 	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_,
 			List p_77624_3_, boolean p_77624_4_) {

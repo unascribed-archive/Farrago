@@ -37,6 +37,7 @@ public class ItemIngot extends Item {
 		int damage = p_77667_1_.getItemDamage();
 		return "item.ingot_"+(damage >= ingotTypes.length ? "yttrium" : ingotTypes[damage]);
 	}
+	
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
 		for (int i = 0; i < ingotTypes.length; i++) {

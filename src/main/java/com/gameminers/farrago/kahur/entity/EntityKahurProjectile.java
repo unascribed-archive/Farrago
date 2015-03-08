@@ -170,7 +170,7 @@ public class EntityKahurProjectile extends EntityThrowable {
 					worldObj.playSoundAtEntity(living, "random.burp", 0.8f, 1.0f);
 					kill = true;
 				} else {
-					living.attackEntityFrom(DamageSource.causeThrownDamage(getThrower(), this), damage);
+					living.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), damage);
 					kill = true;
 					if (getItem().getItem() == Items.poisonous_potato) {
 						living.addPotionEffect(new PotionEffect(Potion.poison.getId(), 100, 1));

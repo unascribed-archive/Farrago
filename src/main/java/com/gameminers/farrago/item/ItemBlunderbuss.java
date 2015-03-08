@@ -66,7 +66,7 @@ public class ItemBlunderbuss extends Item {
 						player.inventory.consumeInventoryItem(Item.getItemFromBlock(Blocks.gravel));
 					}
 					if (itemRand.nextInt(12) == 1) {
-						player.attackEntityFrom(DamageSource.causePlayerDamage(player), 2f);
+						player.attackEntityFrom(new DamageSource("blunderbuss_backfire"), 2f);
 					}
 					player.inventory.consumeInventoryItem(Item.getItemFromBlock(Blocks.gravel));
 					gun.damageItem(itemRand.nextInt(3)+1, player);

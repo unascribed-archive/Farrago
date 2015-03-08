@@ -28,6 +28,7 @@ public class ItemRubble extends Item {
 	public String getUnlocalizedName(ItemStack p_77667_1_) {
 		return "item.rubble_"+(p_77667_1_.getItemDamage()+1);
 	}
+	
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
 		for (int i = 0; i < typeCount; i++) {

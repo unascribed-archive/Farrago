@@ -1,10 +1,12 @@
 package com.gameminers.farrago.entity;
 
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -36,10 +38,15 @@ public class EntityBlunderbussProjectile extends EntityThrowable {
     
 	@Override
 	protected void onImpact(MovingObjectPosition pos) {
+		if (pos.entityHit instanceof EntityEnderman) return;
+		if (pos.typeOfHit == MovingObjectType.BLOCK) {
+			System.out.println(worldObj.getBlock(pos.blockX, pos.blockY, pos.blockZ));
+			if (worldObj.getBlock(pos.blockX, pos.blockY, pos.blockZ).getMaterial().isReplaceable()) return;
+		}
 		setDead();
 		if (!worldObj.isRemote) {
 			if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
-				((EntityLivingBase)pos.entityHit).attackEntityFrom(DamageSource.causeMobDamage(getThrower()), (rand.nextFloat()*1f)+0.6f);
+				((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("blunderbuss", this, getThrower()), (rand.nextFloat()*1f)+0.6f);
 				((EntityLivingBase)pos.entityHit).hurtResistantTime = 1;
 			}
 			if (worldObj instanceof WorldServer) {

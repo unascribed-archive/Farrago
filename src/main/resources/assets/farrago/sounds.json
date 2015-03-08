@@ -16,5 +16,50 @@
 				"stream": false
 			}
 		]
+	},
+	"laser_fire": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "laser_fire",
+				"stream": false
+			}
+		]
+	},
+	"laser_impact": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "laser_impact",
+				"stream": false
+			}
+		]
+	},
+	"laser_charge": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "laser_charge",
+				"stream": false
+			}
+		]
+	},
+	"laser_mode": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "laser_mode",
+				"stream": false
+			}
+		]
+	},
+	"laser_overcharge": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "laser_overcharge",
+				"stream": false
+			}
+		]
 	}
 }

@@ -107,6 +107,7 @@ public class ItemFondue extends ItemFood {
 				r.registerIcon("farrago:cyber_cider")
 		};
 	}
+	
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
 		list.add(new ItemStack(item, 1, 0));

@@ -322,6 +322,7 @@ public class TileEntityScrapper extends TileEntity implements ISidedInventory {
 		}
 	}
 
+	
 	private int processRecipes(ItemStack itemstack, IRecipe cause, IRecipe previousCause, int depth) {
 		if (depth >= 14) return 0;
 		

@@ -95,7 +95,7 @@ public class KahurIota implements Iota {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
+	
 	public static void calculateMass(Item i, int depth, int durability) {
 		if (depth > 100) {
 			throw new StackOverflowError();
@@ -156,7 +156,7 @@ public class KahurIota implements Iota {
 		updateMass(new ItemStack(i, 1, 32767), 1.0f);
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	static float processOreRecipe(Object[] input, int depth) {
 		float mass = 0f;
 		/*int count = 0;
@@ -316,7 +316,7 @@ public class KahurIota implements Iota {
 		return avg == Float.NaN || avg == Float.NEGATIVE_INFINITY || avg == Float.POSITIVE_INFINITY ? 0f : avg;
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	public static float getMagic(ItemStack stack) {
 		float magic = 0;
 		Collection<Integer> enchantLevels = EnchantmentHelper.getEnchantments(stack).values();
