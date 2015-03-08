@@ -22,7 +22,7 @@ public class EntityRifleProjectile extends EntityThrowable {
         super(p_i1773_1_);
     }
 
-    public EntityRifleProjectile(World world, EntityLivingBase shooter) {
+    public EntityRifleProjectile(World world, EntityLivingBase shooter, float spread) {
         super(world, shooter);
         setSize(0.25F, 0.25F);
         setLocationAndAngles(shooter.posX, shooter.posY + (double)shooter.getEyeHeight(), shooter.posZ, shooter.rotationYaw, shooter.rotationPitch);
@@ -35,7 +35,7 @@ public class EntityRifleProjectile extends EntityThrowable {
         motionX = (double)(-MathHelper.sin(rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(rotationPitch / 180.0F * (float)Math.PI) * f);
         motionZ = (double)(MathHelper.cos(rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(rotationPitch / 180.0F * (float)Math.PI) * f);
         motionY = (double)(-MathHelper.sin((rotationPitch + func_70183_g()) / 180.0F * (float)Math.PI) * f);
-        setThrowableHeading(motionX, motionY, motionZ, func_70182_d(), 0.0F);
+        setThrowableHeading(motionX, motionY, motionZ, func_70182_d(), spread);
     }
 
     public EntityRifleProjectile(World p_i1775_1_, double p_i1775_2_, double p_i1775_4_, double p_i1775_6_) {
@@ -76,6 +76,15 @@ public class EntityRifleProjectile extends EntityThrowable {
 						ticksExisted += 10;
 					} else {
 						ticksExisted += 15;
+					}
+					break;
+				}
+				case SCATTER: {
+					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
+						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 12f);
+						ticksExisted += 15;
+					} else {
+						ticksExisted += 20;
 					}
 					break;
 				}

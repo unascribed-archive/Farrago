@@ -81,9 +81,18 @@ public class ItemRifle extends Item {
 			if (consumeInventoryItem(player.inventory, FarragoMod.CELL, getMode(gun).getCellType())) {
 				if (!world.isRemote) {
 					world.playSoundAtEntity(player, "farrago:laser_fire", 1.0f, 1.0f);
-					EntityRifleProjectile proj = new EntityRifleProjectile(world, player);
-					proj.setMode(getMode(gun));
-					world.spawnEntityInWorld(proj);
+					RifleMode mode = getMode(gun);
+					float spread = 0.0f;
+					int count = 1;
+					if (mode == RifleMode.SCATTER) {
+						spread = 5f;
+						count = itemRand.nextInt(10)+5;
+					}
+					for (int i = 0; i < count; i++) {
+						EntityRifleProjectile proj = new EntityRifleProjectile(world, player, spread);
+						proj.setMode(mode);
+						world.spawnEntityInWorld(proj);
+					}
 					if (!player.inventory.addItemStackToInventory(new ItemStack(FarragoMod.CELL, 1, 0))) {
 						player.entityDropItem(new ItemStack(FarragoMod.CELL, 1, 0), 1.0f);
 					}

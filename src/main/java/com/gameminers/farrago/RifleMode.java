@@ -5,6 +5,7 @@ import gminers.kitchensink.Strings;
 public enum RifleMode {
 	RIFLE(1.75f, 1, 0xFF0000),
 	BAZOOKA(1.1f, 1, 0xFF0000),
+	SCATTER(1.0f, 1, 0xFF0000),
 	
 	MINING(1.2f, 3, 0x00FFFF),
 	PRECISION_MINING(2.0f, 3, 0x00FFFF),
