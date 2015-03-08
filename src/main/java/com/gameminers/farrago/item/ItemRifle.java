@@ -140,6 +140,11 @@ public class ItemRifle extends Item {
 	}
 	
 	@Override
+	public IIcon getIconFromDamage(int p_77617_1_) {
+		return icons[0];
+	}
+	
+	@Override
 	public ItemStack onItemRightClick(ItemStack gun, World world, EntityPlayer player) {
 		if (player.isSneaking()) {
 			RifleMode[] vals = RifleMode.values();
