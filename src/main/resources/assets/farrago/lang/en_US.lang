@@ -13,6 +13,7 @@ item.cell_rifle.name=Redstone-Copper Cell
 item.cell_glow.name=Yttrium-Glowstone Cell
 item.cell_mine.name=Gold-Diamond Cell
 item.cell_explode.name=Iron-Gunpowder Cell
+item.cell_teleport.name=Ender-Emerald Cell
 
 death.attack.rifle_backfire=%1$s overcharged their Yttric Rifle
 death.attack.blunderbuss_backfire=%1$s got a bit carried away with their Blunderbuss
@@ -46,6 +47,7 @@ item.dust_dorito.description=In honor of the track by Coda! :D
 item.dust_yttrium.name=Yttrium Dust
 item.dust_yttrium_copper.name=Yttrium-Copper Blend
 item.dust_copper.name=Copper Dust
+item.dust_ender.name=Ender Pearl Dust
 
 item.ingot_yttrium.name=Yttrium Ingot
 item.ingot_yttrium_copper.name=Yttric Copper Ingot

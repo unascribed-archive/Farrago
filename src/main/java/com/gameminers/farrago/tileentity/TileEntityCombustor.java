@@ -256,22 +256,23 @@ public class TileEntityCombustor extends TileEntityFurnace {
 	@Override
 	public void smeltItem() {
 		if (this.canSmelt()) {
-			ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(
-					this.furnaceItemStacks[0]);
-
-			if (this.furnaceItemStacks[2] == null) {
-				this.furnaceItemStacks[2] = itemstack.copy();
-			} else if (this.furnaceItemStacks[2].getItem() == itemstack
-					.getItem()) {
-				this.furnaceItemStacks[2].stackSize += itemstack.stackSize;
+			if (!worldObj.isRemote) {
+				ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(
+						this.furnaceItemStacks[0]);
+	
+				if (this.furnaceItemStacks[2] == null) {
+					this.furnaceItemStacks[2] = itemstack.copy();
+				} else if (this.furnaceItemStacks[2].getItem() == itemstack
+						.getItem()) {
+					this.furnaceItemStacks[2].stackSize += itemstack.stackSize;
+				}
+	
+				--this.furnaceItemStacks[0].stackSize;
+	
+				if (this.furnaceItemStacks[0].stackSize <= 0) {
+					this.furnaceItemStacks[0] = null;
+				}
 			}
-
-			--this.furnaceItemStacks[0].stackSize;
-
-			if (this.furnaceItemStacks[0].stackSize <= 0) {
-				this.furnaceItemStacks[0] = null;
-			}
-			
 			if (worldObj.isRemote) {
 				EnumFacing p_82488_1_ = EnumFacing.values()[worldObj.getBlockMetadata(xCoord, yCoord, zCoord)];
 				int meta = p_82488_1_.getFrontOffsetX() + 1 + (p_82488_1_.getFrontOffsetZ() + 1) * 3;

@@ -184,6 +184,7 @@ public class FarragoMod {
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 5), new ItemStack(INGOT, 1, 0), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 6), new ItemStack(INGOT, 1, 1), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 7), new ItemStack(INGOT, 1, 2), 0);
+		GameRegistry.addSmelting(new ItemStack(DUST, 1, 8), new ItemStack(Items.ender_pearl), 0);
 		GameRegistry.addSmelting(new ItemStack(ORE, 1, 0), new ItemStack(INGOT, 1, 0), 0);
 		GameRegistry.registerWorldGenerator(yttrGen = new YttriumGenerator(), 0);
 		GameRegistry.addRecipe(new ItemStack(Items.nether_star, 9),
@@ -329,8 +330,10 @@ public class FarragoMod {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 2),  new ItemStack(CELL, 1, 0), "dustYttrium", "dustGlowstone"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 2, 3),  new ItemStack(CELL, 1, 0), new ItemStack(CELL, 1, 0), "dustGold", "dustGold", "dustDiamond"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 4),  new ItemStack(CELL, 1, 0), "dustIron", Items.gunpowder));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 5),  new ItemStack(CELL, 1, 0), "dustEnder", "dustEmerald"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
 		OreDictionary.registerOre("dyeRed", new ItemStack(DUST, 1, 5));
+		OreDictionary.registerOre("gemEnder", Items.ender_pearl);
 		for (Iota iota : subMods) {
 			iota.init();
 		}

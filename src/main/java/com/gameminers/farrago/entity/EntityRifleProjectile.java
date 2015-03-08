@@ -1,14 +1,18 @@
 package com.gameminers.farrago.entity;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.RifleMode;
@@ -153,6 +157,34 @@ public class EntityRifleProjectile extends EntityThrowable {
 						}
 						setDead();
 					}
+					break;
+				}
+				case TELEPORT: {
+					if (pos.entityHit != null) {
+			            pos.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), 0.0F);
+			        }
+
+			        for (int i = 0; i < 32; ++i) {
+			            worldObj.spawnParticle("portal", posX, posY + rand.nextDouble() * 2.0D, posZ, rand.nextGaussian(), 0.0D, rand.nextGaussian());
+			        }
+
+			        if (!worldObj.isRemote) {
+			            if (getThrower() != null && getThrower() instanceof EntityPlayerMP) {
+			                EntityPlayerMP entityplayermp = (EntityPlayerMP)getThrower();
+
+		                    EnderTeleportEvent event = new EnderTeleportEvent(entityplayermp, posX, posY, posZ, 5.0F);
+		                    if (!MinecraftForge.EVENT_BUS.post(event)) {
+			                    if (getThrower().isRiding()) {
+			                        getThrower().mountEntity((Entity)null);
+			                    }
+
+			                    getThrower().setPositionAndUpdate(event.targetX, event.targetY, event.targetZ);
+			                    getThrower().fallDistance = 0.0F;
+			                    getThrower().attackEntityFrom(DamageSource.fall, event.attackDamage);
+		                    }
+			            }
+			            setDead();
+			        }
 					break;
 				}
 			}

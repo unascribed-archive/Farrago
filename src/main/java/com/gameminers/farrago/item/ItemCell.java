@@ -16,7 +16,8 @@ public class ItemCell extends Item {
 		"rifle",
 		"glow",
 		"mine",
-		"explode"
+		"explode",
+		"teleport"
 	};
 	private IIcon[] iconsByDamage = new IIcon[cellTypes.length];
 	private IIcon empty;

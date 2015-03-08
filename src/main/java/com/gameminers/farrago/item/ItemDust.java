@@ -24,7 +24,8 @@ public class ItemDust extends Item {
 		"dorito",
 		"yttrium",
 		"yttrium_copper",
-		"copper"
+		"copper",
+		"ender"
 	};
 	private IIcon[] iconsByDamage = new IIcon[dustTypes.length];
 	private IIcon iron;
