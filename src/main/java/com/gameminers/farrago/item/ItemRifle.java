@@ -64,7 +64,7 @@ public class ItemRifle extends Item {
 	@Override
 	public ItemStack onEaten(ItemStack gun, World world, EntityPlayer player) {
 		gun.damageItem(32, player);
-		player.attackEntityFrom(new DamageSource("rifle_backfire"), 32);
+		player.attackEntityFrom(new DamageSource("rifle_backfire"), 8);
 		consumeInventoryItem(player.inventory, FarragoMod.CELL, getMode(gun).getCellType());
 		world.playSoundAtEntity(player, "farrago:laser_overcharge", 1.0f, 1.0f);
 		if (world instanceof WorldServer) {
