@@ -3,13 +3,13 @@ package com.gameminers.farrago;
 import gminers.kitchensink.Strings;
 
 public enum RifleMode {
-	DAMAGE(1.75f, 1, 0xFF0000),
-	AREA_DAMAGE(1.1f, 1, 0xFF0000),
+	RIFLE(1.75f, 1, 0xFF0000),
+	BAZOOKA(1.1f, 1, 0xFF0000),
 	
 	MINING(1.2f, 3, 0x00FFFF),
-	PRECISION(2.0f, 3, 0x00FFFF),
+	PRECISION_MINING(2.0f, 3, 0x00FFFF),
 	
-	EXPLOSION(0.8f, 4, 0xAAAAAA),
+	EXPLOSIVE(0.8f, 4, 0xAAAAAA),
 	GLOW(2.0f, 2, 0xFFFF00),
 	
 	TELEPORT(0.5f, 5, 0xFF00FF);

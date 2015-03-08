@@ -70,7 +70,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 	protected void onImpact(MovingObjectPosition pos) {
 		if (!worldObj.isRemote) {
 			switch (getMode()) {
-				case DAMAGE: {
+				case RIFLE: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
 						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 24f);
 						ticksExisted += 10;
@@ -79,12 +79,12 @@ public class EntityRifleProjectile extends EntityThrowable {
 					}
 					break;
 				}
-				case AREA_DAMAGE: {
+				case BAZOOKA: {
 					worldObj.createExplosion(this, (int)pos.hitVec.xCoord, (int)pos.hitVec.yCoord, (int)pos.hitVec.zCoord, 4.0f, false);
 					setDead();
 					break;
 				} 
-				case EXPLOSION: {
+				case EXPLOSIVE: {
 					worldObj.createExplosion(this, (int)pos.hitVec.xCoord, (int)pos.hitVec.yCoord, (int)pos.hitVec.zCoord, 6.0f, true);
 					setDead();
 					break;
@@ -105,7 +105,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 					}
 					break;
 				}
-				case PRECISION: {
+				case PRECISION_MINING: {
 					if (pos.typeOfHit == MovingObjectType.BLOCK && getThrower() instanceof EntityPlayerMP) {
 						EntityPlayerMP player = ((EntityPlayerMP)getThrower());
 						if (!worldObj.isAirBlock(pos.blockX, pos.blockY, pos.blockZ) && worldObj.canMineBlock(player, pos.blockX, pos.blockY, pos.blockZ)) {
@@ -219,8 +219,8 @@ public class EntityRifleProjectile extends EntityThrowable {
 		try {
 			return RifleMode.valueOf(dataWatcher.getWatchableObjectString(12));
 		} catch (Exception e) {
-			setMode(RifleMode.DAMAGE);
-			return RifleMode.DAMAGE;
+			setMode(RifleMode.RIFLE);
+			return RifleMode.RIFLE;
 		}
 	}
 }

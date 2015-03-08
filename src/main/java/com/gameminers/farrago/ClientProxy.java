@@ -21,6 +21,7 @@ import com.gameminers.farrago.entity.EntityRifleProjectile;
 import com.gameminers.farrago.kahur.client.InitScreen;
 import com.gameminers.farrago.pane.PaneBranding;
 import com.gameminers.farrago.pane.PaneOrbGlow;
+import com.gameminers.farrago.pane.PaneRifle;
 import com.google.common.base.Charsets;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -40,6 +41,7 @@ public class ClientProxy implements Proxy {
 	public void init() {
 		//new PaneVanityArmor().autoOverlay(GuiInventory.class);
 		new PaneOrbGlow().autoOverlay(GuiIngame.class);
+		new PaneRifle().autoOverlay(GuiIngame.class);
 		if (FarragoMod.brand != null) {
 			new PaneBranding().autoOverlay(GuiMainMenu.class);
 		}

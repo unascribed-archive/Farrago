@@ -115,7 +115,7 @@ public class ItemRifle extends Item {
         return -1;
     }
 	
-	private int getTicksToFire(ItemStack item) {
+	public int getTicksToFire(ItemStack item) {
 		return (int)(114f / getMode(item).getChargeSpeed());
 	}
 
@@ -198,6 +198,6 @@ public class ItemRifle extends Item {
 				item.getTagCompound().setString("RifleMode", "DAMAGE");
 			}
 		}
-		return RifleMode.DAMAGE;
+		return RifleMode.RIFLE;
 	}
 }
