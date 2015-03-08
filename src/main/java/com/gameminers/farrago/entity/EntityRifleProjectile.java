@@ -36,7 +36,7 @@ public class EntityRifleProjectile extends EntityThrowable {
         motionX = (double)(-MathHelper.sin(rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(rotationPitch / 180.0F * (float)Math.PI) * f);
         motionZ = (double)(MathHelper.cos(rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(rotationPitch / 180.0F * (float)Math.PI) * f);
         motionY = (double)(-MathHelper.sin((rotationPitch + func_70183_g()) / 180.0F * (float)Math.PI) * f);
-        setThrowableHeading(motionX, motionY, motionZ, 5f, spread);
+        setThrowableHeading(motionX, motionY, motionZ, 4f, spread);
     }
 
     public EntityRifleProjectile(World p_i1775_1_, double p_i1775_2_, double p_i1775_4_, double p_i1775_6_) {
@@ -69,6 +69,7 @@ public class EntityRifleProjectile extends EntityThrowable {
     
     @Override
     protected float getGravityVelocity() {
+    	if (getMode() == RifleMode.TELEPORT) return 0.03f;
     	return 0f;
     }
     
