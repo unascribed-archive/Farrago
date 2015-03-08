@@ -53,7 +53,7 @@ public class EntityRifleProjectile extends EntityThrowable {
     	super.onUpdate();
     	FarragoMod.proxy.spawnRifleParticle(getMode(), this);
     	if (getMode() == RifleMode.BLAZE) {
-    		if (worldObj.isAirBlock((int)posX, (int)posY, (int)posZ) && rand.nextInt(14) == 1) {
+    		if (!worldObj.isRemote && worldObj.isAirBlock((int)posX, (int)posY, (int)posZ) && rand.nextInt(14) == 1) {
 				worldObj.setBlock((int)posX, (int)posY, (int)posZ, Blocks.fire);
 			}
     	}
