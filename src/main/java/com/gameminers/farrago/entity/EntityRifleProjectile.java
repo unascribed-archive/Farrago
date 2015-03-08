@@ -32,11 +32,11 @@ public class EntityRifleProjectile extends EntityThrowable {
         posZ -= (double)(MathHelper.sin(rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
         setPosition(posX, posY, posZ);
         yOffset = 0.0F;
-        float f = (rand.nextFloat()*0.8f)+0.2f;
+        float f = 0.4f;
         motionX = (double)(-MathHelper.sin(rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(rotationPitch / 180.0F * (float)Math.PI) * f);
         motionZ = (double)(MathHelper.cos(rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(rotationPitch / 180.0F * (float)Math.PI) * f);
         motionY = (double)(-MathHelper.sin((rotationPitch + func_70183_g()) / 180.0F * (float)Math.PI) * f);
-        setThrowableHeading(motionX, motionY, motionZ, func_70182_d(), spread);
+        setThrowableHeading(motionX, motionY, motionZ, 5f, spread);
     }
 
     public EntityRifleProjectile(World p_i1775_1_, double p_i1775_2_, double p_i1775_4_, double p_i1775_6_) {
@@ -134,7 +134,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 					if (pos.typeOfHit == MovingObjectType.BLOCK && getThrower() instanceof EntityPlayerMP) {
 						EntityPlayerMP player = ((EntityPlayerMP)getThrower());
 						if (!worldObj.isAirBlock(pos.blockX, pos.blockY, pos.blockZ) && worldObj.canMineBlock(player, pos.blockX, pos.blockY, pos.blockZ)) {
-							if (player.theItemInWorldManager.tryHarvestBlock(pos.blockX, pos.blockY, pos.blockZ)) {
+							if (harvest(player, pos.blockX, pos.blockY, pos.blockZ)) {
 								ticksExisted += 2;
 							} else {
 								ticksExisted += 5;
@@ -218,8 +218,6 @@ public class EntityRifleProjectile extends EntityThrowable {
 	}
 
 	private boolean harvest(EntityPlayerMP player, int x, int y, int z) {
-		int foodLevel = player.getFoodStats().getFoodLevel();
-		float sat = player.getFoodStats().getSaturationLevel();
 		Block block = worldObj.getBlock(x, y, z);
         int meta = worldObj.getBlockMetadata(x, y, z);
         if (block.getBlockHardness(worldObj, x, y, z) < 0) return false;
@@ -231,8 +229,6 @@ public class EntityRifleProjectile extends EntityThrowable {
             block.harvestBlock(worldObj,player, x, y, z, meta);
             block.dropXpOnBlockBreak(worldObj, x, y, z, meta);
         }
-        player.getFoodStats().setFoodLevel(foodLevel);
-        player.getFoodStats().setFoodSaturationLevel(sat);
         return success;
 	}
 

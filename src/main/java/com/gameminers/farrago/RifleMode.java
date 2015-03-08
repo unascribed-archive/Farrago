@@ -15,7 +15,7 @@ public enum RifleMode {
 	EXPLOSIVE(0.8f, 4, 0xAAAAAA),
 	GLOW(2.0f, 2, 0xFFFF00),
 	
-	TELEPORT(0.5f, 5, 0xFF00FF);
+	TELEPORT(2.0f, 5, 0xFF00FF);
 	private final float chargeSpeed;
 	private final String abbrev;
 	private final String displayName;

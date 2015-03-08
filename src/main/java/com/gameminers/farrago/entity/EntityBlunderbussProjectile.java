@@ -24,11 +24,11 @@ public class EntityBlunderbussProjectile extends EntityThrowable {
         this.posZ -= (double)(MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
         this.setPosition(this.posX, this.posY, this.posZ);
         this.yOffset = 0.0F;
-        float f = (rand.nextFloat()*0.8f)+0.2f;
+        float f = 0.4f;
         this.motionX = (double)(-MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * f);
         this.motionZ = (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * f);
         this.motionY = (double)(-MathHelper.sin((this.rotationPitch + this.func_70183_g()) / 180.0F * (float)Math.PI) * f);
-        this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, this.func_70182_d(), 25.0F);
+        this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, (rand.nextFloat()*1.5f)+1.0f, 25.0F);
         ticksExisted += rand.nextInt(80)*40;
     }
 
