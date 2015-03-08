@@ -25,7 +25,7 @@ public class Encyclopedia {
 		descriptions.put(Item.getItemFromBlock(FarragoMod.NETHER_STAR_BLOCK), "A solid block of Nether Stars. You're either rich or insane.");
 		descriptions.put(FarragoMod.BLUNDERBUSS, "This somewhat shoddy gun uses gunpowder to detonate gravel and fire the shards in the general direction it's pointed in. Good for crowd control.");
 		descriptions.put(FarragoMod.RIFLE, "This advanced weapon can use cells filled with a variety of dusts to cause reactions and shoot lasers with different effects. Sneak+Shoot to change modes. Be careful not to overcharge it!");
-		descriptions.put(FarragoMod.DUST, "Metal powder. Don't breathe this.");
+		descriptions.put(FarragoMod.DUST, "Metal powder. Don't breathe this. Obtained by scrapping objects; scrapping an ingot or gem is a 1:1 conversion.");
 		descriptions.put(FarragoMod.INGOT, "A solid bar of metal. Useful for a variety of crafting recipes.");
 	}
 	

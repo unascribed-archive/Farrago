@@ -170,7 +170,8 @@ public class ItemRifle extends Item {
 		"Redstone-Copper",
 		"Yttrium-Glowstone",
 		"Diamond-Gold",
-		"Iron-Gunpowder"
+		"Iron-Gunpowder",
+		"Redstone-Blaze-Copper"
 	};
 	
 	@Override

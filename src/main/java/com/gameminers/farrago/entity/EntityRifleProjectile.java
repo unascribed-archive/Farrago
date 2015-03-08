@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.MathHelper;
@@ -51,6 +52,11 @@ public class EntityRifleProjectile extends EntityThrowable {
     public void onUpdate() {
     	super.onUpdate();
     	FarragoMod.proxy.spawnRifleParticle(getMode(), this);
+    	if (getMode() == RifleMode.BLAZE) {
+    		if (worldObj.isAirBlock((int)posX, (int)posY, (int)posZ) && rand.nextInt(14) == 1) {
+				worldObj.setBlock((int)posX, (int)posY, (int)posZ, Blocks.fire);
+			}
+    	}
     	if (ticksExisted > 250) {
     		setDead();
     	}
@@ -93,6 +99,16 @@ public class EntityRifleProjectile extends EntityThrowable {
 					setDead();
 					break;
 				} 
+				case BLAZE: {
+					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
+						((EntityLivingBase)pos.entityHit).setFire(40);
+						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 20f);
+						ticksExisted += 20;
+					} else {
+						ticksExisted += 25;
+					}
+					break;
+				}
 				case EXPLOSIVE: {
 					worldObj.createExplosion(this, (int)pos.hitVec.xCoord, (int)pos.hitVec.yCoord, (int)pos.hitVec.zCoord, 6.0f, true);
 					setDead();

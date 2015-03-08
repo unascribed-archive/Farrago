@@ -331,6 +331,8 @@ public class FarragoMod {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 2, 3),  new ItemStack(CELL, 1, 0), new ItemStack(CELL, 1, 0), "dustGold", "dustGold", "dustDiamond"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 4),  new ItemStack(CELL, 1, 0), "dustIron", Items.gunpowder));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 5),  new ItemStack(CELL, 1, 0), "dustEnder", "dustEmerald"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 6),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone", Items.blaze_powder));
+		
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
 		OreDictionary.registerOre("dyeRed", new ItemStack(DUST, 1, 5));
 		OreDictionary.registerOre("gemEnder", Items.ender_pearl);
