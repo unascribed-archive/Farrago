@@ -17,6 +17,8 @@ public class RenderBlunderbussProjectile extends Render {
     	GL11.glPushMatrix();
 			GL11.glTranslatef((float)x, (float)y, (float)z);
 			GL11.glScalef(0.25f, 0.25f, 0.25f);
+			GL11.glRotatef(((projectile.ticksExisted+partialTicks)*40)%360, 1.0f, 1.0f, 1.0f);
+			GL11.glTranslatef(-0.125f, -0.125f, -0.125f);
 	    	bindEntityTexture(projectile);
 	    	Tessellator tess = Tessellator.instance;
 	    	box.render(tess, 0.0625f);
