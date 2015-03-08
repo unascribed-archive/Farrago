@@ -197,6 +197,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 		float sat = player.getFoodStats().getSaturationLevel();
 		Block block = worldObj.getBlock(x, y, z);
         int meta = worldObj.getBlockMetadata(x, y, z);
+        if (block.getBlockHardness(worldObj, x, y, z) < 0) return false;
         block.onBlockHarvested(worldObj, x, y, z, meta, player);
         boolean success = block.removedByPlayer(worldObj, player, x, y, z, true);
 

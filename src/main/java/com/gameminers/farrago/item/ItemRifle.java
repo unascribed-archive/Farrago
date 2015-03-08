@@ -134,7 +134,17 @@ public class ItemRifle extends Item {
 	public ItemStack onItemRightClick(ItemStack gun, World world, EntityPlayer player) {
 		if (player.isSneaking()) {
 			RifleMode[] vals = RifleMode.values();
-			RifleMode mode = vals[(getMode(gun).ordinal()+1)%vals.length];
+			int idx = getMode(gun).ordinal()+1;
+			RifleMode mode = vals[idx%vals.length];
+			int tries = 0;
+			while (find(player.inventory, FarragoMod.CELL, mode.getCellType()) < 0) {
+				if (tries++ > vals.length) {
+					idx = getMode(gun).ordinal()+1;
+					break;
+				}
+				idx++;
+				mode = vals[idx%vals.length];
+			}
 			world.playSoundAtEntity(player, "farrago:laser_mode", 1.0f, (mode.ordinal()*0.15f)+1.0f);
 			setMode(gun, mode);
 		} else {
