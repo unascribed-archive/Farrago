@@ -27,6 +27,7 @@ public class EntityBlunderbussProjectile extends EntityThrowable {
         this.motionZ = (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * f);
         this.motionY = (double)(-MathHelper.sin((this.rotationPitch + this.func_70183_g()) / 180.0F * (float)Math.PI) * f);
         this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, this.func_70182_d(), 25.0F);
+        ticksExisted += rand.nextInt(80)*40;
     }
 
     public EntityBlunderbussProjectile(World p_i1775_1_, double p_i1775_2_, double p_i1775_4_, double p_i1775_6_) {

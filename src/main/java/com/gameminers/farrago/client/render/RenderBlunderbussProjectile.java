@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 
 public class RenderBlunderbussProjectile extends Render {
 	private final ModelBox box = new ModelBox(new ModelRenderer(new ModelNull(16, 16)), 0, 0, 0f, 0f, 0f, 4, 4, 4, 1f);
-	private static final ResourceLocation TEX = new ResourceLocation("textures/blocks/cobblestone.png");
+	private static final ResourceLocation TEX = new ResourceLocation("textures/blocks/gravel.png");
     @Override
     public void doRender(Entity projectile, double x, double y, double z, float yaw, float partialTicks) {
     	GL11.glPushMatrix();

@@ -23,7 +23,7 @@ public class Encyclopedia {
 		descriptions.put(Item.getItemFromBlock(FarragoMod.COMBUSTOR), "This machine uses gunpowder or TNT as an alternate, and very fast, way to smelt items.");
 		descriptions.put(Item.getItemFromBlock(FarragoMod.SCRAPPER), "This machine can break down items and blocks into what was used to craft them. It can only recover metals and gems, however.");
 		descriptions.put(Item.getItemFromBlock(FarragoMod.NETHER_STAR_BLOCK), "A solid block of Nether Stars. You're either rich or insane.");
-		descriptions.put(FarragoMod.BLUNDERBUSS, "This somewhat shoddy gun uses gunpowder to detonate cobblestone and fire the shards in the general direction it's pointed in. Good for crowd control.");
+		descriptions.put(FarragoMod.BLUNDERBUSS, "This somewhat shoddy gun uses gunpowder to detonate gravel and fire the shards in the general direction it's pointed in. Good for crowd control.");
 	}
 	@SuppressWarnings("unchecked")
 	public static void process(ItemStack itemStack, EntityPlayer entityPlayer, List<String> toolTip, boolean showAdvancedItemTooltips) {
