@@ -119,6 +119,7 @@ public class BlockGlow extends Block {
 	
 	@Override
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
+		setBlockBoundsBasedOnState(world, x, y, z);
 		float x1 = (float) getBlockBoundsMinX();
 		float y1 = (float) getBlockBoundsMinY();
 		float z1 = (float) getBlockBoundsMinZ();
