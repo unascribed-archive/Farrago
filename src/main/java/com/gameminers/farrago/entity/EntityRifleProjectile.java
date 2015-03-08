@@ -12,8 +12,10 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
+import net.minecraftforge.event.world.BlockEvent;
 
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.RifleMode;
@@ -219,18 +221,23 @@ public class EntityRifleProjectile extends EntityThrowable {
 	}
 
 	private boolean harvest(EntityPlayerMP player, int x, int y, int z) {
-		Block block = worldObj.getBlock(x, y, z);
-        int meta = worldObj.getBlockMetadata(x, y, z);
-        if (block.getBlockHardness(worldObj, x, y, z) < 0) return false;
-        block.onBlockHarvested(worldObj, x, y, z, meta, player);
-        boolean success = block.removedByPlayer(worldObj, player, x, y, z, true);
-
-        if (success) {
-            block.onBlockDestroyedByPlayer(worldObj, x, y, z, meta);
-            block.harvestBlock(worldObj,player, x, y, z, meta);
-            block.dropXpOnBlockBreak(worldObj, x, y, z, meta);
-        }
-        return success;
+		BlockEvent.BreakEvent event = ForgeHooks.onBlockBreakEvent(worldObj, player.theItemInWorldManager.getGameType(), player, x, y, z);
+		if (event.isCanceled()) {
+			return false;
+		} else {
+			Block block = worldObj.getBlock(x, y, z);
+	        int meta = worldObj.getBlockMetadata(x, y, z);
+	        if (block.getBlockHardness(worldObj, x, y, z) < 0) return false;
+	        block.onBlockHarvested(worldObj, x, y, z, meta, player);
+	        boolean success = block.removedByPlayer(worldObj, player, x, y, z, true);
+	
+	        if (success) {
+	            block.onBlockDestroyedByPlayer(worldObj, x, y, z, meta);
+	            block.harvestBlock(worldObj,player, x, y, z, meta);
+	            block.dropXpOnBlockBreak(worldObj, x, y, z, event.getExpToDrop() != 0 ? event.getExpToDrop() : block.getExpDrop(worldObj, meta, 0));
+	        }
+	        return success;
+		}
 	}
 
 	public void setMode(RifleMode mode) {
