@@ -1,14 +1,14 @@
 package com.gameminers.farrago.item.chromatic;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
 import com.gameminers.farrago.FarragoMod;
 
-public class ItemChromaticPickaxe extends ItemPickaxe {
-	public ItemChromaticPickaxe() {
+public class ItemChromaticHoe extends ItemHoe {
+	public ItemChromaticHoe() {
 		super(ToolMaterial.IRON);
 		setCreativeTab(FarragoMod.creativeTab);
 	}
@@ -34,8 +34,8 @@ public class ItemChromaticPickaxe extends ItemPickaxe {
 	
 	@Override
 	public void registerIcons(IIconRegister register) {
-		bg = register.registerIcon("farrago:chromatic_pickaxe_head");
-		fg = register.registerIcon("farrago:chromatic_pickaxe_handle");
+		bg = register.registerIcon("farrago:chromatic_hoe_head");
+		fg = register.registerIcon("farrago:chromatic_hoe_handle");
 	}
 	
 	@Override
@@ -44,7 +44,7 @@ public class ItemChromaticPickaxe extends ItemPickaxe {
 	}
 	
 	@Override
-	public ItemChromaticPickaxe setUnlocalizedName(String p_77655_1_) {
+	public ItemChromaticHoe setUnlocalizedName(String p_77655_1_) {
 		super.setUnlocalizedName(p_77655_1_);
 		return this;
 	}

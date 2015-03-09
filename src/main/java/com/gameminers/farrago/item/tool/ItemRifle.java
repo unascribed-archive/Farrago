@@ -240,4 +240,9 @@ public class ItemRifle extends Item {
 		}
 		return RifleMode.RIFLE;
 	}
+	
+	@Override
+	public boolean getIsRepairable(ItemStack a, ItemStack b) {
+        return b.getItem() == FarragoMod.INGOT && b.getItemDamage() == 1 ? true : super.getIsRepairable(a, b);
+    }
 }

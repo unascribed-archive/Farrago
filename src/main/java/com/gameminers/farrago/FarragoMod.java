@@ -48,7 +48,13 @@ import com.gameminers.farrago.enums.MineralColor;
 import com.gameminers.farrago.enums.WoodColor;
 import com.gameminers.farrago.gen.YttriumGenerator;
 import com.gameminers.farrago.item.ItemFondue;
-import com.gameminers.farrago.item.chromatic.ItemChromaticYttrium;
+import com.gameminers.farrago.item.chromatic.ItemChromaticArmor;
+import com.gameminers.farrago.item.chromatic.ItemChromaticAxe;
+import com.gameminers.farrago.item.chromatic.ItemChromaticHoe;
+import com.gameminers.farrago.item.chromatic.ItemChromaticPickaxe;
+import com.gameminers.farrago.item.chromatic.ItemChromaticShears;
+import com.gameminers.farrago.item.chromatic.ItemChromaticSpade;
+import com.gameminers.farrago.item.chromatic.ItemChromaticSword;
 import com.gameminers.farrago.item.resource.ItemCell;
 import com.gameminers.farrago.item.resource.ItemDust;
 import com.gameminers.farrago.item.resource.ItemIngot;
@@ -58,7 +64,7 @@ import com.gameminers.farrago.item.tool.ItemKahur;
 import com.gameminers.farrago.item.tool.ItemRifle;
 import com.gameminers.farrago.item.tool.ItemVividOrb;
 import com.gameminers.farrago.proxy.Proxy;
-import com.gameminers.farrago.recipes.RecipeChromaticYttrium;
+import com.gameminers.farrago.recipes.RecipeChromatic;
 import com.gameminers.farrago.recipes.RecipesVividOrbDyes;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
@@ -102,8 +108,20 @@ public class FarragoMod {
 	public static ItemBlunderbuss BLUNDERBUSS;
 	public static ItemFondue FONDUE;
 	public static ItemRifle RIFLE;
-	public static ItemChromaticYttrium CHROMATIC_YTTRIUM;
 	public static ItemKahur KAHUR;
+	
+	public static ItemChromaticPickaxe CHROMATIC_PICKAXE;
+	public static ItemChromaticAxe CHROMATIC_AXE;
+	public static ItemChromaticSword CHROMATIC_SWORD;
+	public static ItemChromaticSpade CHROMATIC_SHOVEL;
+	public static ItemChromaticHoe CHROMATIC_HOE;
+	
+	public static ItemChromaticArmor CHROMATIC_HELMET;
+	public static ItemChromaticArmor CHROMATIC_CHESTPLATE;
+	public static ItemChromaticArmor CHROMATIC_LEGGINGS;
+	public static ItemChromaticArmor CHROMATIC_BOOTS;
+	
+	public static ItemChromaticShears CHROMATIC_SHEARS;
 	
 	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
 	public static String brand;
@@ -141,8 +159,20 @@ public class FarragoMod {
 		FONDUE = new ItemFondue();
 		RIFLE = new ItemRifle();
 		CELL = new ItemCell();
-		CHROMATIC_YTTRIUM = new ItemChromaticYttrium();
 		KAHUR = new ItemKahur();
+		
+		CHROMATIC_PICKAXE = new ItemChromaticPickaxe().setUnlocalizedName("chromatic_pickaxe");
+		CHROMATIC_AXE = new ItemChromaticAxe().setUnlocalizedName("chromatic_axe");
+		CHROMATIC_SWORD = new ItemChromaticSword().setUnlocalizedName("chromatic_sword");
+		CHROMATIC_SHOVEL = new ItemChromaticSpade().setUnlocalizedName("chromatic_shovel");
+		CHROMATIC_HOE = new ItemChromaticHoe().setUnlocalizedName("chromatic_hoe");
+		
+		CHROMATIC_HELMET = new ItemChromaticArmor(0, 0).setTextureName("farrago:chromatic_helmet").setUnlocalizedName("chromatic_helmet");
+		CHROMATIC_CHESTPLATE = new ItemChromaticArmor(0, 1).setTextureName("farrago:chromatic_chestplate").setUnlocalizedName("chromatic_chestplate");
+		CHROMATIC_LEGGINGS = new ItemChromaticArmor(0, 2).setTextureName("farrago:chromatic_leggings").setUnlocalizedName("chromatic_leggings");
+		CHROMATIC_BOOTS = new ItemChromaticArmor(0, 3).setTextureName("farrago:chromatic_boots").setUnlocalizedName("chromatic_boots");
+		
+		
 		GameRegistry.registerFuelHandler(new IFuelHandler() {
 			private Random rand = new Random();
 			@Override
@@ -172,8 +202,16 @@ public class FarragoMod {
 		GameRegistry.registerItem(VIVID_ORB, "vividOrb");
 		GameRegistry.registerItem(CELL, "cell");
 		GameRegistry.registerItem(RIFLE, "rifle");
-		GameRegistry.registerItem(CHROMATIC_YTTRIUM, "chromaticYttrium");
 		GameRegistry.registerItem(KAHUR, "kahur");
+		GameRegistry.registerItem(CHROMATIC_PICKAXE, "chromaticPickaxe");
+		GameRegistry.registerItem(CHROMATIC_AXE, "chromaticAxe");
+		GameRegistry.registerItem(CHROMATIC_SWORD, "chromaticSword");
+		GameRegistry.registerItem(CHROMATIC_SHOVEL, "chromaticShovel");
+		GameRegistry.registerItem(CHROMATIC_HOE, "chromaticHoe");
+		GameRegistry.registerItem(CHROMATIC_HELMET, "chromaticHelmet");
+		GameRegistry.registerItem(CHROMATIC_CHESTPLATE, "chromaticChestplate");
+		GameRegistry.registerItem(CHROMATIC_LEGGINGS, "chromaticLeggings");
+		GameRegistry.registerItem(CHROMATIC_BOOTS, "chromaticBoots");
 		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, this, 64, 12, true);
 		EntityRegistry.registerModEntity(EntityRifleProjectile.class, "rifleShot", 1, this, 64, 12, true);
 		EntityRegistry.registerModEntity(EntityBlunderbussProjectile.class, "blunderbussShot", 2, this, 64, 12, true);
@@ -338,10 +376,84 @@ public class FarragoMod {
 				'C', "ingotYttriumCopper",
 				'G', "paneGlass"
 				));
-		GameRegistry.addRecipe(new RecipeChromaticYttrium(new ItemStack(CHROMATIC_YTTRIUM, 8), 
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_PICKAXE,
 				"III",
+				" / ",
+				" V ",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB,
+				'/', "stickWood"
+				));
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_AXE,
+				"II ",
+				"I/ ",
+				" V ",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB,
+				'/', "stickWood"
+				));
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_AXE,
+				" II",
+				" /I",
+				" V ",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB,
+				'/', "stickWood"
+				));
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_SWORD,
+				" I ",
+				" I ",
+				" V ",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB
+				));
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_SHOVEL,
+				" I ",
+				" / ",
+				" V ",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB,
+				'/', "stickWood"
+				));
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_HOE,
+				"II ",
+				" / ",
+				" V ",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB,
+				'/', "stickWood"
+				));
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_HOE,
+				" II",
+				" / ",
+				" V ",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB,
+				'/', "stickWood"
+				));
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_HELMET,
+				"IVI",
+				"I I",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB
+				));
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_CHESTPLATE,
+				"I I",
 				"IVI",
 				"III",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB
+				));
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_LEGGINGS,
+				"IVI",
+				"I I",
+				"I I",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB
+				));
+		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_BOOTS,
+				"I I",
+				"IVI",
 				'I', "ingotYttrium",
 				'V', VIVID_ORB
 				));

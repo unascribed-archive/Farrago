@@ -55,7 +55,19 @@ item.ingot_yttrium_copper.name=Yttric Copper Ingot
 item.ingot_yttrium_steel.name=Yttric Steel Ingot
 item.ingot_copper.name=Copper Ingot
 
-item.chromatic_yttrium.name=Chromatic Yttrium
+item.chromatic_helmet.name=Chromatic Yttrium Helmet
+item.chromatic_chestplate.name=Chromatic Yttrium Chestplate
+item.chromatic_leggings.name=Chromatic Yttrium Leggings
+item.chromatic_boots.name=Chromatic Yttrium Boots
+
+item.chromatic_pickaxe.name=Chromatic Yttrium Pickaxe
+item.chromatic_axe.name=Chromatic Yttrium Axe
+item.chromatic_sword.name=Chromatic Yttrium Sword
+item.chromatic_shovel.name=Chromatic Yttrium Shovel
+item.chromatic_hoe.name=Chromatic Yttrium Hoe
+
+item.chromatic_shears.name=Chromatic Yttrium Shears
+
 item.vivid_orb.name=Vivid Orb
 
 

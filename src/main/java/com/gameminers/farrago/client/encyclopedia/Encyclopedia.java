@@ -36,6 +36,7 @@ public class Encyclopedia implements IResourceManagerReloadListener {
 	
 	private final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	public static void process(ItemStack itemStack, EntityPlayer entityPlayer, List<String> toolTip, boolean showAdvancedItemTooltips) {
+		if (itemStack == null || itemStack.getItem() == null) return;
 		builder.setLength(0);
 		boolean matched = false;
 		for (EncyclopediaEntry entry : entries) {

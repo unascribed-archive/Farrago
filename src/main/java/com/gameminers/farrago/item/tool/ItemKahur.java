@@ -390,4 +390,9 @@ public class ItemKahur extends Item {
 			world.spawnEntityInWorld(proj);
 		}
 	}
+	
+	@Override
+	public boolean getIsRepairable(ItemStack a, ItemStack b) {
+        return b.getItem() == Item.getItemFromBlock(Blocks.planks) ? true : super.getIsRepairable(a, b);
+    }
 }
