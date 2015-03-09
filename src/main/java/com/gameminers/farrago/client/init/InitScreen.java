@@ -1,4 +1,4 @@
-package com.gameminers.farrago.kahur.client;
+package com.gameminers.farrago.client.init;
 
 import gminers.glasspane.GlassPane;
 import gminers.glasspane.HorzAlignment;
@@ -17,7 +17,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-import com.gameminers.farrago.kahur.WoodColor;
+import com.gameminers.farrago.enums.WoodColor;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -35,7 +35,7 @@ public class InitScreen {
 		ring.setRelativeWidthOffset(2);
 		ring.setRelativeHeightOffset(2);
 
-		final PaneImage image = new PaneImage(new ResourceLocation("kahur", "textures/misc/kahur.png"));
+		final PaneImage image = new PaneImage(new ResourceLocation("farrago", "textures/misc/kahur.png"));
 		image.setWidth(128);
 		image.setHeight(128);
 

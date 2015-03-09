@@ -18,7 +18,7 @@ import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.world.BlockEvent;
 
 import com.gameminers.farrago.FarragoMod;
-import com.gameminers.farrago.RifleMode;
+import com.gameminers.farrago.enums.RifleMode;
 
 public class EntityRifleProjectile extends EntityThrowable {
 	public EntityRifleProjectile(World p_i1773_1_) {

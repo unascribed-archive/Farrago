@@ -23,7 +23,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.container.ContainerScrapper;
-import com.gameminers.farrago.item.ItemRubble;
+import com.gameminers.farrago.item.resource.ItemRubble;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

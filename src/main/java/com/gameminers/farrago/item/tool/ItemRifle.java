@@ -1,4 +1,4 @@
-package com.gameminers.farrago.item;
+package com.gameminers.farrago.item.tool;
 
 import gminers.kitchensink.ReadableNumbers;
 
@@ -17,8 +17,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import com.gameminers.farrago.FarragoMod;
-import com.gameminers.farrago.RifleMode;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
+import com.gameminers.farrago.enums.RifleMode;
 
 public class ItemRifle extends Item {
 	private IIcon[] icons;

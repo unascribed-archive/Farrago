@@ -1,12 +1,12 @@
-package com.gameminers.farrago.kahur.client;
+package com.gameminers.farrago.client.init;
 
 import gminers.glasspane.component.progress.PaneProgressRing;
 import gminers.glasspane.component.text.PaneLabel;
 import net.minecraft.item.Item;
 
-import com.gameminers.farrago.kahur.KahurIota;
-import com.gameminers.farrago.kahur.client.render.RenderKahurProjectile;
-import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
+import com.gameminers.farrago.Masses;
+import com.gameminers.farrago.client.render.RenderKahurProjectile;
+import com.gameminers.farrago.entity.EntityKahurProjectile;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.registry.GameData;
@@ -46,7 +46,7 @@ public class InitThread extends Thread {
 				String n = Item.itemRegistry.getNameForObject(i);
 				setText("Calculating item mass for "+n);
 				try {
-					KahurIota.calculateMass(i, 0, 32767);
+					Masses.calculateMass(i, 0, 32767);
 				} catch (StackOverflowError error) {
 					blink();
 					continue;
@@ -59,7 +59,7 @@ public class InitThread extends Thread {
 			}
 		}
 		setText("Baking item masses");
-		KahurIota.bake();
+		Masses.bake();
 		RenderingRegistry.registerEntityRenderingHandler(EntityKahurProjectile.class, new RenderKahurProjectile());
 		while (progress.getLagPercentage() < 0.95) {
 			try {

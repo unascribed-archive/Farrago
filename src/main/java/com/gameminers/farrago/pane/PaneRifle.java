@@ -12,7 +12,7 @@ import net.minecraftforge.client.GuiIngameForge;
 import org.lwjgl.opengl.GL11;
 
 import com.gameminers.farrago.FarragoMod;
-import com.gameminers.farrago.RifleMode;
+import com.gameminers.farrago.enums.RifleMode;
 
 public class PaneRifle extends GlassPane {
 	private static final ResourceLocation[] crosshairs = new ResourceLocation[26];

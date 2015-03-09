@@ -1,4 +1,4 @@
-package com.gameminers.farrago.kahur.entity;
+package com.gameminers.farrago.entity;
 
 import java.util.Iterator;
 import java.util.List;

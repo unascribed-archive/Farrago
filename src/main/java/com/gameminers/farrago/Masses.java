@@ -1,4 +1,4 @@
-package com.gameminers.farrago.kahur;
+package com.gameminers.farrago;
 
 import java.util.Collection;
 import java.util.List;
@@ -8,7 +8,6 @@ import java.util.UUID;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
@@ -18,84 +17,17 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import com.gameminers.farrago.FarragoMod;
-import com.gameminers.farrago.Iota;
-import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
-import com.gameminers.farrago.kahur.item.ItemKahur;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-public class KahurIota implements Iota {
-	/*
-	 * Damage is calculated based off of two values: Mass and Magic.
-	 * 
-	 * Mass is determined by the depth and contents of the crafting chain.
-	 * An item with no way to craft it has a mass of 1.
-	 * For example, a diamond has a mass of 1. A diamond block has a mass of 9.
-	 * A gold ingot has a mass of 9 due to the nugget recipe, and a gold block has a mass of 81.
-	 * If a crafting recipe makes multiple items, the mass of the used items is added and then divided by the amount made.
-	 * Crafting trees deeper than 12 entries will be truncated to 12.
-	 * 
-	 * Magic is determined by enchantments and enchantment glow.
-	 * If the item hasEffect, but no enchantments, magic += 12. (Assume it's a special item.)
-	 * For every enchantment on the item, magic += (1 + enchantmentLevel)
-	 * If the item has the generic.attackDamage attribute, add half of that to the magic.
-	 * For every other attribute, add attributeValue/8 to the magic.
-	 * 
-	 * The Kahur takes damage equal to (1+magic) every shot.
-	 * 
-	 * Damage is equal to mass + (magic*2).
-	 * 
-	 * Drop chance is determined by mass and magic.
-	 * For a given item, it's chance of dropping is 1 in max(1, 50-(mass+magic)).
-	 * Probably not the best method. Needs research.
-	 */
+public class Masses {
 	public static Map<Long, List<Float>> mass = Maps.newHashMap();
 	public static Map<Long, Float> bakedMass = Maps.newHashMap();
 	static boolean baked = false;
-	public static List<Runnable> tasks = Lists.newArrayList();
-	public static ItemKahur KAHUR;
-	@SubscribeEvent
-	public void onInformation(ItemTooltipEvent e) {
-		if (e.showAdvancedItemTooltips) {
-			float massF = getMass(e.itemStack);
-			String massS = (massF <= 0 ? "\u00A7cERROR\u00A79" : ""+massF);
-			float magic = getMagic(e.itemStack);
-			if (magic > 0) {
-				e.toolTip.add("\u00A79"+magic+" Kahur Magic");
-			}
-			e.toolTip.add("\u00A79"+massS+" Kahur Mass");
-		}
-	}
-	
-	@SubscribeEvent
-	public void onTick(TickEvent.ServerTickEvent e) {
-		if (e.phase == Phase.END) {
-			if (!tasks.isEmpty()) {
-				tasks.get(0).run();
-				tasks.remove(0);
-			}
-		}
-	}
-	
-	
 	public static void calculateMass(Item i, int depth, int durability) {
 		if (depth > 100) {
 			throw new StackOverflowError();
@@ -357,71 +289,4 @@ public class KahurIota implements Iota {
 		return magic;
 	}
 
-	@Override
-	public void init() {
-		KAHUR = new ItemKahur();
-		GameRegistry.registerItem(KAHUR, "kahur");
-		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, FarragoMod.inst, 64, 12, true);
-		for (WoodColor body : WoodColor.values()) {
-			if (body == WoodColor.CREATIVE) continue;
-			for (WoodColor drum : WoodColor.values()) {
-				if (drum == WoodColor.CREATIVE) continue;
-				for (MineralColor pump : MineralColor.values()) {
-					if (pump.getSelector().getRepresentation() == null) continue;
-					ItemStack kahur = new ItemStack(KAHUR);
-					NBTTagCompound tag = new NBTTagCompound();
-					tag.setString("KahurBodyMaterial", body.name());
-					tag.setString("KahurDrumMaterial", drum.name());
-					tag.setString("KahurPumpMaterial", pump.name());
-					kahur.setTagCompound(tag);
-					GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
-							"B  ",
-							"PD ",
-							" /B",
-							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
-							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-							'P', pump.getSelector().getRepresentation(),
-							'/', "stickWood"));
-					GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
-							"  B",
-							" DP",
-							"B/ ",
-							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
-							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-							'P', pump.getSelector().getRepresentation(),
-							'/', "stickWood"));
-				}
-			}
-		}
-		FMLCommonHandler.instance().bus().register(this);
-		MinecraftForge.EVENT_BUS.register(this);
-	}
-
-	@Override
-	public void postInit() {}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void clientPostInit() {
-	}
-
-	@Override
-	@SideOnly(Side.SERVER)
-	public void serverPostInit() {
-		for (Object o : GameData.getItemRegistry()) {
-			if (o instanceof Item) { // should always be true, but just to be sure
-				Item i = (Item) o;
-				try {
-					KahurIota.calculateMass(i, 0, 32767);
-				} catch (StackOverflowError error) {
-					continue;
-				} catch (Exception e) {
-					e.printStackTrace();
-					System.err.println("Dazed and confused, but trying to continue");
-					continue;
-				}
-			}
-		}
-		KahurIota.bake();
-	}
 }

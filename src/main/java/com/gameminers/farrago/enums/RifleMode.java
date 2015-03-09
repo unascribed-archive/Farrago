@@ -1,4 +1,4 @@
-package com.gameminers.farrago;
+package com.gameminers.farrago.enums;
 
 import gminers.kitchensink.Strings;
 

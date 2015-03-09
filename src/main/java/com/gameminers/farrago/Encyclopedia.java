@@ -10,14 +10,13 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
 
-import com.gameminers.farrago.kahur.KahurIota;
 import com.google.common.collect.Maps;
 
 
 public class Encyclopedia {
 	private static final Map<Item, String> descriptions = Maps.newHashMap();
 	public static void init() {
-		descriptions.put(KahurIota.KAHUR, "A strange weapon that uses everyday items as ammunition. The more complex they are, the more damage they do.");
+		descriptions.put(FarragoMod.KAHUR, "A strange weapon that uses everyday items as ammunition. The more complex they are, the more damage they do.");
 		descriptions.put(FarragoMod.RUBBLE, "Leftover trash from scrapping an object. Can be used as fuel in a furnace, but it will only last until all flammable material is burnt.");
 		descriptions.put(FarragoMod.VIVID_ORB, "This orb is capable of storing the very essence of a color. Nobody knows how to make brightly colored ones anymore, and as such they can only be found in the world.");
 		descriptions.put(Item.getItemFromBlock(FarragoMod.COMBUSTOR), "This machine uses gunpowder or TNT as an alternate, and very fast, way to smelt items.");

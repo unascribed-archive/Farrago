@@ -1,4 +1,4 @@
-package com.gameminers.farrago;
+package com.gameminers.farrago.proxy;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,13 +15,15 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.client.effect.EntityRifleFX;
+import com.gameminers.farrago.client.init.InitScreen;
 import com.gameminers.farrago.client.render.RenderBlunderbussProjectile;
 import com.gameminers.farrago.client.render.RenderNull;
 import com.gameminers.farrago.client.render.RifleItemRenderer;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
-import com.gameminers.farrago.kahur.client.InitScreen;
+import com.gameminers.farrago.enums.RifleMode;
 import com.gameminers.farrago.pane.PaneBranding;
 import com.gameminers.farrago.pane.PaneOrbGlow;
 import com.gameminers.farrago.pane.PaneRifle;
@@ -34,9 +36,6 @@ public class ClientProxy implements Proxy {
 
 	@Override
 	public void postInit() {
-		for (Iota sub : FarragoMod.getSubMods()) {
-			sub.clientPostInit();
-		}
 		InitScreen.init();
 	}
 

@@ -1,4 +1,4 @@
-package com.gameminers.farrago.kahur;
+package com.gameminers.farrago.enums;
 
 public enum WoodColor {
 	OAK		(0xBC9862, "Oak"),

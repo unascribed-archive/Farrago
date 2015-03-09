@@ -1,10 +1,11 @@
-package com.gameminers.farrago;
+package com.gameminers.farrago.proxy;
 
 import java.util.Random;
 
 import net.minecraft.world.World;
 
 import com.gameminers.farrago.entity.EntityRifleProjectile;
+import com.gameminers.farrago.enums.RifleMode;
 
 public interface Proxy {
 	void postInit();

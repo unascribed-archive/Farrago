@@ -1,4 +1,4 @@
-package com.gameminers.farrago.item;
+package com.gameminers.farrago.item.resource;
 
 import java.util.List;
 

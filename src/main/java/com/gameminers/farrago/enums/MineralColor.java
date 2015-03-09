@@ -1,4 +1,4 @@
-package com.gameminers.farrago.kahur;
+package com.gameminers.farrago.enums;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;

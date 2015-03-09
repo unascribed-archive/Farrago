@@ -1,4 +1,4 @@
-package com.gameminers.farrago;
+package com.gameminers.farrago.recipes;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 
-import com.gameminers.farrago.item.ItemVividOrb;
+import com.gameminers.farrago.FarragoMod;
+import com.gameminers.farrago.item.tool.ItemVividOrb;
 
 public class RecipesVividOrbDyes implements IRecipe {
 

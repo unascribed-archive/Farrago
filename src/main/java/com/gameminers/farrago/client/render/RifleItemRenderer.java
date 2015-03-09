@@ -8,7 +8,7 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 import com.gameminers.farrago.FarragoMod;
-import com.gameminers.farrago.RifleMode;
+import com.gameminers.farrago.enums.RifleMode;
 
 public class RifleItemRenderer implements IItemRenderer {
 	@Override

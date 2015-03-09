@@ -41,20 +41,24 @@ import com.gameminers.farrago.block.BlockGlow;
 import com.gameminers.farrago.block.BlockOre;
 import com.gameminers.farrago.block.BlockScrapper;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
+import com.gameminers.farrago.entity.EntityKahurProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
+import com.gameminers.farrago.enums.MineralColor;
+import com.gameminers.farrago.enums.WoodColor;
 import com.gameminers.farrago.gen.YttriumGenerator;
-import com.gameminers.farrago.item.ItemBlunderbuss;
-import com.gameminers.farrago.item.ItemCell;
-import com.gameminers.farrago.item.ItemDust;
 import com.gameminers.farrago.item.ItemFondue;
-import com.gameminers.farrago.item.ItemIngot;
-import com.gameminers.farrago.item.ItemRifle;
-import com.gameminers.farrago.item.ItemRubble;
-import com.gameminers.farrago.item.ItemVividOrb;
-import com.gameminers.farrago.kahur.KahurIota;
+import com.gameminers.farrago.item.resource.ItemCell;
+import com.gameminers.farrago.item.resource.ItemDust;
+import com.gameminers.farrago.item.resource.ItemIngot;
+import com.gameminers.farrago.item.resource.ItemRubble;
+import com.gameminers.farrago.item.tool.ItemBlunderbuss;
+import com.gameminers.farrago.item.tool.ItemKahur;
+import com.gameminers.farrago.item.tool.ItemRifle;
+import com.gameminers.farrago.item.tool.ItemVividOrb;
+import com.gameminers.farrago.proxy.Proxy;
+import com.gameminers.farrago.recipes.RecipesVividOrbDyes;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
-import com.google.common.collect.Lists;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IFuelHandler;
@@ -63,7 +67,6 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -75,7 +78,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="1.0")
 public class FarragoMod {
-	private static final List<Iota> subMods = Lists.newArrayList();
 	public static final Logger log = LogManager.getLogger("Farrago");
 	@SidedProxy(clientSide="com.gameminers.farrago.ClientProxy", serverSide="com.gameminers.farrago.ServerProxy")
 	public static Proxy proxy;
@@ -97,6 +99,7 @@ public class FarragoMod {
 	public static ItemBlunderbuss BLUNDERBUSS;
 	public static ItemFondue FONDUE;
 	public static ItemRifle RIFLE;
+	public static ItemKahur KAHUR;
 	
 	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
 	public static String brand;
@@ -113,7 +116,6 @@ public class FarragoMod {
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
 		proxy.preInit();
-		subMods.add(new KahurIota());
 	}
 	
 	@EventHandler
@@ -135,6 +137,7 @@ public class FarragoMod {
 		FONDUE = new ItemFondue();
 		RIFLE = new ItemRifle();
 		CELL = new ItemCell();
+		KAHUR = new ItemKahur();
 		GameRegistry.registerFuelHandler(new IFuelHandler() {
 			private Random rand = new Random();
 			@Override
@@ -164,8 +167,10 @@ public class FarragoMod {
 		GameRegistry.registerItem(VIVID_ORB, "vividOrb");
 		GameRegistry.registerItem(CELL, "cell");
 		GameRegistry.registerItem(RIFLE, "rifle");
-		EntityRegistry.registerModEntity(EntityRifleProjectile.class, "rifleShot", 5, this, 64, 12, true);
-		EntityRegistry.registerModEntity(EntityBlunderbussProjectile.class, "blunderbussShot", 6, this, 64, 12, true);
+		GameRegistry.registerItem(KAHUR, "kahur");
+		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, this, 64, 12, true);
+		EntityRegistry.registerModEntity(EntityRifleProjectile.class, "rifleShot", 1, this, 64, 12, true);
+		EntityRegistry.registerModEntity(EntityBlunderbussProjectile.class, "blunderbussShot", 2, this, 64, 12, true);
 		ORE.registerOres();
 		DUST.registerOres();
 		INGOT.registerOres();
@@ -336,8 +341,36 @@ public class FarragoMod {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
 		OreDictionary.registerOre("dyeRed", new ItemStack(DUST, 1, 5));
 		OreDictionary.registerOre("gemEnder", Items.ender_pearl);
-		for (Iota iota : subMods) {
-			iota.init();
+		for (WoodColor body : WoodColor.values()) {
+			if (body == WoodColor.CREATIVE) continue;
+			for (WoodColor drum : WoodColor.values()) {
+				if (drum == WoodColor.CREATIVE) continue;
+				for (MineralColor pump : MineralColor.values()) {
+					if (pump.getSelector().getRepresentation() == null) continue;
+					ItemStack kahur = new ItemStack(KAHUR);
+					NBTTagCompound tag = new NBTTagCompound();
+					tag.setString("KahurBodyMaterial", body.name());
+					tag.setString("KahurDrumMaterial", drum.name());
+					tag.setString("KahurPumpMaterial", pump.name());
+					kahur.setTagCompound(tag);
+					GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
+							"B  ",
+							"PD ",
+							" /B",
+							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
+							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
+							'P', pump.getSelector().getRepresentation(),
+							'/', "stickWood"));
+					GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
+							"  B",
+							" DP",
+							"B/ ",
+							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
+							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
+							'P', pump.getSelector().getRepresentation(),
+							'/', "stickWood"));
+				}
+			}
 		}
 		for (IRecipe recipe : (List<IRecipe>)CraftingManager.getInstance().getRecipeList()) {
 			if (recipe == null) continue;
@@ -386,6 +419,15 @@ public class FarragoMod {
 	private Deque<Chunk> chunksToGen = new ArrayDeque<Chunk>();
 	@SubscribeEvent
 	public void onTooltip(ItemTooltipEvent e) {
+		if (e.showAdvancedItemTooltips) {
+			float massF = Masses.getMass(e.itemStack);
+			String massS = (massF <= 0 ? "\u00A7cERROR\u00A79" : ""+massF);
+			float magic = Masses.getMagic(e.itemStack);
+			if (magic > 0) {
+				e.toolTip.add("\u00A79"+magic+" Kahur Magic");
+			}
+			e.toolTip.add("\u00A79"+massS+" Kahur Mass");
+		}
 		Encyclopedia.process(e.itemStack, e.entityPlayer, e.toolTip, e.showAdvancedItemTooltips);
 	}
 	@SubscribeEvent
@@ -408,19 +450,12 @@ public class FarragoMod {
 	}
 	@EventHandler
 	public void onPostInit(FMLPostInitializationEvent e) {
-		for (Iota iota : subMods) {
-			iota.postInit();
-		}
 		proxy.postInit();
 		if (OreDictionary.getOres("ingotCopper").size() <= 1) {
 			copperlessEnvironment = true;
 			log.warn("We are running in a copperless environment; enabling fallback copper dust drops from Yttrium ore");
 		}
 		Encyclopedia.init();
-	}
-	@EventHandler
-	public void onAvailable(FMLLoadCompleteEvent e) {
-		log.info("Farrago load completed without incident; loaded "+subMods.size()+" Iotas");
 	}
 	public static long hashItemStack(ItemStack toHash) {
 		long hash = 0;
@@ -430,8 +465,5 @@ public class FarragoMod {
 			hash |= (toHash.getTagCompound().hashCode() << 32);
 		}
 		return hash;
-	}
-	protected static List<Iota> getSubMods() {
-		return subMods;
 	}
 }

@@ -1,4 +1,4 @@
-package com.gameminers.farrago.kahur.item;
+package com.gameminers.farrago.item.tool;
 
 import java.util.List;
 
@@ -21,10 +21,10 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.gameminers.farrago.FarragoMod;
-import com.gameminers.farrago.kahur.KahurIota;
-import com.gameminers.farrago.kahur.MineralColor;
-import com.gameminers.farrago.kahur.WoodColor;
-import com.gameminers.farrago.kahur.entity.EntityKahurProjectile;
+import com.gameminers.farrago.Masses;
+import com.gameminers.farrago.entity.EntityKahurProjectile;
+import com.gameminers.farrago.enums.MineralColor;
+import com.gameminers.farrago.enums.WoodColor;
 
 public class ItemKahur extends Item {
 	private IIcon body;
@@ -35,7 +35,7 @@ public class ItemKahur extends Item {
 	private IIcon blank;
 	public ItemKahur() {
 		setUnlocalizedName("kahur");
-		setTextureName("kahur:kahur");
+		setTextureName("farrago:kahur");
 		setCreativeTab(FarragoMod.creativeTab);
 	}
 	
@@ -160,12 +160,12 @@ public class ItemKahur extends Item {
 	
 	@Override
 	public void registerIcons(IIconRegister r) {
-		body = r.registerIcon("kahur:kahur_body");
-		drum = r.registerIcon("kahur:kahur_drum");
-		pump = r.registerIcon("kahur:kahur_pump");
-		drumBulge = r.registerIcon("kahur:kahur_drum_entity");
-		entitySpeckles = r.registerIcon("kahur:kahur_drum_entity_overlay");
-		blank = r.registerIcon("kahur:blank");
+		body = r.registerIcon("farrago:kahur_body");
+		drum = r.registerIcon("farrago:kahur_drum");
+		pump = r.registerIcon("farrago:kahur_pump");
+		drumBulge = r.registerIcon("farrago:kahur_drum_entity");
+		entitySpeckles = r.registerIcon("farrago:kahur_drum_entity_overlay");
+		blank = r.registerIcon("farrago:blank");
 	}
 	
 	
@@ -378,8 +378,8 @@ public class ItemKahur extends Item {
 			copy = player.inventory.decrStackSize(slot, 1);
 		}
 		proj.setItem(copy);
-		proj.setDamage(KahurIota.getMass(copy)+(KahurIota.getMagic(copy)*2f));
-		gun.damageItem((int)KahurIota.getMagic(copy)+1, player);
+		proj.setDamage(Masses.getMass(copy)+(Masses.getMagic(copy)*2f));
+		gun.damageItem((int)Masses.getMagic(copy)+1, player);
 		if (copy.getItem() == Items.gunpowder) {
 			Entity owner = null;
 			world.createExplosion(owner, player.posX, player.posY, player.posZ, 0.4f, false);
