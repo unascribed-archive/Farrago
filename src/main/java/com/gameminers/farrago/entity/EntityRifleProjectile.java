@@ -81,7 +81,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 			switch (getMode()) {
 				case RIFLE: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
-						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 24f);
+						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 8f);
 						ticksExisted += 10;
 					} else {
 						ticksExisted += 15;
@@ -90,7 +90,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 				}
 				case SCATTER: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
-						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 12f);
+						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 6f);
 						ticksExisted += 15;
 					} else {
 						ticksExisted += 20;
@@ -98,14 +98,14 @@ public class EntityRifleProjectile extends EntityThrowable {
 					break;
 				}
 				case BAZOOKA: {
-					worldObj.createExplosion(this, (int)pos.hitVec.xCoord, (int)pos.hitVec.yCoord, (int)pos.hitVec.zCoord, 4.0f, false);
+					worldObj.createExplosion(this, (int)pos.hitVec.xCoord, (int)pos.hitVec.yCoord, (int)pos.hitVec.zCoord, 3.5f, false);
 					setDead();
 					break;
 				} 
 				case BLAZE: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
 						((EntityLivingBase)pos.entityHit).setFire(40);
-						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 20f);
+						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 7f);
 						ticksExisted += 20;
 					} else {
 						ticksExisted += 25;
@@ -200,7 +200,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 			            if (getThrower() != null && getThrower() instanceof EntityPlayerMP) {
 			                EntityPlayerMP entityplayermp = (EntityPlayerMP)getThrower();
 
-		                    EnderTeleportEvent event = new EnderTeleportEvent(entityplayermp, posX, posY, posZ, 5.0F);
+		                    EnderTeleportEvent event = new EnderTeleportEvent(entityplayermp, posX, posY, posZ, 2.5F);
 		                    if (!MinecraftForge.EVENT_BUS.post(event)) {
 			                    if (getThrower().isRiding()) {
 			                        getThrower().mountEntity((Entity)null);

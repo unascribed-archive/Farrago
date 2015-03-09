@@ -380,7 +380,6 @@ public class FarragoMod {
 	@SubscribeEvent
 	public void onDataSave(ChunkDataEvent.Save e) {
 		if (!"yttrium".equals(e.getData().getString("farrago:RetroGenKey"))) {
-			log.info("Marking "+e.getChunk().xPosition+", "+e.getChunk().zPosition+" as retrogenerated");
 			e.getData().setString("farrago:RetroGenKey", "yttrium");
 		}
 	}

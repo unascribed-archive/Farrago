@@ -4,5 +4,6 @@ cyber_sting.ogg: Sampled from 'Cyber Thunder Cider' by EZFG
 laser_fire.ogg: 'Lasgun fire' by 211redman112 - http://www.freesound.org/people/211redman112/sounds/234083/
 laser_impact.ogg: 'Lasgun impact' by 211redman112 - http://www.freesound.org/people/211redman112/sounds/234082/
 laser_charge.ogg: based on 'charging loop 2' by JavierZumer - http://www.freesound.org/people/JavierZumer/sounds/257231/
+laser_charge_short.ogg: based on 'charging loop 2' by JavierZumer - http://www.freesound.org/people/JavierZumer/sounds/257231/
 laser_overcharge.ogg: 'metal door gate.mp3' by JavierZumer - http://www.freesound.org/people/JavierZumer/sounds/257233/
 laser_mode.ogg: 'Switch 31.wav' by LG - http://www.freesound.org/people/LG/sounds/72184/

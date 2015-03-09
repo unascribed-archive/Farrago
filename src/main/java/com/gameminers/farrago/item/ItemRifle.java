@@ -1,5 +1,7 @@
 package com.gameminers.farrago.item;
 
+import gminers.kitchensink.ReadableNumbers;
+
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -58,9 +60,18 @@ public class ItemRifle extends Item {
 	
 	@Override
 	public int getMaxItemUseDuration(ItemStack stack) {
-		return (int)(136f/getMode(stack).getChargeSpeed());
+		RifleMode mode = getMode(stack);
+		return (int)((float)getChargeTicksWithOverload(mode)/mode.getChargeSpeed());
 	}
 	
+	public int getChargeTicksWithOverload(RifleMode mode) {
+		return mode.isShort() ? 70 : 142;
+	}
+	
+	public int getChargeTicks(RifleMode mode) {
+		return mode.isShort() ? 23 : 114;
+	}
+
 	@Override
 	public ItemStack onEaten(ItemStack gun, World world, EntityPlayer player) {
 		gun.damageItem(32, player);
@@ -130,7 +141,8 @@ public class ItemRifle extends Item {
     }
 	
 	public int getTicksToFire(ItemStack item) {
-		return (int)(114f / getMode(item).getChargeSpeed());
+		RifleMode mode = getMode(item);
+		return (int)((float)getChargeTicks(mode) / mode.getChargeSpeed());
 	}
 
 	@Override
@@ -169,7 +181,12 @@ public class ItemRifle extends Item {
 		} else {
 			if (find(player.inventory, FarragoMod.CELL, getMode(gun).getCellType()) >= 0 && player.hurtTime < 5) {
 				player.setItemInUse(gun, getMaxItemUseDuration(gun));
-				world.playSoundAtEntity(player, "farrago:laser_charge", 1.0f, getMode(gun).getChargeSpeed());
+				RifleMode mode = getMode(gun);
+				if (mode.isShort()) {
+					world.playSoundAtEntity(player, "farrago:laser_charge_short", 1.0f, mode.getChargeSpeed());
+				} else {
+					world.playSoundAtEntity(player, "farrago:laser_charge", 1.0f, mode.getChargeSpeed());
+				}
 			}
 		}
 		return gun;
@@ -179,8 +196,9 @@ public class ItemRifle extends Item {
 		"Empty",
 		"Redstone-Copper",
 		"Yttrium-Glowstone",
-		"Diamond-Gold",
+		"Gold-Diamond",
 		"Iron-Gunpowder",
+		"Ender-Emerald",
 		"Redstone-Blaze-Copper"
 	};
 	
@@ -189,6 +207,8 @@ public class ItemRifle extends Item {
 		RifleMode mode = getMode(stack);
 		list.add("Mode: "+mode.getDisplayName());
 		list.add("Cell Type: "+cellTypeNames[mode.getCellType()]);
+		list.add("Charge Time: "+ReadableNumbers.humanReadableMillis((long) (((getChargeTicks(mode)/mode.getChargeSpeed())/20f)*1000)));
+		list.add("Overcharge Tolerance: "+ReadableNumbers.humanReadableMillis((long) ((((getChargeTicksWithOverload(mode)-getChargeTicks(mode))/mode.getChargeSpeed())/20f)*1000)));
 	}
 	
 	@Override

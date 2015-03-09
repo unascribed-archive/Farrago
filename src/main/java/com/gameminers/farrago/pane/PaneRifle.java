@@ -36,22 +36,23 @@ public class PaneRifle extends GlassPane {
 					if (mc.thePlayer.isUsingItem()) {
 						float useTime = mc.thePlayer.getItemInUseDuration()+partialTicks;
 						idx = (int)(((float)useTime)/((float)held.getItem().getMaxItemUseDuration(held))*25f);
-						overloadImminent = (idx > 22);
+						overloadImminent = (useTime >= ((FarragoMod.RIFLE.getChargeTicks(mode) + 15)/mode.getChargeSpeed()));
 						ready = (useTime >= FarragoMod.RIFLE.getTicksToFire(held)); 
 					}
 					if (!(overloadImminent || ready)) {
 						GL11.glEnable(GL11.GL_BLEND);
 				        OpenGlHelper.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR, 1, 0);
 					}
-					PaneImage.render(crosshairs[Math.min(25, idx)], (getWidth()/2)-8, (getHeight()/2)-8, 0, 0, 16, 16, 256, 256, overloadImminent ? 0xFFFF0000 : ready ? 0xFF00FF00 : -1, 1.0f, true);
+					int color = overloadImminent ? 0xFFFF0000 : ready ? 0xFF00FF00 : -1;
+					PaneImage.render(crosshairs[Math.min(25, idx)], (getWidth()/2)-8, (getHeight()/2)-8, 0, 0, 16, 16, 256, 256, color, 1.0f, true);
 					GL11.glPushMatrix();
 			        	GL11.glScalef(0.5f, 0.5f, 1.0f);
 			        	if (overloadImminent) {
-			        		Rendering.drawCenteredString(mc.fontRenderer, "\u00A7lOVERLOAD IMMINENT", getWidth()-2, getHeight()-28, 0xFF0000);
+			        		Rendering.drawCenteredString(mc.fontRenderer, "\u00A7lOVERLOAD IMMINENT", getWidth()-2, getHeight()-28, color);
 			        	} else if (ready) {
-			        		Rendering.drawCenteredString(mc.fontRenderer, "\u00A7lREADY", getWidth()-2, getHeight()-28, 0x00FF00);
+			        		Rendering.drawCenteredString(mc.fontRenderer, "\u00A7lREADY", getWidth()-2, getHeight()-28, color);
 			        	}
-			        	Rendering.drawCenteredString(mc.fontRenderer, mode.getDisplayName(), getWidth()-2, getHeight()+20, 0xFFFFFF);
+			        	Rendering.drawCenteredString(mc.fontRenderer, mode.getDisplayName(), getWidth()-2, getHeight()+20, color);
 			        GL11.glPopMatrix();
 					if (!(overloadImminent || ready)) {
 						OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);

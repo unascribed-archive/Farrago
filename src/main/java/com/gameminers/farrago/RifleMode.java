@@ -3,28 +3,30 @@ package com.gameminers.farrago;
 import gminers.kitchensink.Strings;
 
 public enum RifleMode {
-	RIFLE(1.75f, 1, 0xFF0000),
-	BAZOOKA(1.1f, 1, 0xFF0000),
-	SCATTER(1.0f, 1, 0xFF0000),
+	RIFLE(1.75f, 1, 0xFF0000, true),
+	BAZOOKA(1.1f, 1, 0xFF0000, true),
+	SCATTER(1.0f, 1, 0xFF0000, true),
 	
-	BLAZE(1.8f, 6, 0xFFAA00),
+	BLAZE(1.6f, 6, 0xFFAA00, true),
 	
-	MINING(1.2f, 3, 0x00FFFF),
-	PRECISION_MINING(2.0f, 3, 0x00FFFF),
+	MINING(1.2f, 3, 0x00FFFF, false),
+	PRECISION_MINING(2.0f, 3, 0x00FFFF, false),
 	
-	EXPLOSIVE(0.8f, 4, 0xAAAAAA),
-	GLOW(2.0f, 2, 0xFFFF00),
+	EXPLOSIVE(1.5f, 4, 0xAAAAAA, false),
+	GLOW(2.0f, 2, 0xFFFF00, true),
 	
-	TELEPORT(2.0f, 5, 0xFF00FF);
+	TELEPORT(0.5f, 5, 0xFF00FF, true);
 	private final float chargeSpeed;
 	private final String abbrev;
 	private final String displayName;
 	private final int cellType;
 	private final int color;
-	private RifleMode(float chargeSpeed, int cellType, int color) {
+	private final boolean isShort;
+	private RifleMode(float chargeSpeed, int cellType, int color, boolean isShort) {
 		this.chargeSpeed = chargeSpeed;
 		this.cellType = cellType;
 		this.color = color;
+		this.isShort = isShort;
 		abbrev = Character.toString(name().charAt(0));
 		displayName = Strings.formatTitleCase(name());
 	}
@@ -42,5 +44,8 @@ public enum RifleMode {
 	}
 	public int getCellType() {
 		return cellType;
+	}
+	public boolean isShort() {
+		return isShort;
 	}
 }

@@ -61,5 +61,14 @@
 				"stream": false
 			}
 		]
+	},
+	"laser_charge_short": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "laser_charge_short",
+				"stream": false
+			}
+		]
 	}
 }

@@ -40,7 +40,6 @@ public class EntityBlunderbussProjectile extends EntityThrowable {
 	protected void onImpact(MovingObjectPosition pos) {
 		if (pos.entityHit instanceof EntityEnderman) return;
 		if (pos.typeOfHit == MovingObjectType.BLOCK) {
-			System.out.println(worldObj.getBlock(pos.blockX, pos.blockY, pos.blockZ));
 			if (worldObj.getBlock(pos.blockX, pos.blockY, pos.blockZ).getMaterial().isReplaceable()) return;
 		}
 		setDead();
