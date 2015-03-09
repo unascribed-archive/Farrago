@@ -36,10 +36,6 @@
 	{Foo:Bar,Baz:Quux}, but {Foo:Bar}? will match both.
 	
 	('Mojangson' here means the format used by command blocks.)
-	
-	Special def values:
-		'*' will match any and all items.
-		'*?' will match any items that already have an entry.
  -->
 <!--              this file is formatted to fit in 80 columns               -->
 <encyclopedia>
