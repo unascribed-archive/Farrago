@@ -9,6 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.particle.EntityReddustFX;
+import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
@@ -17,6 +19,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.client.effect.EntityRifleFX;
+import com.gameminers.farrago.client.encyclopedia.Encyclopedia;
 import com.gameminers.farrago.client.init.InitScreen;
 import com.gameminers.farrago.client.render.RenderBlunderbussProjectile;
 import com.gameminers.farrago.client.render.RenderNull;
@@ -50,6 +53,10 @@ public class ClientProxy implements Proxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityBlunderbussProjectile.class, new RenderBlunderbussProjectile());
 		RenderingRegistry.registerEntityRenderingHandler(EntityRifleProjectile.class, new RenderNull());
 		MinecraftForgeClient.registerItemRenderer(FarragoMod.RIFLE, new RifleItemRenderer());
+		IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
+		if (manager instanceof IReloadableResourceManager) {
+			((IReloadableResourceManager)manager).registerReloadListener(new Encyclopedia());
+		}
 	}
 
 	@Override

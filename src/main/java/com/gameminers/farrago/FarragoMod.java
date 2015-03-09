@@ -48,6 +48,7 @@ import com.gameminers.farrago.enums.MineralColor;
 import com.gameminers.farrago.enums.WoodColor;
 import com.gameminers.farrago.gen.YttriumGenerator;
 import com.gameminers.farrago.item.ItemFondue;
+import com.gameminers.farrago.item.chromatic.ItemChromaticYttrium;
 import com.gameminers.farrago.item.resource.ItemCell;
 import com.gameminers.farrago.item.resource.ItemDust;
 import com.gameminers.farrago.item.resource.ItemIngot;
@@ -57,6 +58,7 @@ import com.gameminers.farrago.item.tool.ItemKahur;
 import com.gameminers.farrago.item.tool.ItemRifle;
 import com.gameminers.farrago.item.tool.ItemVividOrb;
 import com.gameminers.farrago.proxy.Proxy;
+import com.gameminers.farrago.recipes.RecipeChromaticYttrium;
 import com.gameminers.farrago.recipes.RecipesVividOrbDyes;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
@@ -100,6 +102,7 @@ public class FarragoMod {
 	public static ItemBlunderbuss BLUNDERBUSS;
 	public static ItemFondue FONDUE;
 	public static ItemRifle RIFLE;
+	public static ItemChromaticYttrium CHROMATIC_YTTRIUM;
 	public static ItemKahur KAHUR;
 	
 	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
@@ -138,6 +141,7 @@ public class FarragoMod {
 		FONDUE = new ItemFondue();
 		RIFLE = new ItemRifle();
 		CELL = new ItemCell();
+		CHROMATIC_YTTRIUM = new ItemChromaticYttrium();
 		KAHUR = new ItemKahur();
 		GameRegistry.registerFuelHandler(new IFuelHandler() {
 			private Random rand = new Random();
@@ -168,6 +172,7 @@ public class FarragoMod {
 		GameRegistry.registerItem(VIVID_ORB, "vividOrb");
 		GameRegistry.registerItem(CELL, "cell");
 		GameRegistry.registerItem(RIFLE, "rifle");
+		GameRegistry.registerItem(CHROMATIC_YTTRIUM, "chromaticYttrium");
 		GameRegistry.registerItem(KAHUR, "kahur");
 		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, this, 64, 12, true);
 		EntityRegistry.registerModEntity(EntityRifleProjectile.class, "rifleShot", 1, this, 64, 12, true);
@@ -332,6 +337,13 @@ public class FarragoMod {
 				'Y', "ingotYttrium",
 				'C', "ingotYttriumCopper",
 				'G', "paneGlass"
+				));
+		GameRegistry.addRecipe(new RecipeChromaticYttrium(new ItemStack(CHROMATIC_YTTRIUM, 8), 
+				"III",
+				"IVI",
+				"III",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB
 				));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 1),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 2),  new ItemStack(CELL, 1, 0), "dustYttrium", "dustGlowstone"));
