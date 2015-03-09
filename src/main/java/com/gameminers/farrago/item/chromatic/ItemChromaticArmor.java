@@ -7,13 +7,14 @@ import net.minecraft.item.ItemStack;
 import com.gameminers.farrago.FarragoMod;
 
 public class ItemChromaticArmor extends ItemArmor {
-	public ItemChromaticArmor(int p_i45325_2_, int p_i45325_3_) {
-		super(ArmorMaterial.IRON, p_i45325_2_, p_i45325_3_);
+	public ItemChromaticArmor(int p_i45325_3_) {
+		super(ArmorMaterial.IRON, 2, p_i45325_3_);
 		setCreativeTab(FarragoMod.creativeTab);
 	}
 
 	@Override
 	public String getArmorTexture(ItemStack stack, Entity entity, int slot, String type) {
+		if ("overlay".equals(type)) return "farrago:textures/items/blank.png";
 		return slot == 2 ? "farrago:textures/models/armor/chromatic_layer_2.png" : "farrago:textures/models/armor/chromatic_layer_1.png";
 	}
 	

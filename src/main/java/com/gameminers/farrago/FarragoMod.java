@@ -167,10 +167,10 @@ public class FarragoMod {
 		CHROMATIC_SHOVEL = new ItemChromaticSpade().setUnlocalizedName("chromatic_shovel");
 		CHROMATIC_HOE = new ItemChromaticHoe().setUnlocalizedName("chromatic_hoe");
 		
-		CHROMATIC_HELMET = new ItemChromaticArmor(0, 0).setTextureName("farrago:chromatic_helmet").setUnlocalizedName("chromatic_helmet");
-		CHROMATIC_CHESTPLATE = new ItemChromaticArmor(0, 1).setTextureName("farrago:chromatic_chestplate").setUnlocalizedName("chromatic_chestplate");
-		CHROMATIC_LEGGINGS = new ItemChromaticArmor(0, 2).setTextureName("farrago:chromatic_leggings").setUnlocalizedName("chromatic_leggings");
-		CHROMATIC_BOOTS = new ItemChromaticArmor(0, 3).setTextureName("farrago:chromatic_boots").setUnlocalizedName("chromatic_boots");
+		CHROMATIC_HELMET = new ItemChromaticArmor(0).setTextureName("farrago:chromatic_helmet").setUnlocalizedName("chromatic_helmet");
+		CHROMATIC_CHESTPLATE = new ItemChromaticArmor(1).setTextureName("farrago:chromatic_chestplate").setUnlocalizedName("chromatic_chestplate");
+		CHROMATIC_LEGGINGS = new ItemChromaticArmor(2).setTextureName("farrago:chromatic_leggings").setUnlocalizedName("chromatic_leggings");
+		CHROMATIC_BOOTS = new ItemChromaticArmor(3).setTextureName("farrago:chromatic_boots").setUnlocalizedName("chromatic_boots");
 		
 		
 		GameRegistry.registerFuelHandler(new IFuelHandler() {
