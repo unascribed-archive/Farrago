@@ -40,6 +40,7 @@ import com.gameminers.farrago.block.BlockCombustor;
 import com.gameminers.farrago.block.BlockGlow;
 import com.gameminers.farrago.block.BlockOre;
 import com.gameminers.farrago.block.BlockScrapper;
+import com.gameminers.farrago.client.encyclopedia.Encyclopedia;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityKahurProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
@@ -79,7 +80,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="1.0")
 public class FarragoMod {
 	public static final Logger log = LogManager.getLogger("Farrago");
-	@SidedProxy(clientSide="com.gameminers.farrago.ClientProxy", serverSide="com.gameminers.farrago.ServerProxy")
+	@SidedProxy(clientSide="com.gameminers.farrago.proxy.ClientProxy", serverSide="com.gameminers.farrago.proxy.ServerProxy")
 	public static Proxy proxy;
 	@Instance("farrago")
 	public static FarragoMod inst;
@@ -325,11 +326,12 @@ public class FarragoMod {
 				'B', Items.blaze_rod
 				));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(CELL, 4, 0), 
-				"Y Y",
-				"Y Y",
+				"YGY",
+				"YGY",
 				"YCY",
 				'Y', "ingotYttrium",
-				'C', "ingotYttriumCopper"
+				'C', "ingotYttriumCopper",
+				'G', "paneGlass"
 				));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 1),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 2),  new ItemStack(CELL, 1, 0), "dustYttrium", "dustGlowstone"));
@@ -455,7 +457,6 @@ public class FarragoMod {
 			copperlessEnvironment = true;
 			log.warn("We are running in a copperless environment; enabling fallback copper dust drops from Yttrium ore");
 		}
-		Encyclopedia.init();
 	}
 	public static long hashItemStack(ItemStack toHash) {
 		long hash = 0;

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Why XML and not JSON? Simple. JSON is an Object Notation. It's not very
+	good for expressing information in a format like this due to it being
+	designed to describe programming constructs, rather than informational
+	constructs. XML on the other hand is perfect for this, which is probably
+	why HTML was based on it.
+	
+	There are two types of tags; "entry" and "ignore". The encyclopedia system
+	will stop looking when it encounters an ignore. So, if you put an ignore
+	with a specific damage value before an entry that matches all items of that
+	type, the ignore will be preferred and the item will have no encyclopedia
+	entry. However, when there are two entries, one with a more specific
+	definition, the later one is appended onto the earlier one. To prevent
+	this, the more specific one can be put before the general one and then an
+	ignore tag for the more specific def can be put after the specific entry.
+	for example:
+		<entry def="farrago:potato@5">Potato:5</entry>
+		<entry def="farrago:potato">Potato</entry>
+		results in 'Potato:5 Potato'
+	and:
+		<entry def="farrago:potato@5">Potato:5</entry>
+		<ignore def="farrago:potato@5"/>
+		<entry def="farrago:potato">Potato</entry>
+		results in 'Potato:5'
+	
+	All tags must have a 'def' field. A def must start with a fully qualified
+	block or item name; e.g. 'minecraft:stone', 'farrago:rifle'. An @ sign is
+	a separator between the item's name and it's required damage value. If
+	the damage value is omitted, all damage values are accepted. A value of
+	32767 also acts as a wildcard.
+	Finally, a Mojangson NBT definition can be enclosed in curly braces at the
+	end to require certain NBT tags to be present. As with damage values, if
+	omitted, any values are accepted. If trailed by a '?', then any extra tags
+	on the item are ignored. So, {Foo:Bar} matches {Foo:Bar} but not
+	{Foo:Bar,Baz:Quux}, but {Foo:Bar}? will match both.
+	
+	('Mojangson' here means the format used by command blocks.)
+	
+	Special def values:
+		'*' will match any and all items.
+		'*?' will match any items that already have an entry.
+ -->
+<!--              this file is formatted to fit in 80 columns               -->
+<encyclopedia>
+	<entry def="farrago:kahur">
+		A strange weapon that uses everyday items as ammunition.
+		The more complex they are, the more damage they do.
+	</entry>
+	<entry def="farrago:kahur{KahurPumpMaterial:GLASS}?">
+		This one is particular has been outfitted to only fire potions.
+		These potions will break when hitting something and will apply their
+		effect to nearby mobs.
+	</entry>
+	<entry def="farrago:kahur{KahurPumpMaterial:POTATO}?">
+		This one is particular has been outfitted to  only fire potatoes.
+		Why would you make a gun that can only shoot potatoes?
+	</entry>
+	<entry def="farrago:kahur{KahurPumpMaterial:GLOW}?">
+		This one is particular has been outfitted to only fire torches.
+		These torches will stick onto any walls they hit.
+	</entry>
+	<entry def="farrago:kahur{KahurPumpMaterial:OBSIDIAN}?">
+		This one is particular has been outfitted to only attempt to fire
+		gunpowder. This results in it violently backfiring whenever it is shot.
+	</entry>
+	<entry def="farrago:kahur{KahurPumpMaterial:ENDER}?">
+		This one is particular has been outfitted to fire items in a
+		predictable order.
+	</entry>
+	<entry def="farrago:kahur{KahurPumpMaterial:PLATINUM}?">
+		This one is particular has been outfitted to fire items in a
+		predictable order.
+	</entry>
+	<entry def="farrago:kahur{KahurPumpMaterial:IRIDIUM}?">
+		This one is particular has been outfitted to fire items in a
+		predictable order.
+	</entry>
+	
+	<ignore def="farrago:rubble@5"/>
+	
+	<entry def="farrago:rubble">
+		Leftover trash from scrapping an object. Can be used as fuel in a
+		furnace, but it will only last until all flammable material is burnt.
+	</entry>
+	<entry def="farrago:vividOrb">
+		This orb is capable of storing the very essence of a color.
+		The art of making these in bright colors has been lost, and as such
+		those can now only be found in abandoned ruins.
+	</entry>
+	<entry def="farrago:combustor">
+		This machine uses gunpowder or TNT as an alternative, and very fast,
+		way to smelt items. Every smelting operation has a small chance to
+		smelt two at once, and an even smaller chance to smelt three.
+	</entry>
+	<entry def="farrago:scrapper">
+		This machine can break down items and blocks into their component
+		parts. Sound high tech? It's not. Given any furnace fuels, this
+		machine will repeatedly smash a block or item until it's components
+		are nothing but dust. Only gems and metals can be recovered this way;
+		everything else is lost and converted to rubble. This is, however, a
+		very effective way of converting gems and ingots directly into dusts
+		with no loss.
+	</entry>
+	<entry def="farrago:netherStarBlock">
+		A solid block of Nether Stars. You're either rich, insane, or both.
+	</entry>
+	<entry def="farrago:blunderbuss">
+		This somewhat shoddy gun uses gunpowder to detonate pieces of gravel
+		into tiny shards, perfect for tearing up your enemies. It is highly
+		inaccurate, and is effectively useless at range.
+	</entry>
+	<entry def="farrago:blunderbuss{Zealon:1b}?">
+		This one in particular has been outfitted with a strange upgrade
+		made from stranger materials; the effect appears to be that the fire
+		rate is unlimited.
+	</entry>
+	<entry def="farrago:rifle">
+		This state-of-the-art rifle can use cells filled with varying types
+		of dusts and powders to cause reactions of both chemical and magical
+		nature, and then harnesses them to shoot beams with different effects.
+		Sneak while firing to change modes. Be careful not to overcharge it!
+	</entry>
+	<entry def="farrago:dust">
+		Don't breathe this.
+	</entry>
+	<entry def="farrago:dust@8">
+		This dust is somewhat unstable, but emeralds are known to act as a good
+		catalyst to stabilize it for use.
+	</entry>
+	<entry def="farrago:ingot@0">
+		A solid bar of Yttrium. Yttrium has a variety of uses, including the
+		manufacture of ray guns, reacting with glowstone to make an eternal
+		light, and being alloyed with copper to make a highly conductive
+		metal.
+	</entry>
+	<entry def="farrago:ingot@1">
+		A solid bar of Yttric Copper. Yttric Copper is an alloy of Yttrium and
+		copper, and it is highly conductive. It is also useful for reinforcing
+		things, as it is less brittle than pure Yttrium.
+	</entry>
+	<entry def="farrago:cell@0">
+		An empty cell, made from Yttrium and Yttric Copper. Maybe you should
+		fill it with something?
+	</entry>
+	<entry def="farrago:cell@1">
+		This cell has been filled with Redstone and Copper, which when fired
+		out of a Yttric Rifle, cause a powerful corrosive reaction.
+	</entry>
+	<entry def="farrago:cell@2">
+		This cell has been filled with Glowstone and Yttrium, which react
+		together making an eternal light.
+	</entry>
+	<entry def="farrago:cell@3">
+		This cell has been filled with gold and diamond (but mostly gold, you
+		cheapskate), which when fired out of a Yttric Rifle, are capable of
+		breaking almost any block.
+	</entry>
+	<entry def="farrago:cell@4">
+		This cell has been filled with iron and gunpowder, which make
+		explosions. Are you surprised? I'm surprised.
+	</entry>
+	<entry def="farrago:cell@5">
+		This cell has been filled with emerald dust and Ender Pearl dust,
+		which allows the Yttric Rifle to act as a teleporter. The innate magic
+		left in the Ender Pearl pulls the beam toward the ground, where
+		strongholds are located.
+	</entry>
+	<entry def="farrago:cell@6">
+		This cell has been filled with Redstone, Copper, and Blaze Powder. It's
+		the same as a Redstone-Copper cell, but with the added ability to set
+		things on fire.
+	</entry>
+	<entry def="farrago:caquelon">
+		An empty iron container for a variety of foods.
+	</entry>
+	<entry def="farrago:fondue@0">
+		A caquelon filled with a delicious mixture of molten cheeses. How it
+		stays hot is anyone's guess.
+	</entry>
+	<entry def="farrago:fondue@1">
+		A caquelon filled with a variety of meats and a bit of bread. Very
+		filling.
+	</entry>
+	<entry def="farrago:fondue@2">
+		A caquelon filled with melted chocolate. Anyone have a strawberry?
+	</entry>
+	<entry def="farrago:fondue@3">
+		A caquelon filled with apple cider... wait, why'd you fill a caquelon
+		with cider? Isn't that what bottles are for?
+	</entry>
+	<entry def="farrago:fondue@4">
+		&#x00A7;kSaiba sanda saida, saiba sanda saida
+	</entry>
+	<entry def="farrago:chromaticYttrium">
+		I'm not entirely sure how you managed to combine a Vivid Orb and
+		Yttrium, but this metal appears to exhibit virtually the same
+		properties as pure Yttrium, other than appearing to be a different
+		color. Maybe it'd be good for tools and armor?
+	</entry>
+</encyclopedia>
