@@ -52,7 +52,6 @@ import com.gameminers.farrago.item.chromatic.ItemChromaticArmor;
 import com.gameminers.farrago.item.chromatic.ItemChromaticAxe;
 import com.gameminers.farrago.item.chromatic.ItemChromaticHoe;
 import com.gameminers.farrago.item.chromatic.ItemChromaticPickaxe;
-import com.gameminers.farrago.item.chromatic.ItemChromaticShears;
 import com.gameminers.farrago.item.chromatic.ItemChromaticSpade;
 import com.gameminers.farrago.item.chromatic.ItemChromaticSword;
 import com.gameminers.farrago.item.resource.ItemCell;
@@ -120,8 +119,6 @@ public class FarragoMod {
 	public static ItemChromaticArmor CHROMATIC_CHESTPLATE;
 	public static ItemChromaticArmor CHROMATIC_LEGGINGS;
 	public static ItemChromaticArmor CHROMATIC_BOOTS;
-	
-	public static ItemChromaticShears CHROMATIC_SHEARS;
 	
 	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
 	public static String brand;
@@ -215,6 +212,7 @@ public class FarragoMod {
 		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, this, 64, 12, true);
 		EntityRegistry.registerModEntity(EntityRifleProjectile.class, "rifleShot", 1, this, 64, 12, true);
 		EntityRegistry.registerModEntity(EntityBlunderbussProjectile.class, "blunderbussShot", 2, this, 64, 12, true);
+		Items.shears.delegate.get();
 		ORE.registerOres();
 		DUST.registerOres();
 		INGOT.registerOres();
