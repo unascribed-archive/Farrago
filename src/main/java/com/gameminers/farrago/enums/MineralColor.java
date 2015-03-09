@@ -28,12 +28,11 @@ public enum MineralColor {
 	QUARTZ	(new OreSelector("gemQuartz"), 			0xDACEC1, 200, "Nether Quartz"),
 	COPPER	(new OreSelector("ingotCopper"), 		0x9F4710, 225, "Copper"),
 	IRON	(new OreSelector("ingotIron"), 			0xD8AF93, 250, "Iron"),
-	SILVER	(new OreSelector("ingotSilver"), 		0xD8AF93, 280, "Silver"),
+	SILVER	(new OreSelector("ingotSilver"), 		0xCCD8E6, 280, "Silver"),
 	GOLD	(new OreSelector("ingotGold"), 			0xFCEE4B, 300, "Gold [Mobs]"),
 	YTTRIUM (new OreSelector("ingotYttrium"), 		0xB1B1B1, 320, "Yttrium [Mobs]"),
 	STEEL	(new OreSelector("ingotSteel"), 		0x888888, 350, "Steel [Mobs]"),
 	EMERALD	(new OreSelector("gemEmerald"), 		0x17DD62, 450, "Emerald [Mobs]"),
-	SYTTRIUM(new OreSelector("ingotYttriumSteel"), 	0x9D9D9D, 600, "Yttric Steel [Mobs]"),
 	DIAMOND	(new OreSelector("gemDiamond"), 		0x5DECF5, 850, "Diamond [Mobs]"),
 	
 	// Predictable Tiers
