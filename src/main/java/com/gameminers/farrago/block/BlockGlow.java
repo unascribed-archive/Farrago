@@ -28,6 +28,11 @@ public class BlockGlow extends Block {
 	}
 	
 	@Override
+	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
+		return false;
+	}
+	
+	@Override
 	public boolean isOpaqueCube() {
 		return false;
 	}

@@ -103,8 +103,8 @@ public class ClientProxy implements Proxy {
 		float y2 = (float) FarragoMod.GLOW.getBlockBoundsMaxY();
 		float z2 = (float) FarragoMod.GLOW.getBlockBoundsMaxZ();
 		for (int i = 0; i < rand.nextInt(10)+5; i++) {
-			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityReddustFX(world, x+(x1+(rand.nextFloat()*x2)),
-					y+(y1+(rand.nextFloat()*y2)), z+(z1+(rand.nextFloat()*z2)), 0.6f, 1.0f, 1.0f, 0.0f));
+			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityReddustFX(world, x+(x1+(rand.nextFloat()*(x2-x1))),
+					y+(y1+(rand.nextFloat()*(y2-y1))), z+(z1+(rand.nextFloat()*(z2-z1))), 0.6f, 1.0f, 1.0f, 0.0f));
 		}
 	}
 
