@@ -129,7 +129,11 @@ public class ItemKahur extends Item {
 		if (pass == 0) {
 			WoodColor bodyColor = WoodColor.BIG_OAK;
 			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurBodyMaterial")) {
-				bodyColor = WoodColor.valueOf(stack.getTagCompound().getString("KahurBodyMaterial"));
+				try {
+					bodyColor = WoodColor.valueOf(stack.getTagCompound().getString("KahurBodyMaterial"));
+				} catch (IllegalArgumentException e) {
+					stack.getTagCompound().setString("KahurBodyMaterial", "BIG_OAK");
+				}
 			}
 			return bodyColor.getColor();
 		} else if (pass == 1) {
@@ -138,14 +142,22 @@ public class ItemKahur extends Item {
 			} else {
 				WoodColor drumColor = WoodColor.SPRUCE;
 				if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurDrumMaterial")) {
-					drumColor = WoodColor.valueOf(stack.getTagCompound().getString("KahurDrumMaterial"));
+					try {
+						drumColor = WoodColor.valueOf(stack.getTagCompound().getString("KahurDrumMaterial"));
+					} catch (IllegalArgumentException e) {
+						stack.getTagCompound().setString("KahurDrumMaterial", "SPRUCE");
+					}
 				}
 				return drumColor.getColor();
 			}
 		} else if (pass == 2) {
 			MineralColor pumpColor = MineralColor.IRON;
 			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurPumpMaterial")) {
-				pumpColor = MineralColor.valueOf(stack.getTagCompound().getString("KahurPumpMaterial"));
+				try {
+					pumpColor = MineralColor.valueOf(stack.getTagCompound().getString("KahurPumpMaterial"));
+				} catch (IllegalArgumentException e) {
+					stack.getTagCompound().setString("KahurPumpMaterial", "IRON");
+				}
 			}
 			return pumpColor.getColor();
 		} else if (pass == 3) {
@@ -174,8 +186,8 @@ public class ItemKahur extends Item {
 		for (MineralColor pump : MineralColor.values()) {
 				ItemStack kahur = new ItemStack(item);
 				NBTTagCompound tag = new NBTTagCompound();
-				tag.setString("KahurBodyMaterial", "CREATIVE");
-				tag.setString("KahurDrumMaterial", "CREATIVE");
+				tag.setString("KahurBodyMaterial", "BIG_OAK");
+				tag.setString("KahurDrumMaterial", "SPRUCE");
 				tag.setString("KahurPumpMaterial", pump.name());
 				kahur.setTagCompound(tag);
 				list.add(kahur);
