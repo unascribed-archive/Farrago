@@ -93,7 +93,26 @@ public class EntityKahurProjectile extends EntityThrowable {
     
 	@Override
 	protected void onImpact(MovingObjectPosition pos) {
-		boolean kill = false;
+		float dropChance = 0.8f;
+		if (pos.entityHit != null) {
+			if (pos.entityHit.isDead) return;
+			if (pos.entityHit instanceof EntityLivingBase) {
+				EntityLivingBase living = ((EntityLivingBase)pos.entityHit);
+				if (getItem().getItem() == Items.potato && living instanceof EntityPlayerMP) {
+					((EntityPlayerMP)living).getFoodStats().addStats(1, 0.2f);
+					worldObj.playSoundAtEntity(living, "random.burp", 0.8f, 1.0f);
+					dropChance = 0.0f;
+				} else {
+					living.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), damage);
+					dropChance = 0.4f;
+					if (getItem().getItem() == Items.poisonous_potato) {
+						living.addPotionEffect(new PotionEffect(Potion.poison.getId(), 100, 1));
+					} else if (getItem().getItem() == Items.baked_potato) {
+						living.setFire(5);
+					}
+				}
+			}
+		}
 		setDead();
 		if (getItem().getItem() == Items.potionitem) {
 			if (!this.worldObj.isRemote) {
@@ -159,25 +178,7 @@ public class EntityKahurProjectile extends EntityThrowable {
 				this.worldObj.playAuxSFX(2002, (int) Math.round(this.posX),
 						(int) Math.round(this.posY),
 						(int) Math.round(this.posZ), getItem().getItemDamage());
-				kill = true;
-			}
-		}
-		if (pos.entityHit != null) {
-			if (pos.entityHit instanceof EntityLivingBase) {
-				EntityLivingBase living = ((EntityLivingBase)pos.entityHit);
-				if (getItem().getItem() == Items.potato && living instanceof EntityPlayerMP) {
-					((EntityPlayerMP)living).getFoodStats().addStats(1, 0.2f);
-					worldObj.playSoundAtEntity(living, "random.burp", 0.8f, 1.0f);
-					kill = true;
-				} else {
-					living.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), damage);
-					kill = true;
-					if (getItem().getItem() == Items.poisonous_potato) {
-						living.addPotionEffect(new PotionEffect(Potion.poison.getId(), 100, 1));
-					} else if (getItem().getItem() == Items.baked_potato) {
-						living.setFire(5);
-					}
-				}
+				dropChance = 0.0f;
 			}
 		}
 		if (Block.getBlockFromItem(getItem().getItem()) == Blocks.tnt) {
@@ -261,8 +262,8 @@ public class EntityKahurProjectile extends EntityThrowable {
 	            }
 			}
 		}
-		if (!worldObj.isRemote && !kill) {
-			if (getItem().getItem().isItemTool(getItem()) || rand.nextFloat() < 0.8f) {
+		if (!worldObj.isRemote) {
+			if (getItem().getItem().isItemTool(getItem()) || rand.nextFloat() < dropChance) {
 				entityDropItem(getItem(), 0.2f);
 				worldObj.playSoundAtEntity(this, "step.stone", 1.5f, 2.0f);
 			} else {
