@@ -35,7 +35,7 @@ public class PaneRifle extends GlassPane {
 					RifleMode mode = FarragoMod.RIFLE.getMode(held);
 					if (mc.thePlayer.isUsingItem()) {
 						float useTime = mc.thePlayer.getItemInUseDuration()+partialTicks;
-						idx = (int)(((float)useTime)/((float)held.getItem().getMaxItemUseDuration(held))*25f);
+						idx = (int)(((float)useTime)/((float)held.getItem().getMaxItemUseDuration(held))*25f)+1;
 						overloadImminent = (useTime >= ((FarragoMod.RIFLE.getChargeTicks(mode) + 15)/mode.getChargeSpeed()));
 						ready = (useTime >= FarragoMod.RIFLE.getTicksToFire(held)); 
 					}
