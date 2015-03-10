@@ -2,6 +2,9 @@ package com.gameminers.farrago.tileentity;
 
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 public abstract class TileEntityMachine extends TileEntity implements ISidedInventory {
@@ -21,9 +24,21 @@ public abstract class TileEntityMachine extends TileEntity implements ISidedInve
 	}
 	
 	@Override
+	public Packet getDescriptionPacket() {
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setInteger("Direction", direction);
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -255, tag);
+	}
+	
+	@Override
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+		setDirection(pkt.func_148857_g().getInteger("Direction"));
+	}
+	
+	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		direction = tag.getInteger("Direction");
+		setDirection(tag.getInteger("Direction"));
 		if (tag.hasKey("CustomName", 8)) {
 			this.customName = tag.getString("CustomName");
 		}
