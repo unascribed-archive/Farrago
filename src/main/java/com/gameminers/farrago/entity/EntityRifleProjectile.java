@@ -178,12 +178,12 @@ public class EntityRifleProjectile extends EntityThrowable {
 							break;
 						}
 						Block block = worldObj.getBlock(posX, posY, posZ);
+						setDead();
 						if (block == null || block.isAir(worldObj, posX, posY, posZ) || block.isReplaceable(worldObj, posX, posY, posZ) || !block.isCollidable()) {
 							worldObj.setBlock(posX, posY, posZ, FarragoMod.GLOW);
 							worldObj.setBlockMetadataWithNotify(posX, posY, posZ, pos.sideHit, 3);
 							return;
 						}
-						setDead();
 					}
 					break;
 				}
