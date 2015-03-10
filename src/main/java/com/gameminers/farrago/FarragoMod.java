@@ -35,10 +35,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.gameminers.farrago.block.BlockCombustor;
 import com.gameminers.farrago.block.BlockGlow;
+import com.gameminers.farrago.block.BlockMachine;
 import com.gameminers.farrago.block.BlockOre;
 import com.gameminers.farrago.block.BlockResource;
 import com.gameminers.farrago.block.BlockScrapper;
-import com.gameminers.farrago.block.item.ItemBlockResource;
+import com.gameminers.farrago.block.item.ItemBlockWithCustomName;
 import com.gameminers.farrago.client.encyclopedia.Encyclopedia;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityKahurProjectile;
@@ -92,11 +93,14 @@ public class FarragoMod {
 	@Instance("farrago")
 	public static FarragoMod inst;
 	
+	@Deprecated
 	public static BlockCombustor COMBUSTOR;
+	@Deprecated
 	public static BlockScrapper SCRAPPER;
 	public static BlockOre ORE;
 	public static BlockResource RESOURCE;
 	public static BlockGlow GLOW;
+	public static BlockMachine MACHINE;
 	
 	public static ItemVividOrb VIVID_ORB;
 	public static Item CAQUELON;
@@ -124,10 +128,17 @@ public class FarragoMod {
 	public static String brand;
 	public static boolean copperlessEnvironment;
 	public static CreativeTabs creativeTab = new CreativeTabs("farrago") {
-		
+		private ItemStack iconItemStack;
+		@Override
+		public ItemStack getIconItemStack() {
+			if (iconItemStack == null) {
+				iconItemStack = new ItemStack(MACHINE, 1, 0);
+			}
+			return iconItemStack;
+		}
 		@Override
 		public Item getTabIconItem() {
-			return Item.getItemFromBlock(COMBUSTOR);
+			return null;
 		}
 	};
 	private YttriumGenerator yttrGen;
@@ -145,6 +156,7 @@ public class FarragoMod {
 		ORE = new BlockOre();
 		GLOW = new BlockGlow();
 		RESOURCE = new BlockResource();
+		MACHINE = new BlockMachine();
 		
 		CAQUELON = new Item().setTextureName("farrago:caquelon").setMaxStackSize(1).setUnlocalizedName("caquelon").setCreativeTab(creativeTab);
 		VIVID_ORB = new ItemVividOrb();
@@ -188,8 +200,9 @@ public class FarragoMod {
 		GameRegistry.registerBlock(GLOW, null, "glow");
 		GameRegistry.registerBlock(COMBUSTOR, "combustor");
 		GameRegistry.registerBlock(SCRAPPER, "scrapper");
+		GameRegistry.registerBlock(MACHINE, ItemBlockWithCustomName.class, "machine");
 		GameRegistry.registerBlock(ORE, "watashi");
-		GameRegistry.registerBlock(RESOURCE, ItemBlockResource.class, "resource", RESOURCE);
+		GameRegistry.registerBlock(RESOURCE, ItemBlockWithCustomName.class, "resource");
 		
 		
 		GameRegistry.registerItem(BLUNDERBUSS, "blunderbuss");
@@ -272,6 +285,8 @@ public class FarragoMod {
 		eow.setTagCompound(compound);
 		Chromatics.setColor(eow, 0xFF0000);
 		eow.setStackDisplayName("\u00A7cEater of Worlds");
+		GameRegistry.addShapelessRecipe(new ItemStack(MACHINE, 1, 0), COMBUSTOR);
+		GameRegistry.addShapelessRecipe(new ItemStack(MACHINE, 1, 1), SCRAPPER);
 		GameRegistry.addRecipe(new RecipeChromatic(eow,
 				"DVD",
 				"+y+",
@@ -323,7 +338,7 @@ public class FarragoMod {
 				'I', "ingotIron",
 				'B', Items.bucket
 				));
-		GameRegistry.addRecipe(new ShapedOreRecipe(COMBUSTOR, 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(MACHINE, 1, 0),
 				"III",
 				"IBI",
 				"IGI",
@@ -331,7 +346,7 @@ public class FarragoMod {
 				'B', Blocks.iron_bars,
 				'G', Items.gunpowder
 				));
-		GameRegistry.addRecipe(new ShapedOreRecipe(SCRAPPER, 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(MACHINE, 1, 1),
 				"III",
 				"QPQ",
 				"BDB",
@@ -452,7 +467,7 @@ public class FarragoMod {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 2),  new ItemStack(CELL, 1, 0), "dustYttrium", "dustGlowstone"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 2, 3),  new ItemStack(CELL, 1, 0), new ItemStack(CELL, 1, 0), "dustGold", "dustGold", "dustDiamond"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 4),  new ItemStack(CELL, 1, 0), "dustIron", Items.gunpowder));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 5),  new ItemStack(CELL, 1, 0), "dustEnder", "dustEmerald"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 5),  new ItemStack(CELL, 1, 0), "dustEnderPearl", "dustEmerald"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 6),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone", Items.blaze_powder));
 		
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
@@ -541,6 +556,10 @@ public class FarragoMod {
 			}
 			e.toolTip.add("\u00A79"+massS+" Kahur Mass");
 		}
+		if (e.itemStack.getItem() == Item.getItemFromBlock(COMBUSTOR) || e.itemStack.getItem() == Item.getItemFromBlock(SCRAPPER)) {
+			e.toolTip.add("\u00A74DEPRECATED. Place in a crafting window to update.");
+			e.toolTip.add("\u00A7cIF THIS ITEM IS NOT UPDATED IT WILL BE LOST IN FARRAGO 1.1");
+		}
 		Encyclopedia.process(e.itemStack, e.entityPlayer, e.toolTip, e.showAdvancedItemTooltips);
 	}
 	@SubscribeEvent
@@ -570,6 +589,7 @@ public class FarragoMod {
 		}
 	}
 	public static long hashItemStack(ItemStack toHash) {
+		if (toHash == null) return 0;
 		long hash = 0;
 		hash |= (toHash.getItemDamage() & Short.MAX_VALUE) << Short.SIZE;
 		hash |= (Item.getIdFromItem(toHash.getItem()) & Short.MAX_VALUE);

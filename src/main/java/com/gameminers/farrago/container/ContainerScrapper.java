@@ -34,34 +34,34 @@ public class ContainerScrapper extends Container {
 
     public ContainerScrapper(InventoryPlayer p_i1812_1_, TileEntityScrapper p_i1812_2_)
     {
-        this.tileScrapper = p_i1812_2_;
+        tileScrapper = p_i1812_2_;
         tileScrapper.setContainer(this);
-        this.addSlotToContainer(new Slot(p_i1812_2_, 0, 44, 16));
-        this.addSlotToContainer(new Slot(p_i1812_2_, 1, 44, 52));
-        this.addSlotToContainer(new RestrictedSlot(p_i1812_2_, 2, 72, 48));
+        addSlotToContainer(new Slot(p_i1812_2_, 0, 44, 16));
+        addSlotToContainer(new Slot(p_i1812_2_, 1, 44, 52));
+        addSlotToContainer(new RestrictedSlot(p_i1812_2_, 2, 72, 48));
         
-        this.addSlotToContainer(new RestrictedSlot(p_i1812_2_,  3, 98 , 16));
-        this.addSlotToContainer(new RestrictedSlot(p_i1812_2_,  4, 116, 16));
-        this.addSlotToContainer(new RestrictedSlot(p_i1812_2_,  5, 134, 16));
-        this.addSlotToContainer(new RestrictedSlot(p_i1812_2_,  6, 98 , 34));
-        this.addSlotToContainer(new RestrictedSlot(p_i1812_2_,  7, 116, 34));
-        this.addSlotToContainer(new RestrictedSlot(p_i1812_2_,  8, 134, 34));
-        this.addSlotToContainer(new RestrictedSlot(p_i1812_2_,  9, 98 , 52));
-        this.addSlotToContainer(new RestrictedSlot(p_i1812_2_, 10, 116, 52));
-        this.addSlotToContainer(new RestrictedSlot(p_i1812_2_, 11, 134, 52));
+        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  3, 98 , 16));
+        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  4, 116, 16));
+        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  5, 134, 16));
+        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  6, 98 , 34));
+        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  7, 116, 34));
+        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  8, 134, 34));
+        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  9, 98 , 52));
+        addSlotToContainer(new RestrictedSlot(p_i1812_2_, 10, 116, 52));
+        addSlotToContainer(new RestrictedSlot(p_i1812_2_, 11, 134, 52));
         int i;
 
         for (i = 0; i < 3; ++i)
         {
             for (int j = 0; j < 9; ++j)
             {
-                this.addSlotToContainer(new Slot(p_i1812_1_, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+                addSlotToContainer(new Slot(p_i1812_1_, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
 
         for (i = 0; i < 9; ++i)
         {
-            this.addSlotToContainer(new Slot(p_i1812_1_, i, 8 + i * 18, 142));
+            addSlotToContainer(new Slot(p_i1812_1_, i, 8 + i * 18, 142));
         }
     }
 
@@ -71,131 +71,119 @@ public class ContainerScrapper extends Container {
     	return super.mergeItemStack(p_75135_1_, p_75135_2_, p_75135_3_, p_75135_4_);
     }
     
-    public void addCraftingToCrafters(ICrafting p_75132_1_)
-    {
-        super.addCraftingToCrafters(p_75132_1_);
-        p_75132_1_.sendProgressBarUpdate(this, 0, this.tileScrapper.furnaceCookTime);
-        p_75132_1_.sendProgressBarUpdate(this, 1, this.tileScrapper.furnaceBurnTime);
-        p_75132_1_.sendProgressBarUpdate(this, 2, this.tileScrapper.currentItemBurnTime);
-    }
+	@Override
+	public void addCraftingToCrafters(ICrafting p_75132_1_) {
+		super.addCraftingToCrafters(p_75132_1_);
+		p_75132_1_.sendProgressBarUpdate(this, 0, tileScrapper.furnaceCookTime);
+		p_75132_1_.sendProgressBarUpdate(this, 1, tileScrapper.furnaceBurnTime);
+		p_75132_1_.sendProgressBarUpdate(this, 2,
+				tileScrapper.currentItemBurnTime);
+	}
 
-    /**
-     * Looks for changes made in the container, sends them to every listener.
-     */
-    public void detectAndSendChanges()
-    {
-        super.detectAndSendChanges();
+	/**
+	 * Looks for changes made in the container, sends them to every listener.
+	 */
+	@Override
+	public void detectAndSendChanges() {
+		super.detectAndSendChanges();
 
-        for (int i = 0; i < this.crafters.size(); ++i)
-        {
-            ICrafting icrafting = (ICrafting)this.crafters.get(i);
+		for (int i = 0; i < crafters.size(); ++i) {
+			ICrafting icrafting = (ICrafting) crafters.get(i);
 
-            if (this.lastCookTime != this.tileScrapper.furnaceCookTime)
-            {
-                icrafting.sendProgressBarUpdate(this, 0, this.tileScrapper.furnaceCookTime);
-            }
+			if (lastCookTime != tileScrapper.furnaceCookTime) {
+				icrafting.sendProgressBarUpdate(this, 0,
+						tileScrapper.furnaceCookTime);
+			}
 
-            if (this.lastBurnTime != this.tileScrapper.furnaceBurnTime)
-            {
-                icrafting.sendProgressBarUpdate(this, 1, this.tileScrapper.furnaceBurnTime);
-            }
+			if (lastBurnTime != tileScrapper.furnaceBurnTime) {
+				icrafting.sendProgressBarUpdate(this, 1,
+						tileScrapper.furnaceBurnTime);
+			}
 
-            if (this.lastItemBurnTime != this.tileScrapper.currentItemBurnTime)
-            {
-                icrafting.sendProgressBarUpdate(this, 2, this.tileScrapper.currentItemBurnTime);
-            }
-        }
+			if (lastItemBurnTime != tileScrapper.currentItemBurnTime) {
+				icrafting.sendProgressBarUpdate(this, 2,
+						tileScrapper.currentItemBurnTime);
+			}
+		}
 
-        this.lastCookTime = this.tileScrapper.furnaceCookTime;
-        this.lastBurnTime = this.tileScrapper.furnaceBurnTime;
-        this.lastItemBurnTime = this.tileScrapper.currentItemBurnTime;
-    }
+		lastCookTime = tileScrapper.furnaceCookTime;
+		lastBurnTime = tileScrapper.furnaceBurnTime;
+		lastItemBurnTime = tileScrapper.currentItemBurnTime;
+	}
 
-    @SideOnly(Side.CLIENT)
-    public void updateProgressBar(int p_75137_1_, int p_75137_2_)
-    {
-        if (p_75137_1_ == 0)
-        {
-            this.tileScrapper.furnaceCookTime = p_75137_2_;
-        }
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void updateProgressBar(int p_75137_1_, int p_75137_2_) {
+		if (p_75137_1_ == 0) {
+			tileScrapper.furnaceCookTime = p_75137_2_;
+		}
 
-        if (p_75137_1_ == 1)
-        {
-            this.tileScrapper.furnaceBurnTime = p_75137_2_;
-        }
+		if (p_75137_1_ == 1) {
+			tileScrapper.furnaceBurnTime = p_75137_2_;
+		}
 
-        if (p_75137_1_ == 2)
-        {
-            this.tileScrapper.currentItemBurnTime = p_75137_2_;
-        }
-    }
+		if (p_75137_1_ == 2) {
+			tileScrapper.currentItemBurnTime = p_75137_2_;
+		}
+	}
 
-    public boolean canInteractWith(EntityPlayer p_75145_1_)
-    {
-        return this.tileScrapper.isUseableByPlayer(p_75145_1_);
-    }
+	@Override
+	public boolean canInteractWith(EntityPlayer p_75145_1_) {
+		return tileScrapper.isUseableByPlayer(p_75145_1_);
+	}
 
-    /**
-     * Called when a player shift-clicks on a slot. You must override this or you will crash when someone does that.
-     */
-    public ItemStack transferStackInSlot(EntityPlayer p_82846_1_, int p_82846_2_)
-    {
-        ItemStack itemstack = null;
-        Slot slot = (Slot)this.inventorySlots.get(p_82846_2_);
+	/**
+	 * Called when a player shift-clicks on a slot. You must override this or
+	 * you will crash when someone does that.
+	 */
+	@Override
+	public ItemStack transferStackInSlot(EntityPlayer p_82846_1_, int p_82846_2_) {
+		ItemStack itemstack = null;
+		Slot slot = (Slot) inventorySlots.get(p_82846_2_);
 
-        if (slot != null && slot.getHasStack())
-        {
-            ItemStack itemstack1 = slot.getStack();
-            itemstack = itemstack1.copy();
+		if (slot != null && slot.getHasStack()) {
+			ItemStack itemstack1 = slot.getStack();
+			itemstack = itemstack1.copy();
 
-            if (p_82846_2_ >= 2 && p_82846_2_ <= 11)
-            {
-                if (!this.mergeItemStack(itemstack1, 12, 39, true))
-                {
-                    return null;
-                }
+			if (p_82846_2_ >= 2 && p_82846_2_ <= 11) {
+				if (!mergeItemStack(itemstack1, 12, 39, true)) {
+					return null;
+				}
 
-                slot.onSlotChange(itemstack1, itemstack);
-            }
-            else if (p_82846_2_ != 1 && p_82846_2_ != 0)
-            {
-            	if (TileEntityFurnace.isItemFuel(itemstack1)) {
-                    if (!this.mergeItemStack(itemstack1, 1, 2, false)) {
-                        return null;
-                    }
-                } else if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
-                    return null;
-                } else if (p_82846_2_ >= 12 && p_82846_2_ < 30) {
-                    if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
-                        return null;
-                    }
-                } else if (p_82846_2_ >= 30 && p_82846_2_ < 39 && !this.mergeItemStack(itemstack1, 12, 30, false)) {
-                    return null;
-                }
-            }
-            else if (!this.mergeItemStack(itemstack1, 12, 39, false))
-            {
-                return null;
-            }
+				slot.onSlotChange(itemstack1, itemstack);
+			} else if (p_82846_2_ != 1 && p_82846_2_ != 0) {
+				if (TileEntityFurnace.isItemFuel(itemstack1)) {
+					if (!mergeItemStack(itemstack1, 1, 2, false)) {
+						return null;
+					}
+				} else if (!mergeItemStack(itemstack1, 0, 1, false)) {
+					return null;
+				} else if (p_82846_2_ >= 12 && p_82846_2_ < 30) {
+					if (!mergeItemStack(itemstack1, 30, 39, false)) {
+						return null;
+					}
+				} else if (p_82846_2_ >= 30 && p_82846_2_ < 39
+						&& !mergeItemStack(itemstack1, 12, 30, false)) {
+					return null;
+				}
+			} else if (!mergeItemStack(itemstack1, 12, 39, false)) {
+				return null;
+			}
 
-            if (itemstack1.stackSize == 0)
-            {
-                slot.putStack((ItemStack)null);
-            }
-            else
-            {
-                slot.onSlotChanged();
-            }
+			if (itemstack1.stackSize == 0) {
+				slot.putStack((ItemStack) null);
+			} else {
+				slot.onSlotChanged();
+			}
 
-            if (itemstack1.stackSize == itemstack.stackSize)
-            {
-                return null;
-            }
+			if (itemstack1.stackSize == itemstack.stackSize) {
+				return null;
+			}
 
-            slot.onPickupFromSlot(p_82846_1_, itemstack1);
-        }
+			slot.onPickupFromSlot(p_82846_1_, itemstack1);
+		}
 
-        return itemstack;
-    }
+		return itemstack;
+	}
 
 }

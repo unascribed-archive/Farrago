@@ -4,13 +4,13 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlockWithMetadata;
 import net.minecraft.item.ItemStack;
 
-import com.gameminers.farrago.block.BlockResource;
+import com.gameminers.farrago.block.NameDelegate;
 
-public class ItemBlockResource extends ItemBlockWithMetadata {
-	private final BlockResource block;
-	public ItemBlockResource(Block b, BlockResource block) {
-		super(b, block);
-		this.block = block;
+public class ItemBlockWithCustomName extends ItemBlockWithMetadata {
+	private final NameDelegate block;
+	public ItemBlockWithCustomName(Block block) {
+		super(block, block);
+		this.block = (NameDelegate) block;
 	}
 	
 	@Override

@@ -3,7 +3,6 @@ package com.gameminers.farrago.gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
@@ -14,7 +13,7 @@ import com.gameminers.farrago.tileentity.TileEntityCombustor;
 public class GuiCombustorInventory extends GuiContainer {
 
 	private static final ResourceLocation combustorGuiTextures = new ResourceLocation("farrago", "textures/gui/container/combustor.png");
-    private TileEntityFurnace tileCombustor;
+    private TileEntityCombustor tileCombustor;
 
     public GuiCombustorInventory(InventoryPlayer p_i1091_1_, TileEntityCombustor p_i1091_2_) {
         super(new ContainerCombustor(p_i1091_1_, p_i1091_2_));

@@ -21,10 +21,12 @@ death.attack.blunderbuss_backfire=%1$s got a bit carried away with their Blunder
 death.attack.laser=%1$s was fried by %2$s
 death.attack.blunderbuss=%1$s was torn to shreds by %2$s
 
-tile.combustor.name=Combustor
+tile.combustor.name=§mCombustor§r
+tile.machine_combustor.name=Combustor
 container.combustor=Combustor
 
-tile.scrapper.name=Scrapper
+tile.scrapper.name=§mScrapper§r
+tile.machine_scrapper.name=Scrapper
 container.scrapper=Scrapper
 
 tile.oreYttrium.name=Yttrium Ore

@@ -49,7 +49,7 @@
 		effect to nearby mobs.
 	</entry>
 	<entry def="farrago:kahur{KahurPumpMaterial:POTATO}?">
-		This one is particular has been outfitted to  only fire potatoes.
+		This one is particular has been outfitted to only fire potatoes.
 		Why would you make a gun that can only shoot potatoes?
 	</entry>
 	<entry def="farrago:kahur{KahurPumpMaterial:GLOW}?">
@@ -84,12 +84,12 @@
 		The art of making these in bright colors has been lost, and as such
 		those can now only be found in abandoned ruins.
 	</entry>
-	<entry def="farrago:combustor">
+	<entry def="farrago:machine@0">
 		This machine uses gunpowder or TNT as an alternative, and very fast,
 		way to smelt items. Every smelting operation has a small chance to
 		smelt two at once, and an even smaller chance to smelt three.
 	</entry>
-	<entry def="farrago:scrapper">
+	<entry def="farrago:machine@1">
 		This machine can break down items and blocks into their component
 		parts. Sound high tech? It's not. Given any furnace fuels, this
 		machine will repeatedly smash a block or item until it's components

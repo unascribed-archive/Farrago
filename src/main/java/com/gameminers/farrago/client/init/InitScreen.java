@@ -17,8 +17,6 @@ import net.minecraft.util.ResourceLocation;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-import com.gameminers.farrago.enums.WoodColor;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -40,7 +38,7 @@ public class InitScreen {
 		image.setHeight(140);
 
 		final PaneLabel verLabel = new PaneLabel("Farrago");
-		verLabel.setColor(WoodColor.SPRUCE.getColor());
+		verLabel.setColor(0x55AAFF);
 		verLabel.setOutlined(true);
 		verLabel.setShadow(false);
 		verLabel.setAlignmentX(HorzAlignment.MIDDLE);
@@ -60,27 +58,16 @@ public class InitScreen {
 		lessDerpLabel.setAutoResizeWidth(true);
 		lessDerpLabel.setRelativeWidth(1.0);
 
-		final PaneLabel estimateLabel = new PaneLabel("0% - about 7 eternities remaining");
-		estimateLabel.setAlignmentX(HorzAlignment.MIDDLE);
-		estimateLabel.setColor(0xCCCCCC);
-		estimateLabel.setAutoResizeWidth(true);
-		estimateLabel.setRelativeWidth(1.0);
-
 		final MutableBoolean go = new MutableBoolean(true);
 		final InitThread initThread = new InitThread(lessDerpLabel, ring);
 		final GlassPane takeoverPane = new GlassPane() {
 			{
-				add(ring, image, derpLabel, verLabel, lessDerpLabel, estimateLabel);
+				add(ring, image, derpLabel, verLabel, lessDerpLabel);
 				final ImageTileShadowbox shadowbox = new ImageTileShadowbox(new ResourceLocation(
-						"textures/blocks/planks_big_oak.png"));
+						"textures/blocks/wool_colored_white.png"));
 				shadowbox.setTransparentWhenInWorld(false);
-				shadowbox.setDarkened(false);
+				shadowbox.setDarkened(true);
 				setShadowbox(shadowbox);
-			}
-
-			@Override
-			public void doTick() {
-				estimateLabel.setText(Math.round(ring.getPercentage() * 100) + "% - " + ring.getTimeEstimate());
 			}
 
 			@PaneEventHandler
@@ -90,7 +77,6 @@ public class InitScreen {
 				verLabel.setY((e.getNewHeight() / 2) + 48);
 				derpLabel.setY((e.getNewHeight() / 2) + 76);
 				lessDerpLabel.setY((e.getNewHeight() / 2) + 88);
-				estimateLabel.setY((e.getNewHeight() / 2) - 112);
 			}
 
 			@PaneEventHandler

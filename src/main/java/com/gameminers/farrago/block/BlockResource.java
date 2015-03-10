@@ -18,7 +18,7 @@ import com.gameminers.farrago.FarragoMod;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class BlockResource extends BlockCompressed {
+public class BlockResource extends BlockCompressed implements NameDelegate {
 	private String[] resourceTypes = {
 		"nether_star",
 		"yttrium",
@@ -67,6 +67,7 @@ public class BlockResource extends BlockCompressed {
 		return meta >= resourceTypes.length ? iconsByDamage[0] : iconsByDamage[meta];
 	}
 	
+	@Override
 	public String getUnlocalizedName(int meta) {
 		return "tile.block_"+(meta >= resourceTypes.length ? resourceTypes[0] : resourceTypes[meta]);
 	}
