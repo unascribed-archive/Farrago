@@ -1,35 +1,63 @@
 package com.gameminers.farrago.recipes;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import net.minecraft.block.BlockColored;
 import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.OreDictionary;
 
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.item.tool.ItemVividOrb;
+import com.google.common.collect.Maps;
 
 public class RecipesVividOrbDyes implements IRecipe {
 
+	private Map<String, Integer> dyes = Maps.newHashMap();
+	
+	public RecipesVividOrbDyes() {
+		dyes.put("Black", 0);
+		dyes.put("Red", 1);
+		dyes.put("Green", 2);
+		dyes.put("Brown", 3);
+		dyes.put("Blue", 4);
+		dyes.put("Purple", 5);
+		dyes.put("Cyan", 6);
+		dyes.put("LightGray", 7);
+		dyes.put("Gray", 8);
+		dyes.put("Pink", 9);
+		dyes.put("Lime", 10);
+		dyes.put("Yellow", 11);
+		dyes.put("LightBlue", 12);
+		dyes.put("Magenta", 13);
+		dyes.put("Orange", 14);
+		dyes.put("White", 15);
+	}
+	
     public boolean matches(InventoryCrafting p_77569_1_, World p_77569_2_) {
         ItemStack itemstack = null;
         ArrayList arraylist = new ArrayList();
 
-        for (int i = 0; i < p_77569_1_.getSizeInventory(); ++i) {
+        root: for (int i = 0; i < p_77569_1_.getSizeInventory(); ++i) {
             ItemStack itemstack1 = p_77569_1_.getStackInSlot(i);
 
             if (itemstack1 != null) {
                 if (itemstack1.getItem() == FarragoMod.VIVID_ORB) {
                     itemstack = itemstack1;
                 } else {
-                    if (itemstack1.getItem() != Items.dye) {
-                        return false;
-                    }
-                    arraylist.add(itemstack1);
+                	int[] ids = OreDictionary.getOreIDs(itemstack1);
+                	for (int x = 0; x < ids.length; x++) {
+                		String nm = OreDictionary.getOreName(ids[x]);
+                		if (nm.startsWith("dye") && dyes.containsKey(nm.substring(3))) {
+                			arraylist.add(itemstack1);   
+                			continue root;
+                		}
+                	}
+                    return false;
                 }
             }
         }
@@ -71,11 +99,18 @@ public class RecipesVividOrbDyes implements IRecipe {
                         ++j;
                     }
                 } else {
-                    if (itemstack1.getItem() != Items.dye) {
-                        return null;
-                    }
-
-                    float[] afloat = EntitySheep.fleeceColorTable[BlockColored.func_150032_b(itemstack1.getItemDamage())];
+                	int color = -1;
+                	int[] ids = OreDictionary.getOreIDs(itemstack1);
+                	for (int x = 0; x < ids.length; x++) {
+                		String nm = OreDictionary.getOreName(ids[x]);
+                		if (nm.startsWith("dye") && dyes.containsKey(nm.substring(3))) {
+                			color = dyes.get(nm.substring(3));
+                			break;
+                		}
+                	}
+                	if (color == -1) return null;
+                	
+                    float[] afloat = EntitySheep.fleeceColorTable[BlockColored.func_150032_b(color)];
                     int j1 = (int)(afloat[0] * 255.0F);
                     int k1 = (int)(afloat[1] * 255.0F);
                     l1 = (int)(afloat[2] * 255.0F);
