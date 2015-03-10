@@ -35,11 +35,11 @@ public class InitScreen {
 		ring.setRelativeWidthOffset(2);
 		ring.setRelativeHeightOffset(2);
 
-		final PaneImage image = new PaneImage(new ResourceLocation("farrago", "textures/misc/kahur.png"));
-		image.setWidth(128);
-		image.setHeight(128);
+		final PaneImage image = new PaneImage(new ResourceLocation("farrago", "textures/misc/box.png"));
+		image.setWidth(140);
+		image.setHeight(140);
 
-		final PaneLabel verLabel = new PaneLabel("Kahur");
+		final PaneLabel verLabel = new PaneLabel("Farrago");
 		verLabel.setColor(WoodColor.SPRUCE.getColor());
 		verLabel.setOutlined(true);
 		verLabel.setShadow(false);
