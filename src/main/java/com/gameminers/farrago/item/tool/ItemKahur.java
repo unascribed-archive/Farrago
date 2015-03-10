@@ -7,6 +7,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -206,6 +207,7 @@ public class ItemKahur extends Item {
 			}
 			if (pumpColor.ordinal() <= MineralColor.LAPIS.ordinal()) return true;
 			if (target instanceof EntityPlayer) return true;
+			if (target instanceof IBossDisplayData) return true;
 			if (stack.getMaxDamage()-stack.getItemDamage() < 12) {
 				stack.damageItem(2000, player);
 			} else {
