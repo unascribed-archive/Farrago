@@ -98,7 +98,7 @@
 		very effective way of converting gems and ingots directly into dusts
 		with no loss.
 	</entry>
-	<entry def="farrago:netherStarBlock">
+	<entry def="farrago:resource@0">
 		A solid block of Nether Stars. You're either rich, insane, or both.
 	</entry>
 	<entry def="farrago:blunderbuss">

@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockCompressed;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,7 +36,9 @@ import org.apache.logging.log4j.Logger;
 import com.gameminers.farrago.block.BlockCombustor;
 import com.gameminers.farrago.block.BlockGlow;
 import com.gameminers.farrago.block.BlockOre;
+import com.gameminers.farrago.block.BlockResource;
 import com.gameminers.farrago.block.BlockScrapper;
+import com.gameminers.farrago.block.item.ItemBlockResource;
 import com.gameminers.farrago.client.encyclopedia.Encyclopedia;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityKahurProjectile;
@@ -48,6 +47,7 @@ import com.gameminers.farrago.enums.MineralColor;
 import com.gameminers.farrago.enums.WoodColor;
 import com.gameminers.farrago.gen.YttriumGenerator;
 import com.gameminers.farrago.item.ItemFondue;
+import com.gameminers.farrago.item.chromatic.Chromatics;
 import com.gameminers.farrago.item.chromatic.ItemChromaticArmor;
 import com.gameminers.farrago.item.chromatic.ItemChromaticAxe;
 import com.gameminers.farrago.item.chromatic.ItemChromaticHoe;
@@ -94,8 +94,8 @@ public class FarragoMod {
 	
 	public static BlockCombustor COMBUSTOR;
 	public static BlockScrapper SCRAPPER;
-	public static Block NETHER_STAR_BLOCK;
 	public static BlockOre ORE;
+	public static BlockResource RESOURCE;
 	public static BlockGlow GLOW;
 	
 	public static ItemVividOrb VIVID_ORB;
@@ -144,8 +144,7 @@ public class FarragoMod {
 		SCRAPPER = new BlockScrapper();
 		ORE = new BlockOre();
 		GLOW = new BlockGlow();
-		NETHER_STAR_BLOCK = new BlockCompressed(MapColor.adobeColor).setBlockTextureName("farrago:nether_star_block").setHardness(20f).setLightLevel(0.5f).setBlockName("nether_star_block").setCreativeTab(creativeTab);
-		NETHER_STAR_BLOCK.setHarvestLevel("pickaxe", 2);
+		RESOURCE = new BlockResource();
 		
 		CAQUELON = new Item().setTextureName("farrago:caquelon").setMaxStackSize(1).setUnlocalizedName("caquelon").setCreativeTab(creativeTab);
 		VIVID_ORB = new ItemVividOrb();
@@ -185,11 +184,14 @@ public class FarragoMod {
 		});
 		GameRegistry.registerTileEntity(TileEntityCombustor.class, "FarragoCombustor");
 		GameRegistry.registerTileEntity(TileEntityScrapper.class, "FarragoScrapper");
-		GameRegistry.registerBlock(GLOW, "glow");
+		
+		GameRegistry.registerBlock(GLOW, null, "glow");
 		GameRegistry.registerBlock(COMBUSTOR, "combustor");
 		GameRegistry.registerBlock(SCRAPPER, "scrapper");
-		GameRegistry.registerBlock(NETHER_STAR_BLOCK, "netherStarBlock");
 		GameRegistry.registerBlock(ORE, "watashi");
+		GameRegistry.registerBlock(RESOURCE, ItemBlockResource.class, "resource", RESOURCE);
+		
+		
 		GameRegistry.registerItem(BLUNDERBUSS, "blunderbuss");
 		GameRegistry.registerItem(CAQUELON, "caquelon");
 		GameRegistry.registerItem(RUBBLE, "rubble");
@@ -200,22 +202,25 @@ public class FarragoMod {
 		GameRegistry.registerItem(CELL, "cell");
 		GameRegistry.registerItem(RIFLE, "rifle");
 		GameRegistry.registerItem(KAHUR, "kahur");
+		
 		GameRegistry.registerItem(CHROMATIC_PICKAXE, "chromaticPickaxe");
 		GameRegistry.registerItem(CHROMATIC_AXE, "chromaticAxe");
 		GameRegistry.registerItem(CHROMATIC_SWORD, "chromaticSword");
 		GameRegistry.registerItem(CHROMATIC_SHOVEL, "chromaticShovel");
 		GameRegistry.registerItem(CHROMATIC_HOE, "chromaticHoe");
+		
 		GameRegistry.registerItem(CHROMATIC_HELMET, "chromaticHelmet");
 		GameRegistry.registerItem(CHROMATIC_CHESTPLATE, "chromaticChestplate");
 		GameRegistry.registerItem(CHROMATIC_LEGGINGS, "chromaticLeggings");
 		GameRegistry.registerItem(CHROMATIC_BOOTS, "chromaticBoots");
+		
 		EntityRegistry.registerModEntity(EntityKahurProjectile.class, "kahurShot", 0, this, 64, 12, true);
 		EntityRegistry.registerModEntity(EntityRifleProjectile.class, "rifleShot", 1, this, 64, 12, true);
 		EntityRegistry.registerModEntity(EntityBlunderbussProjectile.class, "blunderbussShot", 2, this, 64, 12, true);
-		Items.shears.delegate.get();
 		ORE.registerOres();
 		DUST.registerOres();
 		INGOT.registerOres();
+		RESOURCE.registerOres();
 		for (String s : new String[] {ChestGenHooks.DUNGEON_CHEST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, ChestGenHooks.PYRAMID_DESERT_CHEST, ChestGenHooks.STRONGHOLD_LIBRARY, ChestGenHooks.MINESHAFT_CORRIDOR}) {
 			for (int color : new int[] {0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF}) {
 				ItemStack orb = new ItemStack(VIVID_ORB);
@@ -234,23 +239,14 @@ public class FarragoMod {
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 8), new ItemStack(Items.ender_pearl), 0);
 		GameRegistry.addSmelting(new ItemStack(ORE, 1, 0), new ItemStack(INGOT, 1, 0), 0);
 		GameRegistry.registerWorldGenerator(yttrGen = new YttriumGenerator(), 0);
-		GameRegistry.addRecipe(new ItemStack(Items.nether_star, 9),
-				"B",
-				'B', NETHER_STAR_BLOCK);
-		GameRegistry.addRecipe(new ItemStack(Items.nether_star),
-				"123",
-				"4D5",
-				"d6d",
-				'1', new ItemStack(RUBBLE, 1, 0),
-				'2', new ItemStack(RUBBLE, 1, 1),
-				'3', new ItemStack(RUBBLE, 1, 2),
-				'4', new ItemStack(RUBBLE, 1, 3),
-				'5', new ItemStack(RUBBLE, 1, 4),
-				'6', new ItemStack(RUBBLE, 1, 5),
-				'D', new ItemStack(DUST, 1, 4),
-				'd', new ItemStack(Blocks.diamond_block)
-				);
-		ItemStack eow = new ItemStack(Items.diamond_sword);
+		
+		OreDictionary.registerOre("dyeRed", new ItemStack(DUST, 1, 5));
+		OreDictionary.registerOre("gemEnderPearl", Items.ender_pearl);
+		OreDictionary.registerOre("gemNetherStar", Items.nether_star);
+		
+		RESOURCE.registerRecipes();
+		
+		ItemStack eow = new ItemStack(CHROMATIC_SWORD);
 		NBTTagCompound compound = new NBTTagCompound();
 		NBTTagList ench = new NBTTagList();
 		{
@@ -274,26 +270,23 @@ public class FarragoMod {
         compound.setTag("ench", ench);
 		compound.setBoolean("Unbreakable", true);
 		eow.setTagCompound(compound);
+		Chromatics.setColor(eow, 0xFF0000);
 		eow.setStackDisplayName("\u00A7cEater of Worlds");
-		GameRegistry.addRecipe(eow,
-				" D ",
-				"+d+",
-				" + ",
+		GameRegistry.addRecipe(new RecipeChromatic(eow,
+				"DVD",
+				"+y+",
+				"d+d",
 				'D', new ItemStack(DUST, 1, 4),
-				'd', new ItemStack(Blocks.diamond_block),
-				'+', new ItemStack(NETHER_STAR_BLOCK)
-				);
-		GameRegistry.addRecipe(new ItemStack(NETHER_STAR_BLOCK),
-				"+++",
-				"+++",
-				"+++",
-				'+', Items.nether_star
-				);
+				'y', "blockYttriumCopper",
+				'd', "blockDiamond",
+				'+', "blockNetherStar",
+				'V', VIVID_ORB
+				));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(VIVID_ORB),
 				"QIQ",
 				"IEI",
 				"QIQ",
-				'E', Items.ender_pearl,
+				'E', "gemEnderPearl",
 				'I', "ingotIron",
 				'Q', "blockQuartz"
 				));
@@ -343,10 +336,10 @@ public class FarragoMod {
 				"QPQ",
 				"BDB",
 				'I', "ingotYttrium",
-				'Q', Items.quartz,
-				'B', "blockIron",
+				'Q', "gemQuartz",
+				'B', "blockYttrium",
 				'D', "gemDiamond",
-				'P', Blocks.heavy_weighted_pressure_plate
+				'P', "ingotYttriumCopper"
 				));
 		GameRegistry.addRecipe(new ShapedOreRecipe(BLUNDERBUSS, 
 				" I ",
@@ -463,12 +456,8 @@ public class FarragoMod {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 6),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone", Items.blaze_powder));
 		
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
-		OreDictionary.registerOre("dyeRed", new ItemStack(DUST, 1, 5));
-		OreDictionary.registerOre("gemEnder", Items.ender_pearl);
 		for (WoodColor body : WoodColor.values()) {
-			if (body == WoodColor.CREATIVE) continue;
 			for (WoodColor drum : WoodColor.values()) {
-				if (drum == WoodColor.CREATIVE) continue;
 				for (MineralColor pump : MineralColor.values()) {
 					if (pump.getSelector().getRepresentation() == null) continue;
 					ItemStack kahur = new ItemStack(KAHUR);

@@ -30,7 +30,11 @@ container.scrapper=Scrapper
 tile.oreYttrium.name=Yttrium Ore
 tile.glow.name=Yttrium-Glowstone Lamp
 
-tile.nether_star_block.name=Nether Star Block
+tile.block_nether_star.name=Nether Star Block
+tile.block_ender_pearl.name=Ender Pearl Block
+tile.block_yttrium.name=Block of Yttrium
+tile.block_yttrium_copper.name=Block of Yttric Copper
+tile.block_copper.name=Block of Copper
 
 item.rubble_1.name=Feckless Rubble
 item.rubble_2.name=Vain Debris
@@ -48,7 +52,7 @@ item.dust_dorito.description=In honor of the track by Coda! :D
 item.dust_yttrium.name=Yttrium Dust
 item.dust_yttrium_copper.name=Yttrium-Copper Blend
 item.dust_copper.name=Copper Dust
-item.dust_ender.name=Ender Pearl Dust
+item.dust_ender_pearl.name=Ender Pearl Dust
 
 item.ingot_yttrium.name=Yttrium Ingot
 item.ingot_yttrium_copper.name=Yttric Copper Ingot
