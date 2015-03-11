@@ -18,7 +18,6 @@ public class XenotimeGenerator implements IWorldGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
         if (world.provider.dimensionId == 0) {
-        	System.out.println("Generating Xenotime and Apocite");
         	Chunk c = world.getChunkFromChunkCoords(chunkX, chunkZ);
         	int x = random.nextInt(16);
         	int y = random.nextInt(64);

@@ -15,7 +15,6 @@ public class YttriumGenerator implements IWorldGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
         if (world.provider.dimensionId == 0) {
-        	System.out.println("Generating Yttrium");
         	Chunk c = world.getChunkFromChunkCoords(chunkX, chunkZ);
         	for (int i = 0; i < 45; i++) {
             	int x = random.nextInt(16);
