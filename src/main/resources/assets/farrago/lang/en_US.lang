@@ -29,7 +29,12 @@ tile.scrapper.name=§mScrapper§r
 tile.machine_scrapper.name=Scrapper
 container.scrapper=Scrapper
 
-tile.oreYttrium.name=Yttrium Ore
+tile.machine_cell_filler.name=Cell Filler
+container.cell_filler=Cell Filler
+
+tile.ore_yttrium.name=Yttrium Ore
+tile.ore_xenotime.name=Xenotime
+tile.ore_apocite.name=Apocite Ore
 tile.glow.name=Yttrium-Glowstone Lamp
 
 tile.block_nether_star.name=Nether Star Block
@@ -60,12 +65,15 @@ item.ingot_yttrium.name=Yttrium Ingot
 item.ingot_yttrium_copper.name=Yttric Copper Ingot
 item.ingot_yttrium_steel.name=Yttric Steel Ingot
 item.ingot_copper.name=Copper Ingot
+item.apocite.name=Apocite
+item.stable_apocite.name=Stable Apocite
 
 item.chromatic_helmet.name=Chromatic Yttrium Helmet
 item.chromatic_chestplate.name=Chromatic Yttrium Chestplate
 item.chromatic_leggings.name=Chromatic Yttrium Leggings
 item.chromatic_boots.name=Chromatic Yttrium Boots
 
+item.chromatic_pickaxe_diamond.name=Diamond-Tipped Chromatic Yttrium Pickaxe
 item.chromatic_pickaxe.name=Chromatic Yttrium Pickaxe
 item.chromatic_axe.name=Chromatic Yttrium Axe
 item.chromatic_sword.name=Chromatic Yttrium Sword

@@ -24,6 +24,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import com.gameminers.farrago.FarragoMod;
+import com.gameminers.farrago.tileentity.TileEntityCellFiller;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityMachine;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
@@ -50,11 +51,13 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
 
 	private String[] machineTypes = {
 			"combustor",
-			"scrapper"
+			"scrapper",
+			"cell_filler"
 	};
 	private Class[] tileEntities = {
 			TileEntityCombustor.class,
-			TileEntityScrapper.class
+			TileEntityScrapper.class,
+			TileEntityCellFiller.class
 	};
 	private MachineIcons[] icons = new MachineIcons[machineTypes.length];
 

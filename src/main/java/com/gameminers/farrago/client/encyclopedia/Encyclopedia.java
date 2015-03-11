@@ -25,6 +25,7 @@ import org.w3c.dom.NodeList;
 
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.selector.ItemSelector;
+import com.gameminers.farrago.selector.NullSelector;
 import com.gameminers.farrago.selector.Selector;
 import com.google.common.collect.Lists;
 
@@ -110,6 +111,7 @@ public class Encyclopedia implements IResourceManagerReloadListener {
 			def = def.substring(0, def.indexOf('@'));
 		}
 		ItemStack stack = new ItemStack((Item) Item.itemRegistry.getObject(def), 1, meta);
+		if (stack.getItem() == null) return new NullSelector();
 		stack.setTagCompound(tag);
 		return new ItemSelector(stack, lenientTag);
 	}

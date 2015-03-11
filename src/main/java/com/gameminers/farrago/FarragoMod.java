@@ -46,6 +46,7 @@ import com.gameminers.farrago.entity.EntityKahurProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
 import com.gameminers.farrago.enums.MineralColor;
 import com.gameminers.farrago.enums.WoodColor;
+import com.gameminers.farrago.gen.XenotimeGenerator;
 import com.gameminers.farrago.gen.YttriumGenerator;
 import com.gameminers.farrago.item.ItemFondue;
 import com.gameminers.farrago.item.chromatic.Chromatics;
@@ -55,6 +56,7 @@ import com.gameminers.farrago.item.chromatic.ItemChromaticHoe;
 import com.gameminers.farrago.item.chromatic.ItemChromaticPickaxe;
 import com.gameminers.farrago.item.chromatic.ItemChromaticSpade;
 import com.gameminers.farrago.item.chromatic.ItemChromaticSword;
+import com.gameminers.farrago.item.resource.ItemApocite;
 import com.gameminers.farrago.item.resource.ItemCell;
 import com.gameminers.farrago.item.resource.ItemDust;
 import com.gameminers.farrago.item.resource.ItemIngot;
@@ -66,6 +68,7 @@ import com.gameminers.farrago.item.tool.ItemVividOrb;
 import com.gameminers.farrago.proxy.Proxy;
 import com.gameminers.farrago.recipes.RecipeChromatic;
 import com.gameminers.farrago.recipes.RecipesVividOrbDyes;
+import com.gameminers.farrago.tileentity.TileEntityCellFiller;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
 
@@ -112,6 +115,7 @@ public class FarragoMod {
 	public static ItemFondue FONDUE;
 	public static ItemRifle RIFLE;
 	public static ItemKahur KAHUR;
+	public static ItemApocite APOCITE;
 	
 	public static ItemChromaticPickaxe CHROMATIC_PICKAXE;
 	public static ItemChromaticAxe CHROMATIC_AXE;
@@ -142,6 +146,7 @@ public class FarragoMod {
 		}
 	};
 	private YttriumGenerator yttrGen;
+	private XenotimeGenerator xenoGen;
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
@@ -168,8 +173,9 @@ public class FarragoMod {
 		RIFLE = new ItemRifle();
 		CELL = new ItemCell();
 		KAHUR = new ItemKahur();
+		APOCITE = new ItemApocite();
 		
-		CHROMATIC_PICKAXE = new ItemChromaticPickaxe().setUnlocalizedName("chromatic_pickaxe");
+		CHROMATIC_PICKAXE = new ItemChromaticPickaxe();
 		CHROMATIC_AXE = new ItemChromaticAxe().setUnlocalizedName("chromatic_axe");
 		CHROMATIC_SWORD = new ItemChromaticSword().setUnlocalizedName("chromatic_sword");
 		CHROMATIC_SHOVEL = new ItemChromaticSpade().setUnlocalizedName("chromatic_shovel");
@@ -196,12 +202,13 @@ public class FarragoMod {
 		});
 		GameRegistry.registerTileEntity(TileEntityCombustor.class, "FarragoCombustor");
 		GameRegistry.registerTileEntity(TileEntityScrapper.class, "FarragoScrapper");
+		GameRegistry.registerTileEntity(TileEntityCellFiller.class, "FarragoCellFiller");
 		
 		GameRegistry.registerBlock(GLOW, null, "glow");
 		GameRegistry.registerBlock(COMBUSTOR, "combustor");
 		GameRegistry.registerBlock(SCRAPPER, "scrapper");
 		GameRegistry.registerBlock(MACHINE, ItemBlockWithCustomName.class, "machine");
-		GameRegistry.registerBlock(ORE, "watashi");
+		GameRegistry.registerBlock(ORE, ItemBlockWithCustomName.class, "watashi");
 		GameRegistry.registerBlock(RESOURCE, ItemBlockWithCustomName.class, "resource");
 		
 		
@@ -215,6 +222,7 @@ public class FarragoMod {
 		GameRegistry.registerItem(CELL, "cell");
 		GameRegistry.registerItem(RIFLE, "rifle");
 		GameRegistry.registerItem(KAHUR, "kahur");
+		GameRegistry.registerItem(APOCITE, "apocite");
 		
 		GameRegistry.registerItem(CHROMATIC_PICKAXE, "chromaticPickaxe");
 		GameRegistry.registerItem(CHROMATIC_AXE, "chromaticAxe");
@@ -251,11 +259,13 @@ public class FarragoMod {
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 7), new ItemStack(INGOT, 1, 2), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 8), new ItemStack(Items.ender_pearl), 0);
 		GameRegistry.addSmelting(new ItemStack(ORE, 1, 0), new ItemStack(INGOT, 1, 0), 0);
-		GameRegistry.registerWorldGenerator(yttrGen = new YttriumGenerator(), 0);
+		GameRegistry.registerWorldGenerator(yttrGen = new YttriumGenerator(), 5);
+		GameRegistry.registerWorldGenerator(xenoGen = new XenotimeGenerator(), 4);
 		
 		OreDictionary.registerOre("dyeRed", new ItemStack(DUST, 1, 5));
 		OreDictionary.registerOre("gemEnderPearl", Items.ender_pearl);
 		OreDictionary.registerOre("gemNetherStar", Items.nether_star);
+		OreDictionary.registerOre("gemApocite", APOCITE);
 		
 		RESOURCE.registerRecipes();
 		
@@ -303,7 +313,7 @@ public class FarragoMod {
 				"QIQ",
 				'E', "gemEnderPearl",
 				'I', "ingotIron",
-				'Q', "blockQuartz"
+				'Q', "gemQuartz"
 				));
 		GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 3),
 				"A",
@@ -370,7 +380,7 @@ public class FarragoMod {
 				"D  ",
 				" C ",
 				" BC",
-				'D', "gemDiamond",
+				'D', "gemApocite",
 				'C', "ingotYttriumCopper",
 				'B', Items.blaze_rod
 				));
@@ -389,6 +399,18 @@ public class FarragoMod {
 				'I', "ingotYttrium",
 				'V', VIVID_ORB,
 				'/', "stickWood"
+				));
+		ItemStack diaChromaticPick = new ItemStack(CHROMATIC_PICKAXE);
+		diaChromaticPick.setTagCompound(new NBTTagCompound());
+		diaChromaticPick.getTagCompound().setBoolean("Diamond", true);
+		GameRegistry.addRecipe(new RecipeChromatic(diaChromaticPick,
+				"III",
+				"D/D",
+				" V ",
+				'I', "ingotYttrium",
+				'V', VIVID_ORB,
+				'/', "stickWood",
+				'D', "gemDiamond"
 				));
 		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_AXE,
 				"II ",
@@ -463,6 +485,10 @@ public class FarragoMod {
 				'I', "ingotYttrium",
 				'V', VIVID_ORB
 				));
+		ItemStack stableApocite = new ItemStack(APOCITE, 1, 0);
+		stableApocite.setTagCompound(new NBTTagCompound());
+		stableApocite.getTagCompound().setBoolean("Stable", true);
+		GameRegistry.addRecipe(new ShapelessOreRecipe(stableApocite, "gemApocite", "dustEnderPearl", "dustEmerald", "dustRedstone"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 1),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 2),  new ItemStack(CELL, 1, 0), "dustYttrium", "dustGlowstone"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 2, 3),  new ItemStack(CELL, 1, 0), new ItemStack(CELL, 1, 0), "dustGold", "dustGold", "dustDiamond"));
@@ -538,13 +564,7 @@ public class FarragoMod {
 			}
 		}
 	}
-	@SubscribeEvent
-	public void onDataSave(ChunkDataEvent.Save e) {
-		if (!"yttrium".equals(e.getData().getString("farrago:RetroGenKey"))) {
-			e.getData().setString("farrago:RetroGenKey", "yttrium");
-		}
-	}
-	private Deque<Chunk> chunksToGen = new ArrayDeque<Chunk>();
+	private Deque<GenData> chunksToGen = new ArrayDeque<GenData>();
 	@SubscribeEvent
 	public void onTooltip(ItemTooltipEvent e) {
 		if (e.showAdvancedItemTooltips) {
@@ -562,19 +582,33 @@ public class FarragoMod {
 		}
 		Encyclopedia.process(e.itemStack, e.entityPlayer, e.toolTip, e.showAdvancedItemTooltips);
 	}
-	@SubscribeEvent
 	public void onDataLoad(ChunkDataEvent.Load e) {
-		// TODO: Incremental retrogen
-		if (!"yttrium".equals(e.getData().getString("farrago:RetroGenKey"))) {
-			chunksToGen.addLast(e.getChunk());
+		if (!e.getChunk().isTerrainPopulated) return;
+		String gen = e.getData().getString("farrago:RetroGenKey");
+		if (gen == null || gen.isEmpty()) {
+			chunksToGen.addLast(new GenData(e.getChunk(), 0));
+			chunksToGen.addLast(new GenData(e.getChunk(), 1));
+		} else if ("yttrium".equals(gen)) {
+			chunksToGen.addLast(new GenData(e.getChunk(), 1));
+		} else if ("xenotime".equals(gen)) {
+			// future
 		}
+	}
+	@SubscribeEvent
+	public void onDataSave(ChunkDataEvent.Save e) {
+		e.getData().setString("farrago:RetroGenKey", "xenotime");
 	}
 	@SubscribeEvent
 	public void onTick(ServerTickEvent e) {
 		if (e.phase == Phase.END) {
 			if (!chunksToGen.isEmpty()) {
-				Chunk chunk = chunksToGen.pop();
-				yttrGen.generate(chunk.worldObj.rand, chunk.xPosition, chunk.zPosition, chunk.worldObj, null, null);
+				GenData data = chunksToGen.pop();
+				Chunk chunk = data.chunk;
+				if (data.level == 0) {
+					yttrGen.generate(chunk.worldObj.rand, chunk.xPosition, chunk.zPosition, chunk.worldObj, null, null);
+				} else if (data.level == 1) {
+					xenoGen.generate(chunk.worldObj.rand, chunk.xPosition, chunk.zPosition, chunk.worldObj, null, null);
+				}
 				chunk.setChunkModified();
 				log.info("Retrogenerating "+chunk.xPosition+", "+chunk.zPosition);
 			}

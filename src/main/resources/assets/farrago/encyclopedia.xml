@@ -114,7 +114,7 @@
 	<entry def="farrago:rifle">
 		This state-of-the-art rifle can use cells filled with varying types
 		of dusts and powders to cause reactions of both chemical and magical
-		nature, and then harnesses them to shoot beams with different effects.
+		nature, and then harness them to shoot beams with different effects.
 		Sneak while firing to change modes. Be careful not to overcharge it!
 	</entry>
 	<entry def="farrago:dust">
@@ -187,5 +187,14 @@
 	</entry>
 	<entry def="farrago:fondue@4">
 		&#x00A7;kSaiba sanda saida, saiba sanda saida
+	</entry>
+	<entry def="farrago:apocite{Stable:1b}?">
+		You have successfully stabilized this Apocite gem. Well done.
+	</entry>
+	<ignore def="farrago:apocite{Stable:1b}?"/>
+	<entry def="farrago:apocite">
+		The existence of this gem appears to be inherently paradoxical; it
+		seems to be slowly fading into nothing as you hold it. Perhaps there's
+		some way to stabilize it?
 	</entry>
 </encyclopedia>
