@@ -112,7 +112,7 @@
 		rate is unlimited.
 	</entry>
 	<entry def="farrago:rifle">
-		This state-of-the-art rifle can use cells filled with varying types
+		This state-of-the-art rifle can use magazines filled with varying types
 		of dusts and powders to cause reactions of both chemical and magical
 		nature, and then harness them to shoot beams with different effects.
 		Sneak while firing to change modes. Be careful not to overcharge it!
@@ -136,35 +136,35 @@
 		things, as it is less brittle than pure Yttrium.
 	</entry>
 	<entry def="farrago:cell@0">
-		An empty cell, made from Yttrium and Yttric Copper. Maybe you should
-		fill it with something?
+		An empty magazine, made from Yttrium and Yttric Copper. Maybe you
+		should fill it with something?
 	</entry>
 	<entry def="farrago:cell@1">
-		This cell has been filled with Redstone and Copper, which when fired
-		out of a Yttric Rifle, cause a powerful corrosive reaction.
+		This magazine has been filled with Redstone and Copper, which when
+		fired out of a Yttric Rifle, cause a powerful corrosive reaction.
 	</entry>
 	<entry def="farrago:cell@2">
-		This cell has been filled with Glowstone and Yttrium, which react
+		This magazine has been filled with Glowstone and Yttrium, which react
 		together making an eternal light.
 	</entry>
 	<entry def="farrago:cell@3">
-		This cell has been filled with gold and diamond (but mostly gold, you
-		cheapskate), which when fired out of a Yttric Rifle, are capable of
+		This magazine has been filled with gold and diamond (but mostly gold,
+		you cheapskate), which when fired out of a Yttric Rifle, are capable of
 		breaking almost any block.
 	</entry>
 	<entry def="farrago:cell@4">
-		This cell has been filled with iron and gunpowder, which make
+		This magazine has been filled with iron and gunpowder, which make
 		explosions. Are you surprised? I'm surprised.
 	</entry>
 	<entry def="farrago:cell@5">
-		This cell has been filled with emerald dust and Ender Pearl dust,
+		This magazine has been filled with emerald dust and Ender Pearl dust,
 		which allows the Yttric Rifle to act as a teleporter. The innate magic
 		left in the Ender Pearl pulls the beam toward the ground, where
 		strongholds are located.
 	</entry>
 	<entry def="farrago:cell@6">
-		This cell has been filled with Redstone, Copper, and Blaze Powder. It's
-		the same as a Redstone-Copper cell, but with the added ability to set
+		This magazine has been filled with Redstone, Copper, and Blaze Powder. It's
+		the same as a Redstone-Copper magazine, but with the added ability to set
 		things on fire.
 	</entry>
 	<entry def="farrago:caquelon">

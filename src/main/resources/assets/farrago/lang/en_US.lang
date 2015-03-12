@@ -8,13 +8,13 @@ item.rifle.name=Yttric Rifle
 item.kahur.name=Kahur
 item.blunderbuss.name=Blunderbuss
 
-item.cell_empty.name=Empty Cell
-item.cell_rifle.name=Redstone-Copper Cell
-item.cell_glow.name=Yttrium-Glowstone Cell
-item.cell_mine.name=Gold-Diamond Cell
-item.cell_explode.name=Iron-Gunpowder Cell
-item.cell_teleport.name=Ender-Emerald Cell
-item.cell_blaze.name=Redstone-Blaze-Copper Cell
+item.cell_empty.name=Empty Rifle Magazine
+item.cell_rifle.name=High-Velocity Rifle Magazine
+item.cell_glow.name=Luminescent Rifle Magazine
+item.cell_mine.name=Mining Rifle Magazine
+item.cell_explode.name=Explosive Rifle Magazine
+item.cell_teleport.name=Teleposition Rifle Magazine
+item.cell_blaze.name=Incendiary Rifle Magazine
 
 death.attack.rifle_backfire=%1$s overcharged their Yttric Rifle
 death.attack.blunderbuss_backfire=%1$s got a bit carried away with their Blunderbuss

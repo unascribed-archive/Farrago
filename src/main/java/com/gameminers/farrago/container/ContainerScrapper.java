@@ -4,7 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -15,18 +14,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerScrapper extends Container {
-	private static final class RestrictedSlot extends Slot {
-		private RestrictedSlot(IInventory p_i1824_1_, int p_i1824_2_,
-				int p_i1824_3_, int p_i1824_4_) {
-			super(p_i1824_1_, p_i1824_2_, p_i1824_3_, p_i1824_4_);
-		}
-
-		@Override
-		public boolean isItemValid(ItemStack p_75214_1_) {
-			return false;
-		}
-	}
-
 	private TileEntityScrapper tileScrapper;
     private int lastCookTime;
     private int lastBurnTime;
@@ -38,17 +25,17 @@ public class ContainerScrapper extends Container {
         tileScrapper.setContainer(this);
         addSlotToContainer(new Slot(p_i1812_2_, 0, 44, 16));
         addSlotToContainer(new Slot(p_i1812_2_, 1, 44, 52));
-        addSlotToContainer(new RestrictedSlot(p_i1812_2_, 2, 72, 48));
+        addSlotToContainer(new SlotRestricted(p_i1812_2_, 2, 72, 48));
         
-        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  3, 98 , 16));
-        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  4, 116, 16));
-        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  5, 134, 16));
-        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  6, 98 , 34));
-        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  7, 116, 34));
-        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  8, 134, 34));
-        addSlotToContainer(new RestrictedSlot(p_i1812_2_,  9, 98 , 52));
-        addSlotToContainer(new RestrictedSlot(p_i1812_2_, 10, 116, 52));
-        addSlotToContainer(new RestrictedSlot(p_i1812_2_, 11, 134, 52));
+        addSlotToContainer(new SlotRestricted(p_i1812_2_,  3, 98 , 16));
+        addSlotToContainer(new SlotRestricted(p_i1812_2_,  4, 116, 16));
+        addSlotToContainer(new SlotRestricted(p_i1812_2_,  5, 134, 16));
+        addSlotToContainer(new SlotRestricted(p_i1812_2_,  6, 98 , 34));
+        addSlotToContainer(new SlotRestricted(p_i1812_2_,  7, 116, 34));
+        addSlotToContainer(new SlotRestricted(p_i1812_2_,  8, 134, 34));
+        addSlotToContainer(new SlotRestricted(p_i1812_2_,  9, 98 , 52));
+        addSlotToContainer(new SlotRestricted(p_i1812_2_, 10, 116, 52));
+        addSlotToContainer(new SlotRestricted(p_i1812_2_, 11, 134, 52));
         int i;
 
         for (i = 0; i < 3; ++i)
@@ -137,32 +124,32 @@ public class ContainerScrapper extends Container {
 	 * you will crash when someone does that.
 	 */
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer p_82846_1_, int p_82846_2_) {
+	public ItemStack transferStackInSlot(EntityPlayer p_82846_1_, int idx) {
 		ItemStack itemstack = null;
-		Slot slot = (Slot) inventorySlots.get(p_82846_2_);
+		Slot slot = (Slot) inventorySlots.get(idx);
 
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 
-			if (p_82846_2_ >= 2 && p_82846_2_ <= 11) {
+			if (idx >= 2 && idx <= 11) {
 				if (!mergeItemStack(itemstack1, 12, 39, true)) {
 					return null;
 				}
 
 				slot.onSlotChange(itemstack1, itemstack);
-			} else if (p_82846_2_ != 1 && p_82846_2_ != 0) {
+			} else if (idx != 1 && idx != 0) {
 				if (TileEntityFurnace.isItemFuel(itemstack1)) {
 					if (!mergeItemStack(itemstack1, 1, 2, false)) {
 						return null;
 					}
 				} else if (!mergeItemStack(itemstack1, 0, 1, false)) {
 					return null;
-				} else if (p_82846_2_ >= 12 && p_82846_2_ < 30) {
+				} else if (idx >= 12 && idx < 30) {
 					if (!mergeItemStack(itemstack1, 30, 39, false)) {
 						return null;
 					}
-				} else if (p_82846_2_ >= 30 && p_82846_2_ < 39
+				} else if (idx >= 30 && idx < 39
 						&& !mergeItemStack(itemstack1, 12, 30, false)) {
 					return null;
 				}
@@ -182,7 +169,7 @@ public class ContainerScrapper extends Container {
 
 			slot.onPickupFromSlot(p_82846_1_, itemstack1);
 		}
-
+		if (itemstack != null && itemstack.stackSize == 0) return null;
 		return itemstack;
 	}
 

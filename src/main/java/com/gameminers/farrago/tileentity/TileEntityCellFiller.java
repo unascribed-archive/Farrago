@@ -3,8 +3,12 @@ package com.gameminers.farrago.tileentity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import com.gameminers.farrago.enums.DustType;
+
 public class TileEntityCellFiller extends TileEntityMachine {
 
+	public int cookTime;
+	
 	public TileEntityCellFiller() {
 		super("container.cell_filler");
 	}
@@ -93,6 +97,21 @@ public class TileEntityCellFiller extends TileEntityMachine {
 	public boolean isOn() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public boolean isDust(ItemStack itemstack1) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public DustType getDustType(int i) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public DustType getDustType(ItemStack itemstack1) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -30,21 +30,32 @@ public class PaneRifle extends GlassPane {
 				if (held.getItem() == FarragoMod.RIFLE) {
 					GuiIngameForge.renderCrosshairs = false;
 					int idx = 0;
+					int idx2 = 0;
 					boolean overloadImminent = false;
 					boolean ready = false;
+					float useTime = 0; 
+					int ticksToFire = FarragoMod.RIFLE.getTicksToFire(held);
 					RifleMode mode = FarragoMod.RIFLE.getMode(held);
 					if (mc.thePlayer.isUsingItem()) {
-						float useTime = mc.thePlayer.getItemInUseDuration()+partialTicks;
-						idx = (int)(((float)useTime)/((float)held.getItem().getMaxItemUseDuration(held))*25f)+1;
+						useTime = mc.thePlayer.getItemInUseDuration()+partialTicks;
+						ready = (useTime >= ticksToFire); 
+						int maxUseTime = held.getItem().getMaxItemUseDuration(held);
+						idx = (int)(((float)Math.min(useTime, ticksToFire))/((float)ticksToFire)*25f)+1;
+						if (ready) {
+							idx2 = (int)(((float)useTime-ticksToFire)/((float)maxUseTime-ticksToFire)*25f)+1;
+						}
 						overloadImminent = (useTime >= ((FarragoMod.RIFLE.getChargeTicks(mode) + 15)/mode.getChargeSpeed()));
-						ready = (useTime >= FarragoMod.RIFLE.getTicksToFire(held)); 
 					}
 					if (!(overloadImminent || ready)) {
 						GL11.glEnable(GL11.GL_BLEND);
 				        OpenGlHelper.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR, 1, 0);
 					}
-					int color = overloadImminent ? 0xFFFF0000 : ready ? 0xFF00FF00 : -1;
+					int color = ready ? 0xFF00FF00 : -1;
+					int color2 = overloadImminent ? 0xFFFF0000 : -1;
 					PaneImage.render(crosshairs[Math.min(25, idx)], (getWidth()/2)-8, (getHeight()/2)-8, 0, 0, 16, 16, 256, 256, color, 1.0f, true);
+					if (ready) {
+						PaneImage.render(crosshairs[Math.min(25, idx2)], (getWidth()/2)-8, (getHeight()/2)-8, 0, 0, 16, 16, 256, 256, color2, 1.0f, true);
+					}
 					GL11.glPushMatrix();
 			        	GL11.glScalef(0.5f, 0.5f, 1.0f);
 			        	if (overloadImminent) {
@@ -57,6 +68,9 @@ public class PaneRifle extends GlassPane {
 					if (!(overloadImminent || ready)) {
 						OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 						GL11.glDisable(GL11.GL_BLEND);
+					}
+					if (ready) {
+						PaneImage.render(crosshairs[0], (getWidth()/2)-8, (getHeight()/2)-8, 0, 0, 16, 16, 256, 256, -1, 1.0f, true);
 					}
 					return;
 				}
