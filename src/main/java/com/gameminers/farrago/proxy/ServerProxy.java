@@ -2,6 +2,7 @@ package com.gameminers.farrago.proxy;
 
 import java.util.Random;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
@@ -35,5 +36,6 @@ public class ServerProxy implements Proxy {
 	@Override public void spawnRifleParticle(RifleMode mode, EntityRifleProjectile proj) {}
 	@Override public void stopSounds() {}
 	@Override public void glowRandomDisplayTick(World world, int x, int y, int z,Random rand) {}
+	@Override public void scope(EntityPlayer player) {}
 
 }

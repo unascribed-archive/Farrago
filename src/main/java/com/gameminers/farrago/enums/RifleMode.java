@@ -6,17 +6,17 @@ public enum RifleMode {
 	RIFLE(1.75f, 1, 0xFF0000, true),
 	SCATTER(1.0f, 1, 0xFF0000, true),
 	
-	BLAZE(1.6f, 6, 0xFFAA00, true),
+	BLAZE(1.5f, 6, 0xFFAA00, true),
 	
-	MINING(1.2f, 3, 0x00FFFF, false),
+	TELEPORT(0.5f, 5, 0xFF00FF, true),
+	
+	MINING(1.75f, 3, 0x00FFFF, false),
 	PRECISION_MINING(2.0f, 3, 0x00FFFF, false),
-	
-	EXPLOSIVE(1.5f, 4, 0xAAAAAA, false),
-	BAZOOKA(1.1f, 4, 0xAAAAAA, true),
 	
 	GLOW(2.0f, 2, 0xFFFF00, true),
 	
-	TELEPORT(0.5f, 5, 0xFF00FF, true);
+	EXPLOSIVE(2.0f, 4, 0xAAAAAA, false),
+	BAZOOKA(0.7f, 4, 0xAAAAAA, true);
 	private final float chargeSpeed;
 	private final String abbrev;
 	private final String displayName;

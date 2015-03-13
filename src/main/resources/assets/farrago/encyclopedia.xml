@@ -115,7 +115,8 @@
 		This state-of-the-art rifle can use magazines filled with varying types
 		of dusts and powders to cause reactions of both chemical and magical
 		nature, and then harness them to shoot beams with different effects.
-		Sneak while firing to change modes. Be careful not to overcharge it!
+		Sneak and scroll or press a number key to change modes. Sneak and left
+		click to toggle the scope. Be careful not to overcharge it!
 	</entry>
 	<entry def="farrago:dust">
 		Don't breathe this.

@@ -2,6 +2,7 @@ package com.gameminers.farrago.proxy;
 
 import java.util.Random;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 import com.gameminers.farrago.entity.EntityRifleProjectile;
@@ -14,4 +15,5 @@ public interface Proxy {
 	void spawnRifleParticle(RifleMode mode, EntityRifleProjectile proj);
 	void stopSounds();
 	void glowRandomDisplayTick(World world, int x, int y, int z, Random rand);
+	void scope(EntityPlayer player);
 }

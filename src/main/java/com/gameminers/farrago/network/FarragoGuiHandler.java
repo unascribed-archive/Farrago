@@ -1,4 +1,4 @@
-package com.gameminers.farrago;
+package com.gameminers.farrago.network;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;

@@ -1,6 +1,7 @@
 package com.gameminers.farrago.entity;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockTNT;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -78,6 +79,40 @@ public class EntityRifleProjectile extends EntityThrowable {
 	@Override
 	protected void onImpact(MovingObjectPosition pos) {
 		if (!worldObj.isRemote) {
+			int hitBlockX = pos.blockX;
+			int hitBlockY = pos.blockY;
+			int hitBlockZ = pos.blockZ;
+			int targetBlockX = hitBlockX;
+			int targetBlockY = hitBlockY;
+			int targetBlockZ = hitBlockZ;
+			switch (pos.sideHit) {
+			case 0:
+				// bottom
+				targetBlockY -= 1;
+				break;
+			case 1:
+				// top
+				targetBlockY += 1;
+				break;
+			case 2:
+				// east
+				targetBlockZ -= 1;
+				break;
+			case 3:
+				// west
+				targetBlockZ += 1;
+				break;
+			case 4:
+				// north
+				targetBlockX -= 1;
+				break;
+			case 5:
+				// south
+				targetBlockX += 1;
+				break;
+			}
+			Block hitBlock = worldObj.getBlock(hitBlockX, hitBlockY, hitBlockZ);
+			Block targetBlock = worldObj.getBlock(targetBlockX, targetBlockY, targetBlockZ);
 			switch (getMode()) {
 				case RIFLE: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
@@ -98,7 +133,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 					break;
 				}
 				case BAZOOKA: {
-					worldObj.createExplosion(this, (int)pos.hitVec.xCoord, (int)pos.hitVec.yCoord, (int)pos.hitVec.zCoord, 3.5f, false);
+					worldObj.createExplosion(this, (int)pos.hitVec.xCoord, (int)pos.hitVec.yCoord, (int)pos.hitVec.zCoord, 3.0f, false);
 					setDead();
 					break;
 				} 
@@ -108,12 +143,20 @@ public class EntityRifleProjectile extends EntityThrowable {
 						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 7f);
 						ticksExisted += 20;
 					} else {
+						if (targetBlock == null || targetBlock.isAir(worldObj, targetBlockX, targetBlockY, targetBlockZ) ||
+								targetBlock.isReplaceable(worldObj, targetBlockX, targetBlockY, targetBlockZ) || !targetBlock.isCollidable()) {
+							worldObj.setBlock(targetBlockX, targetBlockY, targetBlockZ, Blocks.fire);
+						}
+						if (hitBlock == Blocks.tnt) {
+							((BlockTNT)Blocks.tnt).func_150114_a(worldObj, hitBlockX, hitBlockY, hitBlockZ, 1, getThrower());
+							worldObj.setBlockToAir(hitBlockX, hitBlockY, hitBlockZ);
+						}
 						ticksExisted += 25;
 					}
 					break;
 				}
 				case EXPLOSIVE: {
-					worldObj.createExplosion(this, (int)pos.hitVec.xCoord, (int)pos.hitVec.yCoord, (int)pos.hitVec.zCoord, 6.0f, true);
+					worldObj.createExplosion(this, pos.hitVec.xCoord, pos.hitVec.yCoord, pos.hitVec.zCoord, 4.0f, true);
 					setDead();
 					break;
 				} 
@@ -125,7 +168,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 								for (int z = pos.blockZ-1; z <= pos.blockZ+1; z++) {
 									if (!worldObj.isAirBlock(x, y, z) && worldObj.canMineBlock(player, x, y, z)) {
 										harvest(player, x, y, z);
-										ticksExisted += 5;
+										ticksExisted += 3;
 									}
 								}
 							}
@@ -138,9 +181,9 @@ public class EntityRifleProjectile extends EntityThrowable {
 						EntityPlayerMP player = ((EntityPlayerMP)getThrower());
 						if (!worldObj.isAirBlock(pos.blockX, pos.blockY, pos.blockZ) && worldObj.canMineBlock(player, pos.blockX, pos.blockY, pos.blockZ)) {
 							if (harvest(player, pos.blockX, pos.blockY, pos.blockZ)) {
-								ticksExisted += 2;
+								ticksExisted += 8;
 							} else {
-								ticksExisted += 5;
+								ticksExisted += 12;
 							}
 						}
 					}
@@ -148,40 +191,11 @@ public class EntityRifleProjectile extends EntityThrowable {
 				}
 				case GLOW: {
 					if (pos.typeOfHit == MovingObjectType.BLOCK) {
-						int posX = pos.blockX;
-						int posY = pos.blockY;
-						int posZ = pos.blockZ;
-						switch (pos.sideHit) {
-						case 0:
-							// bottom
-							posY -= 1;
-							break;
-						case 1:
-							// top
-							posY += 1;
-							break;
-						case 2:
-							// east
-							posZ -= 1;
-							break;
-						case 3:
-							// west
-							posZ += 1;
-							break;
-						case 4:
-							// north
-							posX -= 1;
-							break;
-						case 5:
-							// south
-							posX += 1;
-							break;
-						}
-						Block block = worldObj.getBlock(posX, posY, posZ);
 						setDead();
-						if (block == null || block.isAir(worldObj, posX, posY, posZ) || block.isReplaceable(worldObj, posX, posY, posZ) || !block.isCollidable()) {
-							worldObj.setBlock(posX, posY, posZ, FarragoMod.GLOW);
-							worldObj.setBlockMetadataWithNotify(posX, posY, posZ, pos.sideHit, 3);
+						if (targetBlock == null || targetBlock.isAir(worldObj, targetBlockX, targetBlockY, targetBlockZ) ||
+								targetBlock.isReplaceable(worldObj, targetBlockX, targetBlockY, targetBlockZ) || !targetBlock.isCollidable()) {
+							worldObj.setBlock(targetBlockX, targetBlockY, targetBlockZ, FarragoMod.GLOW);
+							worldObj.setBlockMetadataWithNotify(targetBlockX, targetBlockY, targetBlockZ, pos.sideHit, 3);
 							return;
 						}
 					}

@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
@@ -106,6 +107,11 @@ public class ClientProxy implements Proxy {
 			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityReddustFX(world, x+(x1+(rand.nextFloat()*(x2-x1))),
 					y+(y1+(rand.nextFloat()*(y2-y1))), z+(z1+(rand.nextFloat()*(z2-z1))), 0.6f, 1.0f, 1.0f, 0.0f));
 		}
+	}
+
+	@Override
+	public void scope(EntityPlayer player) {
+		FarragoMod.scoped = !FarragoMod.scoped;
 	}
 
 }

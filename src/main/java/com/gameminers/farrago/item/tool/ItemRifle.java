@@ -5,6 +5,7 @@ import gminers.kitchensink.ReadableNumbers;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.EnumAction;
@@ -85,6 +86,11 @@ public class ItemRifle extends Item {
 	}
 	
 	@Override
+	public boolean shouldRotateAroundWhenRendering() {
+		return false;
+	}
+	
+	@Override
 	public void onPlayerStoppedUsing(ItemStack gun, World world, EntityPlayer player, int remaining) {
 		int useTime = getMaxItemUseDuration(gun) - remaining;
 		FarragoMod.proxy.stopSounds();
@@ -96,6 +102,9 @@ public class ItemRifle extends Item {
 					float spread = 0.0f;
 					float speed = 4f;
 					int count = 1;
+					if (mode.getCellType() == 0) {
+						speed *= 2;
+					}
 					if (mode == RifleMode.SCATTER) {
 						spread = 10f;
 						count = itemRand.nextInt(10)+5;
@@ -162,36 +171,68 @@ public class ItemRifle extends Item {
 	}
 	
 	@Override
-	public ItemStack onItemRightClick(ItemStack gun, World world, EntityPlayer player) {
-		if (player.isSneaking()) {
-			RifleMode[] vals = RifleMode.values();
-			int idx = getMode(gun).ordinal()+1;
-			RifleMode mode = vals[idx%vals.length];
-			int tries = 0;
-			while (find(player.inventory, FarragoMod.CELL, mode.getCellType()) < 0) {
-				if (tries++ > vals.length) {
-					idx = getMode(gun).ordinal()+1;
-					break;
+	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
+		if (entityLiving instanceof EntityPlayer) {
+			EntityPlayer player = ((EntityPlayer)entityLiving);
+			if (player.isSneaking()) {
+				if (player.worldObj.isRemote) {
+					FarragoMod.proxy.scope(player);
 				}
-				idx++;
-				mode = vals[idx%vals.length];
+				player.worldObj.playSoundAtEntity(player, "random.click", 1.0f, 2.0f);
 			}
-			world.playSoundAtEntity(player, "farrago:laser_mode", 1.0f, (mode.ordinal()*0.15f)+1.0f);
-			setMode(gun, mode);
-		} else {
-			if (find(player.inventory, FarragoMod.CELL, getMode(gun).getCellType()) >= 0 && player.hurtTime < 5) {
-				player.setItemInUse(gun, getMaxItemUseDuration(gun));
-				RifleMode mode = getMode(gun);
-				if (mode.isShort()) {
-					world.playSoundAtEntity(player, "farrago:laser_charge_short", 1.0f, mode.getChargeSpeed());
-				} else {
-					world.playSoundAtEntity(player, "farrago:laser_charge", 1.0f, mode.getChargeSpeed());
-				}
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public ItemStack onItemRightClick(ItemStack gun, World world, EntityPlayer player) {
+		if (hasAmmoFor(player, getMode(gun)) && player.hurtTime < 5) {
+			player.setItemInUse(gun, getMaxItemUseDuration(gun));
+			RifleMode mode = getMode(gun);
+			if (mode.isShort()) {
+				world.playSoundAtEntity(player, "farrago:laser_charge_short", 1.0f, mode.getChargeSpeed());
+			} else {
+				world.playSoundAtEntity(player, "farrago:laser_charge", 1.0f, mode.getChargeSpeed());
 			}
 		}
 		return gun;
 	}
 	
+	public void modifyMode(EntityPlayer player, ItemStack gun, boolean absolute, int i) {
+		RifleMode mode;
+		RifleMode[] vals = RifleMode.values();
+		if (absolute) {
+			if (i == getMode(gun).ordinal()) return;
+			mode = vals[i];
+		} else {
+			if (i == 0) return;
+			int idx = getMode(gun).ordinal()+i;
+			if (idx < 0) {
+				idx += vals.length;
+			}
+			mode = vals[idx%vals.length];
+			int tries = 0;
+			while (!hasAmmoFor(player, mode)) {
+				if (tries++ >= vals.length) {
+					idx = getMode(gun).ordinal()+i;
+					break;
+				}
+				idx += i;
+				if (idx < 0) {
+					idx += vals.length;
+				}
+				mode = vals[idx%vals.length];
+			}
+		}
+		player.worldObj.playSoundAtEntity(player, "farrago:laser_mode", 1.0f, (mode.ordinal()*0.15f)+1.0f);
+		setMode(gun, mode);
+	}
+
+	public boolean hasAmmoFor(EntityPlayer player, RifleMode mode) {
+		return find(player.inventory, FarragoMod.CELL, mode.getCellType()) >= 0;
+	}
+
 	private static final String[] cellTypeNames = {
 		"Empty",
 		"Redstone-Copper",

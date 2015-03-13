@@ -1,19 +1,25 @@
 package com.gameminers.farrago.client.render;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.Timer;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
 import com.gameminers.farrago.FarragoMod;
-import com.gameminers.farrago.enums.RifleMode;
+
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 
 public class RifleItemRenderer implements IItemRenderer {
+	private final Timer timer = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), 16);
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
-		return item.getItem() == FarragoMod.RIFLE && type == ItemRenderType.INVENTORY;
+		return item.getItem() == FarragoMod.RIFLE && (type == ItemRenderType.EQUIPPED_FIRST_PERSON);
 	}
 
 	@Override
@@ -23,13 +29,23 @@ public class RifleItemRenderer implements IItemRenderer {
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-		Minecraft mc = Minecraft.getMinecraft();
-		RenderItem.getInstance().renderIcon(0, 0, item.getItem().getIcon(item, 0), 16, 16);
-		GL11.glPushMatrix();
-			GL11.glTranslatef(0, 0, 3);
-			RifleMode mode = FarragoMod.RIFLE.getMode(item);
-			mc.fontRenderer.drawStringWithShadow(mode.getAbbreviation(), 10, 0, mode.getColor());
-		GL11.glPopMatrix();
+		EntityClientPlayerMP player = ((EntityClientPlayerMP) data[1]);
+		float scopeMult = Math.min((FarragoMod.scopeTicks+timer.renderPartialTicks)/5f, 1.0f);
+		GL11.glTranslatef(1.0f, 0f, 0f);
+		GL11.glRotatef(180F, 1.0f, 0.0f, 0.0f);
+		GL11.glRotatef(180F, 0.0f, 0.0f, 1.0f);
+		if (FarragoMod.scoped) {
+			if (player.isUsingItem()) {
+				GL11.glTranslatef(0f, scopeMult*-0.5f, scopeMult*0.4f);
+				GL11.glRotatef(5F, 0.0f, scopeMult, 0.0f);
+				GL11.glRotatef(10F, scopeMult, 0.0f, 0.0f);
+			} else {
+				GL11.glTranslatef(0f, 0f, scopeMult);
+				GL11.glRotatef(-2F, scopeMult, scopeMult, 0.0f);
+			}
+		}
+		IIcon icon = item.getItem().getIcon(item, 0, player, player.getItemInUse(), player.getItemInUseCount());
+		ItemRenderer.renderItemIn2D(Tessellator.instance, icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV(), icon.getIconWidth(), icon.getIconHeight(), 0.0625f);
 	}
 
 }

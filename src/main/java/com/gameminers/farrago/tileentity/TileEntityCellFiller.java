@@ -114,4 +114,9 @@ public class TileEntityCellFiller extends TileEntityMachine {
 		return null;
 	}
 
+	public int getBurnTimeRemainingScaled(int i) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
