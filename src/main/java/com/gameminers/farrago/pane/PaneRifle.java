@@ -65,18 +65,23 @@ public class PaneRifle extends GlassPane {
 			boolean available = FarragoMod.RIFLE.hasAmmoFor(mc.thePlayer, vals[i]);
 			PaneImage.render(modeIcons.get(vals[i]), x, y, 0, 0, 16, 16, 256, 256, available ? -1 : 0, 1.0f, true);
 			if (available) {
-				int count = 0;
-				InventoryPlayer inv = mc.thePlayer.inventory;
-				for (int j = 0; j < inv.getSizeInventory(); j++) {
-					ItemStack stack = inv.getStackInSlot(j);
-					if (stack == null) continue;
-					if (stack.getItem() == FarragoMod.CELL) {
-						if (stack.getItemDamage() == vals[i].getCellType()) {
-							count += stack.stackSize;
+				String scount;
+				if (!mc.thePlayer.capabilities.isCreativeMode) {
+					int count = 0;
+					InventoryPlayer inv = mc.thePlayer.inventory;
+					for (int j = 0; j < inv.getSizeInventory(); j++) {
+						ItemStack stack = inv.getStackInSlot(j);
+						if (stack == null) continue;
+						if (stack.getItem() == FarragoMod.CELL) {
+							if (stack.getItemDamage() == vals[i].getCellType()) {
+								count += stack.stackSize;
+							}
 						}
 					}
+					scount = Integer.toString(count);
+				} else {
+					scount = "∞";
 				}
-				String scount = Integer.toString(count);
 				mc.fontRenderer.drawStringWithShadow(scount, (x+17)-mc.fontRenderer.getStringWidth(scount), y+9, -1);
 			}
 		}

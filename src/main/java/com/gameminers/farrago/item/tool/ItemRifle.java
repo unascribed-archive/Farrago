@@ -95,7 +95,7 @@ public class ItemRifle extends Item {
 		int useTime = getMaxItemUseDuration(gun) - remaining;
 		FarragoMod.proxy.stopSounds();
 		if (useTime >= getTicksToFire(gun)) {
-			if (consumeInventoryItem(player.inventory, FarragoMod.CELL, getMode(gun).getCellType())) {
+			if (player.capabilities.isCreativeMode || consumeInventoryItem(player.inventory, FarragoMod.CELL, getMode(gun).getCellType())) {
 				if (!world.isRemote) {
 					world.playSoundAtEntity(player, "farrago:laser_fire", 1.0f, 1.0f);
 					RifleMode mode = getMode(gun);
@@ -178,7 +178,6 @@ public class ItemRifle extends Item {
 				if (player.worldObj.isRemote) {
 					FarragoMod.proxy.scope(player);
 				}
-				player.worldObj.playSoundAtEntity(player, "random.click", 1.0f, 2.0f);
 			}
 			return true;
 		}
@@ -195,6 +194,8 @@ public class ItemRifle extends Item {
 			} else {
 				world.playSoundAtEntity(player, "farrago:laser_charge", 1.0f, mode.getChargeSpeed());
 			}
+		} else {
+			world.playSoundAtEntity(player, "random.click", 1.0f, 2.0f);
 		}
 		return gun;
 	}
@@ -230,7 +231,7 @@ public class ItemRifle extends Item {
 	}
 
 	public boolean hasAmmoFor(EntityPlayer player, RifleMode mode) {
-		return find(player.inventory, FarragoMod.CELL, mode.getCellType()) >= 0;
+		return player.capabilities.isCreativeMode || find(player.inventory, FarragoMod.CELL, mode.getCellType()) >= 0;
 	}
 
 	private static final String[] cellTypeNames = {

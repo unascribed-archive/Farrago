@@ -607,10 +607,8 @@ public class FarragoMod {
 					scoped = false;
 					return;
 				}
-				scopeTicks++;
-			} else {
-				scopeTicks = 0;
 			}
+			scopeTicks++;
 		}
 	}
 	@SubscribeEvent

@@ -12,6 +12,7 @@ import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
@@ -78,13 +79,41 @@ public class ClientProxy implements Proxy {
 
 	@Override
 	public void spawnRifleParticle(RifleMode mode, EntityRifleProjectile proj) {
-		EntityRifleFX fx = new EntityRifleFX(proj.worldObj, proj.posX, proj.posY, proj.posZ, 0, 0, 0);
-		fx.motionX = fx.motionY = fx.motionZ = 0;
-		float r = ((mode.getColor() >> 16)&0xFF)/255f;
-		float g = ((mode.getColor() >> 8)&0xFF)/255f;
-		float b = (mode.getColor()&0xFF)/255f;
-		fx.setRBGColorF(r, g, b);
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		double stepSize = 0.5;
+		boolean interpolate = true;
+		if (Minecraft.getMinecraft().gameSettings.particleSetting == 1) {
+			// Decreased
+			stepSize = 1;
+		} else if (Minecraft.getMinecraft().gameSettings.particleSetting == 2) {
+			// Minimal
+			interpolate = false;
+		}
+		double steps = interpolate ? (int)(distance(proj.lastTickPosX, proj.lastTickPosY, proj.lastTickPosZ, proj.posX, proj.posY, proj.posZ)/stepSize)-1 : 1;
+		for (int i = 0; i < steps; i++) {
+			double[] pos = interpolate(proj.lastTickPosX, proj.lastTickPosY, proj.lastTickPosZ, proj.posX, proj.posY, proj.posZ, i/steps);
+			EntityRifleFX fx = new EntityRifleFX(proj.worldObj, pos[0], pos[1], pos[2], 0, 0, 0);
+			fx.motionX = fx.motionY = fx.motionZ = 0;
+			float r = ((mode.getColor() >> 16)&0xFF)/255f;
+			float g = ((mode.getColor() >> 8)&0xFF)/255f;
+			float b = (mode.getColor()&0xFF)/255f;
+			fx.setRBGColorF(r, g, b);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
+	private double[] interpolate(double x1, double y1, double z1, double x2, double y2, double z2, double factor) {
+		return new double[] { 
+				((1.0D - factor) * x1 + factor * x2),
+				((1.0D - factor) * y1 + factor * y2),
+				((1.0D - factor) * z1 + factor * z2)
+		};
+	}
+	
+	private double distance(double x1, double y1, double z1, double x2, double y2, double z2) {
+		double dX = x2 - x1;
+        double dY = y2 - y1;
+        double dZ = z2 - z1;
+        return (double)MathHelper.sqrt_double(dX * dX + dY * dY + dZ * dZ);
 	}
 
 	@Override
@@ -111,7 +140,14 @@ public class ClientProxy implements Proxy {
 
 	@Override
 	public void scope(EntityPlayer player) {
+		if (FarragoMod.scopeTicks < 5) return;
 		FarragoMod.scoped = !FarragoMod.scoped;
+		FarragoMod.scopeTicks = 0;
+		if (FarragoMod.scoped) {
+			player.playSound("farrago:laser_scope", 1.0f, 1.0f);
+		} else {
+			player.playSound("farrago:laser_scope", 1.0f, 1.5f);
+		}
 	}
 
 }

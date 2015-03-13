@@ -70,5 +70,14 @@
 				"stream": false
 			}
 		]
+	},
+	"laser_scope": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "laser_scope",
+				"stream": false
+			}
+		]
 	}
 }
