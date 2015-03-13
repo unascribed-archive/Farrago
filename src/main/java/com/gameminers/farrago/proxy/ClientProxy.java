@@ -12,12 +12,18 @@ import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.client.event.FOVUpdateEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.client.effect.EntityRifleFX;
@@ -29,16 +35,24 @@ import com.gameminers.farrago.client.render.RifleItemRenderer;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
 import com.gameminers.farrago.enums.RifleMode;
+import com.gameminers.farrago.network.ModifyRifleModeMessage;
 import com.gameminers.farrago.pane.PaneBranding;
 import com.gameminers.farrago.pane.PaneOrbGlow;
 import com.gameminers.farrago.pane.PaneRifle;
 import com.google.common.base.Charsets;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
+import cpw.mods.fml.common.gameevent.InputEvent.MouseInputEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 
 public class ClientProxy implements Proxy {
-
+	private boolean linuxNag = true;
+	
 	@Override
 	public void postInit() {
 		InitScreen.init();
@@ -59,6 +73,8 @@ public class ClientProxy implements Proxy {
 		if (manager instanceof IReloadableResourceManager) {
 			((IReloadableResourceManager)manager).registerReloadListener(new Encyclopedia());
 		}
+		FMLCommonHandler.instance().bus().register(this);
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	@Override
@@ -147,6 +163,99 @@ public class ClientProxy implements Proxy {
 			player.playSound("farrago:laser_scope", 1.0f, 1.0f);
 		} else {
 			player.playSound("farrago:laser_scope", 1.0f, 1.5f);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onClientTick(ClientTickEvent e) {
+		if (e.phase == Phase.START) {
+			if (FarragoMod.scoped) {
+				if (Minecraft.getMinecraft().thePlayer == null) {
+					FarragoMod.scoped = false;
+					return;
+				}
+				if (Minecraft.getMinecraft().thePlayer.getHeldItem() == null) {
+					FarragoMod.scoped = false;
+					return;
+				}
+				if (Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() != FarragoMod.RIFLE) {
+					FarragoMod.scoped = false;
+					return;
+				}
+			}
+			FarragoMod.scopeTicks++;
+		}
+	}
+	@SubscribeEvent
+	public void onFov(FOVUpdateEvent e) {
+		if (FarragoMod.scoped) {
+			e.newfov = 0.1f;
+		}
+	}
+	@SubscribeEvent
+	public void onKeyboardInput(KeyInputEvent e) {
+		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.thePlayer != null) {
+			if (mc.thePlayer.isSneaking()) {
+				if (mc.thePlayer.getHeldItem() != null) {
+					ItemStack held = mc.thePlayer.getHeldItem();
+					if (held.getItem() == FarragoMod.RIFLE) {
+						// on Linux, Shift+2 and Shift+6 do not work. This is an LWJGL bug.
+						// This is a QWERTY-only workaround.
+						if (SystemUtils.IS_OS_LINUX) {
+							if (linuxNag) {
+								FarragoMod.log.warn("We are running on Linux. Due to a bug in LWJGL, Shift+2 and Shift+6 do not work "+
+											"properly. Activating workaround. This may cause strange issues and is only "+
+											"confirmed to work with QWERTY keyboards. This message is only shown once.");
+								linuxNag = false;
+							}
+							if (Keyboard.getEventCharacter() == '@') {
+								while (mc.gameSettings.keyBindsHotbar[1].isPressed()) {}
+								FarragoMod.RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(true, 1));
+								return;
+							}
+							if (Keyboard.getEventCharacter() == '^') {
+								while (mc.gameSettings.keyBindsHotbar[5].isPressed()) {}
+								FarragoMod.RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(true, 5));
+								return;
+							}
+						}
+						for (int i = 0; i < 9; i++) {
+							if (mc.gameSettings.keyBindsHotbar[i].isPressed()) {
+								while (mc.gameSettings.keyBindsHotbar[i].isPressed()) {} // drain pressTicks to zero to suppress vanilla behavior
+								FarragoMod.RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(true, i));
+							}
+						}
+						return;
+					}
+				}
+			}
+		}
+	}
+	@SubscribeEvent
+	public void onMouseInput(MouseInputEvent e) {
+		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.thePlayer != null) {
+			int dWheel = Mouse.getEventDWheel();
+			mc.thePlayer.inventory.changeCurrentItem(dWheel*-1);
+			if (dWheel != 0) {
+				if (mc.thePlayer.isSneaking()) {
+					if (mc.thePlayer.getHeldItem() != null) {
+						ItemStack held = mc.thePlayer.getHeldItem();
+						if (held.getItem() == FarragoMod.RIFLE) {
+							if (dWheel > 0) {
+								dWheel = 1;
+							}
+							if (dWheel < 0) {
+								dWheel = -1;
+							}
+							FarragoMod.RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(false, dWheel*-1));
+							return;
+						}
+					}
+				}
+			}
+			mc.thePlayer.inventory.changeCurrentItem(dWheel);
 		}
 	}
 

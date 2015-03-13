@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,7 +21,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
@@ -34,11 +32,8 @@ import net.minecraftforge.oredict.RecipeSorter.Category;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 import com.gameminers.farrago.block.BlockCombustor;
 import com.gameminers.farrago.block.BlockGlow;
@@ -92,9 +87,6 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
-import cpw.mods.fml.common.gameevent.InputEvent.MouseInputEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -166,8 +158,6 @@ public class FarragoMod {
 	public static int scopeTicks;
 	private YttriumGenerator yttrGen;
 	private XenotimeGenerator xenoGen;
-	
-	private boolean linuxNag = true;
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
@@ -589,98 +579,6 @@ public class FarragoMod {
 			if (sting) {
 				player.worldObj.playSoundAtEntity(player, "farrago:cyber_sting", 0.5f, 1.0f);
 			}
-		}
-	}
-	@SubscribeEvent
-	public void onClientTick(ClientTickEvent e) {
-		if (e.phase == Phase.START) {
-			if (scoped) {
-				if (Minecraft.getMinecraft().thePlayer == null) {
-					scoped = false;
-					return;
-				}
-				if (Minecraft.getMinecraft().thePlayer.getHeldItem() == null) {
-					scoped = false;
-					return;
-				}
-				if (Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() != RIFLE) {
-					scoped = false;
-					return;
-				}
-			}
-			scopeTicks++;
-		}
-	}
-	@SubscribeEvent
-	public void onFov(FOVUpdateEvent e) {
-		if (scoped) {
-			e.newfov = 0.1f;
-		}
-	}
-	@SubscribeEvent
-	public void onKeyboardInput(KeyInputEvent e) {
-		Minecraft mc = Minecraft.getMinecraft();
-		if (mc.thePlayer != null) {
-			if (mc.thePlayer.isSneaking()) {
-				if (mc.thePlayer.getHeldItem() != null) {
-					ItemStack held = mc.thePlayer.getHeldItem();
-					if (held.getItem() == FarragoMod.RIFLE) {
-						// on Linux, Shift+2 and Shift+6 do not work. This is an LWJGL bug.
-						// This is a QWERTY-only workaround.
-						if (SystemUtils.IS_OS_LINUX) {
-							if (linuxNag) {
-								log.warn("We are running on Linux. Due to a bug in LWJGL, Shift+2 and Shift+6 do not work "+
-											"properly. Activating workaround. This may cause strange issues and is only "+
-											"confirmed to work with QWERTY keyboards. This message is only shown once.");
-								linuxNag = false;
-							}
-							if (Keyboard.getEventCharacter() == '@') {
-								while (mc.gameSettings.keyBindsHotbar[1].isPressed()) {}
-								RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(true, 1));
-								return;
-							}
-							if (Keyboard.getEventCharacter() == '^') {
-								while (mc.gameSettings.keyBindsHotbar[5].isPressed()) {}
-								RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(true, 5));
-								return;
-							}
-						}
-						for (int i = 0; i < 9; i++) {
-							if (mc.gameSettings.keyBindsHotbar[i].isPressed()) {
-								while (mc.gameSettings.keyBindsHotbar[i].isPressed()) {} // drain pressTicks to zero to suppress vanilla behavior
-								RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(true, i));
-							}
-						}
-						return;
-					}
-				}
-			}
-		}
-	}
-	@SubscribeEvent
-	public void onMouseInput(MouseInputEvent e) {
-		Minecraft mc = Minecraft.getMinecraft();
-		if (mc.thePlayer != null) {
-			int dWheel = Mouse.getEventDWheel();
-			mc.thePlayer.inventory.changeCurrentItem(dWheel*-1);
-			if (dWheel != 0) {
-				if (mc.thePlayer.isSneaking()) {
-					if (mc.thePlayer.getHeldItem() != null) {
-						ItemStack held = mc.thePlayer.getHeldItem();
-						if (held.getItem() == FarragoMod.RIFLE) {
-							if (dWheel > 0) {
-								dWheel = 1;
-							}
-							if (dWheel < 0) {
-								dWheel = -1;
-							}
-							RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(false, dWheel*-1));
-							return;
-						}
-					}
-				}
-			}
-			mc.thePlayer.inventory.changeCurrentItem(dWheel);
 		}
 	}
 	private Deque<GenData> chunksToGen = new ArrayDeque<GenData>();
