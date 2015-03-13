@@ -88,7 +88,7 @@ public class ClientProxy implements Proxy {
 			// Minimal
 			interpolate = false;
 		}
-		double steps = interpolate ? (int)(distance(proj.lastTickPosX, proj.lastTickPosY, proj.lastTickPosZ, proj.posX, proj.posY, proj.posZ)/stepSize)-1 : 1;
+		double steps = interpolate ? (int)(distance(proj.lastTickPosX, proj.lastTickPosY, proj.lastTickPosZ, proj.posX, proj.posY, proj.posZ)/stepSize) : 1;
 		for (int i = 0; i < steps; i++) {
 			double[] pos = interpolate(proj.lastTickPosX, proj.lastTickPosY, proj.lastTickPosZ, proj.posX, proj.posY, proj.posZ, i/steps);
 			EntityRifleFX fx = new EntityRifleFX(proj.worldObj, pos[0], pos[1], pos[2], 0, 0, 0);
