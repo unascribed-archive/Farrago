@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockTNT;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Blocks;
@@ -116,7 +117,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 			switch (getMode()) {
 				case RIFLE: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
-						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 8f);
+						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 10f);
 						ticksExisted += 10;
 					} else {
 						ticksExisted += 15;
@@ -125,7 +126,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 				}
 				case SCATTER: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
-						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 6f);
+						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 8f);
 						ticksExisted += 15;
 					} else {
 						ticksExisted += 20;
@@ -140,7 +141,11 @@ public class EntityRifleProjectile extends EntityThrowable {
 				case BLAZE: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
 						((EntityLivingBase)pos.entityHit).setFire(40);
-						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 7f);
+						if (pos.entityHit instanceof EntityAnimal) {
+							((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 20f);
+						} else {
+							((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 9f);
+						}
 						ticksExisted += 20;
 					} else {
 						if (targetBlock == null || targetBlock.isAir(worldObj, targetBlockX, targetBlockY, targetBlockZ) ||
