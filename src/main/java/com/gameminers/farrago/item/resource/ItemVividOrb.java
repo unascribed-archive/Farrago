@@ -1,4 +1,4 @@
-package com.gameminers.farrago.item.tool;
+package com.gameminers.farrago.item.resource;
 
 import java.awt.Color;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.gameminers.farrago.item.tool;
+package com.gameminers.farrago.item.gun;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;

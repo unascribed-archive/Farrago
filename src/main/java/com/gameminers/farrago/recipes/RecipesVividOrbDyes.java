@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.gameminers.farrago.FarragoMod;
-import com.gameminers.farrago.item.tool.ItemVividOrb;
+import com.gameminers.farrago.item.resource.ItemVividOrb;
 import com.google.common.collect.Maps;
 
 public class RecipesVividOrbDyes implements IRecipe {
