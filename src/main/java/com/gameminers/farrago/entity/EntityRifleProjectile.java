@@ -2,6 +2,7 @@ package com.gameminers.farrago.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockTNT;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -114,6 +115,23 @@ public class EntityRifleProjectile extends EntityThrowable {
 			}
 			Block hitBlock = worldObj.getBlock(hitBlockX, hitBlockY, hitBlockZ);
 			Block targetBlock = worldObj.getBlock(targetBlockX, targetBlockY, targetBlockZ);
+			if (getMode() == null) {
+				if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
+					((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 4f);
+					ticksExisted += 25;
+				} else {
+					if (hitBlock.getMaterial() == Material.plants || hitBlock.getMaterial() == Material.leaves ||
+							hitBlock.isReplaceable(worldObj, hitBlockX, hitBlockY, hitBlockZ) || hitBlock.getMaterial() == Material.glass) {
+						if (pos.typeOfHit == MovingObjectType.BLOCK && getThrower() instanceof EntityPlayerMP) {
+							EntityPlayerMP player = ((EntityPlayerMP)getThrower());
+							harvest(player, hitBlockX, hitBlockY, hitBlockZ);
+							return;
+						}
+					}
+					setDead();
+				}
+				return;
+			}
 			switch (getMode()) {
 				case RIFLE: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
@@ -247,6 +265,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 			Block block = worldObj.getBlock(x, y, z);
 	        int meta = worldObj.getBlockMetadata(x, y, z);
 	        if (block.getBlockHardness(worldObj, x, y, z) < 0) return false;
+	        worldObj.playAuxSFX(2001, x, y, z, Block.getIdFromBlock(block) + (worldObj.getBlockMetadata(x, y, z) << 12));
 	        block.onBlockHarvested(worldObj, x, y, z, meta, player);
 	        boolean success = block.removedByPlayer(worldObj, player, x, y, z, true);
 	
@@ -260,10 +279,15 @@ public class EntityRifleProjectile extends EntityThrowable {
 	}
 
 	public void setMode(RifleMode mode) {
-		dataWatcher.updateObject(12, mode.name());
+		if (mode == null) {
+			dataWatcher.updateObject(12, "null");
+		} else {
+			dataWatcher.updateObject(12, mode.name());
+		}
 	}
 	
 	public RifleMode getMode() {
+		if ("null".equals(dataWatcher.getWatchableObjectString(12))) return null;
 		try {
 			return RifleMode.valueOf(dataWatcher.getWatchableObjectString(12));
 		} catch (Exception e) {

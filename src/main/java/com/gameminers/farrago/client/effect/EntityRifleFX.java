@@ -4,8 +4,8 @@ import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.world.World;
 
 public class EntityRifleFX extends EntityReddustFX {
-	public EntityRifleFX(World p_i1223_1_, double p_i1223_2_, double p_i1223_4_, double p_i1223_6_, float p_i1223_8_, float p_i1223_9_, float p_i1223_10_) {
-		super(p_i1223_1_, p_i1223_2_, p_i1223_4_, p_i1223_6_, p_i1223_8_, p_i1223_9_, p_i1223_10_);
+	public EntityRifleFX(World world, double x, double y, double z, float scale, float r, float g, float b) {
+		super(world, x, y, z, scale, r, g, b);
 		particleMaxAge *= 4;
 	}
 

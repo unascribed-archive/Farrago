@@ -7,7 +7,6 @@ import java.util.List;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import com.gameminers.farrago.FarragoMod;
+import com.gameminers.farrago.Inventories;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
 import com.gameminers.farrago.enums.RifleMode;
 
@@ -77,7 +77,7 @@ public class ItemRifle extends Item {
 	public ItemStack onEaten(ItemStack gun, World world, EntityPlayer player) {
 		gun.damageItem(32, player);
 		player.attackEntityFrom(new DamageSource("rifle_backfire"), 8);
-		consumeInventoryItem(player.inventory, FarragoMod.CELL, getMode(gun).getCellType());
+		Inventories.consumeInventoryItem(player.inventory, FarragoMod.CELL, getMode(gun).getCellType());
 		world.playSoundAtEntity(player, "farrago:laser_overcharge", 1.0f, 1.0f);
 		if (world instanceof WorldServer) {
 			((WorldServer)world).func_147487_a("reddust", player.posX, player.posY+0.81f, player.posZ, 120, 0.5f, 0.6f, 0.5f, 0f);
@@ -95,7 +95,7 @@ public class ItemRifle extends Item {
 		int useTime = getMaxItemUseDuration(gun) - remaining;
 		FarragoMod.proxy.stopSounds();
 		if (useTime >= getTicksToFire(gun)) {
-			if (player.capabilities.isCreativeMode || consumeInventoryItem(player.inventory, FarragoMod.CELL, getMode(gun).getCellType())) {
+			if (player.capabilities.isCreativeMode || Inventories.consumeInventoryItem(player.inventory, FarragoMod.CELL, getMode(gun).getCellType())) {
 				if (!world.isRemote) {
 					world.playSoundAtEntity(player, "farrago:laser_fire", 1.0f, 1.0f);
 					RifleMode mode = getMode(gun);
@@ -125,29 +125,6 @@ public class ItemRifle extends Item {
 			}
 		}
 	}
-	
-	private boolean consumeInventoryItem(InventoryPlayer inv, Item item, int meta) {
-        int i = find(inv, item, meta);
-
-        if (i < 0) {
-            return false;
-        } else {
-            if (--inv.mainInventory[i].stackSize <= 0) {
-                inv.mainInventory[i] = null;
-            }
-            return true;
-        }
-    }
-	
-	private int find(InventoryPlayer inv, Item item, int meta) {
-        for (int i = 0; i < inv.mainInventory.length; i++) {
-            if (inv.mainInventory[i] != null && inv.mainInventory[i].getItem() == item && inv.mainInventory[i].getItemDamage() == meta) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
 	
 	public int getTicksToFire(ItemStack item) {
 		RifleMode mode = getMode(item);
@@ -231,7 +208,7 @@ public class ItemRifle extends Item {
 	}
 
 	public boolean hasAmmoFor(EntityPlayer player, RifleMode mode) {
-		return player.capabilities.isCreativeMode || find(player.inventory, FarragoMod.CELL, mode.getCellType()) >= 0;
+		return player.capabilities.isCreativeMode || Inventories.find(player.inventory, FarragoMod.CELL, mode.getCellType()) >= 0;
 	}
 
 	private static final String[] cellTypeNames = {

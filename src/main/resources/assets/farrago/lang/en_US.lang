@@ -5,6 +5,7 @@ language.code=en_US
 itemGroup.farrago=Farrago
 
 item.rifle.name=Yttric Rifle
+item.minigun.name=Yttric Minigun
 item.kahur.name=Kahur
 item.blunderbuss.name=Blunderbuss
 
@@ -15,6 +16,9 @@ item.cell_mine.name=Mining Rifle Magazine
 item.cell_explode.name=Explosive Rifle Magazine
 item.cell_teleport.name=Teleposition Rifle Magazine
 item.cell_blaze.name=Incendiary Rifle Magazine
+
+item.cell_minigun_empty.name=Empty Minigun Drum
+item.cell_minigun.name=High-Velocity Minigun Drum
 
 death.attack.rifle_backfire=%1$s overcharged their Yttric Rifle
 death.attack.blunderbuss_backfire=%1$s got a bit carried away with their Blunderbuss

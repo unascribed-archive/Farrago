@@ -107,12 +107,16 @@ public class ClientProxy implements Proxy {
 		double steps = interpolate ? (int)(distance(proj.lastTickPosX, proj.lastTickPosY, proj.lastTickPosZ, proj.posX, proj.posY, proj.posZ)/stepSize) : 1;
 		for (int i = 0; i < steps; i++) {
 			double[] pos = interpolate(proj.lastTickPosX, proj.lastTickPosY, proj.lastTickPosZ, proj.posX, proj.posY, proj.posZ, i/steps);
-			EntityRifleFX fx = new EntityRifleFX(proj.worldObj, pos[0], pos[1], pos[2], 0, 0, 0);
+			EntityRifleFX fx = new EntityRifleFX(proj.worldObj, pos[0], pos[1], pos[2], mode == null ? 0.3f : 1.0f, 0, 0, 0);
 			fx.motionX = fx.motionY = fx.motionZ = 0;
-			float r = ((mode.getColor() >> 16)&0xFF)/255f;
-			float g = ((mode.getColor() >> 8)&0xFF)/255f;
-			float b = (mode.getColor()&0xFF)/255f;
-			fx.setRBGColorF(r, g, b);
+			if (mode != null) {
+				float r = ((mode.getColor() >> 16)&0xFF)/255f;
+				float g = ((mode.getColor() >> 8)&0xFF)/255f;
+				float b = (mode.getColor()&0xFF)/255f;
+				fx.setRBGColorF(r, g, b);
+			} else {
+				
+			}
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

@@ -62,9 +62,11 @@ import com.gameminers.farrago.item.resource.ItemApocite;
 import com.gameminers.farrago.item.resource.ItemCell;
 import com.gameminers.farrago.item.resource.ItemDust;
 import com.gameminers.farrago.item.resource.ItemIngot;
+import com.gameminers.farrago.item.resource.ItemMinigunCell;
 import com.gameminers.farrago.item.resource.ItemRubble;
 import com.gameminers.farrago.item.tool.ItemBlunderbuss;
 import com.gameminers.farrago.item.tool.ItemKahur;
+import com.gameminers.farrago.item.tool.ItemMinigun;
 import com.gameminers.farrago.item.tool.ItemRifle;
 import com.gameminers.farrago.item.tool.ItemVividOrb;
 import com.gameminers.farrago.network.FarragoGuiHandler;
@@ -123,6 +125,8 @@ public class FarragoMod {
 	public static ItemRifle RIFLE;
 	public static ItemKahur KAHUR;
 	public static ItemApocite APOCITE;
+	public static ItemMinigun MINIGUN;
+	public static ItemMinigunCell MINIGUN_CELL;
 	
 	public static ItemChromaticPickaxe CHROMATIC_PICKAXE;
 	public static ItemChromaticAxe CHROMATIC_AXE;
@@ -188,6 +192,8 @@ public class FarragoMod {
 		CELL = new ItemCell();
 		KAHUR = new ItemKahur();
 		APOCITE = new ItemApocite();
+		MINIGUN = new ItemMinigun();
+		MINIGUN_CELL = new ItemMinigunCell();
 		
 		CHROMATIC_PICKAXE = new ItemChromaticPickaxe();
 		CHROMATIC_AXE = new ItemChromaticAxe().setUnlocalizedName("chromatic_axe");
@@ -237,6 +243,8 @@ public class FarragoMod {
 		GameRegistry.registerItem(RIFLE, "rifle");
 		GameRegistry.registerItem(KAHUR, "kahur");
 		GameRegistry.registerItem(APOCITE, "apocite");
+		GameRegistry.registerItem(MINIGUN, "minigun");
+		GameRegistry.registerItem(MINIGUN_CELL, "minigunCell");
 		
 		GameRegistry.registerItem(CHROMATIC_PICKAXE, "chromaticPickaxe");
 		GameRegistry.registerItem(CHROMATIC_AXE, "chromaticAxe");
@@ -400,6 +408,28 @@ public class FarragoMod {
 				'D', "gemApocite",
 				'C', "ingotYttriumCopper",
 				'B', Items.blaze_rod
+				));
+		GameRegistry.addRecipe(new ShapedOreRecipe(MINIGUN, 
+				"I  ",
+				" B ",
+				" bD",
+				'B', "blockYttriumCopper",
+				'I', "ingotYttriumCopper",
+				'D', new ItemStack(MINIGUN_CELL, 1, MINIGUN_CELL.getCapacity()+1),
+				'b', Items.blaze_rod
+				));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(MINIGUN_CELL, 1, MINIGUN_CELL.getCapacity()+1), 
+				"ICI",
+				"CBC",
+				"ICI",
+				'B', "blockYttriumCopper",
+				'I', "ingotYttriumCopper",
+				'C', new ItemStack(CELL, 1, 0)
+				));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(MINIGUN_CELL, 1, 0),
+				new ItemStack(MINIGUN_CELL, 1, MINIGUN_CELL.getCapacity()+1),
+				"blockRedstone", "blockRedstone",
+				"blockCopper", "blockCopper"
 				));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(CELL, 4, 0), 
 				"YGY",
