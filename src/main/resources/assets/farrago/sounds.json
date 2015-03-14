@@ -79,5 +79,23 @@
 				"stream": false
 			}
 		]
+	},
+	"minigun_spin_up": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "minigun_spin_up",
+				"stream": false
+			}
+		]
+	},
+	"minigun_spin": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "minigun_spin",
+				"stream": false
+			}
+		]
 	}
 }

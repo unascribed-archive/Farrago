@@ -8,3 +8,5 @@ laser_charge_short.ogg: based on 'charging loop 2' by JavierZumer - http://www.f
 laser_overcharge.ogg: 'metal door gate.mp3' by JavierZumer - http://www.freesound.org/people/JavierZumer/sounds/257233/
 laser_mode.ogg: 'Switch 31.wav' by LG - http://www.freesound.org/people/LG/sounds/72184/
 laser_scope.ogg: 'Gun scope zoom in' by satanicupsman - http://freesound.org/people/satanicupsman/sounds/172958/
+minigun_spin.ogg: 'Computer Hum 2' by tgfcoder - http://freesound.org/people/tgfcoder/sounds/146951/
+minigun_spin_up.ogg: based on 'Computer Hum 2' by tgfcoder - http://freesound.org/people/tgfcoder/sounds/146951/

@@ -53,8 +53,19 @@ public class ItemMinigun extends Item {
 	}
 	
 	@Override
+	public void onPlayerStoppedUsing(ItemStack gun, World world, EntityPlayer player, int remaining) {
+		FarragoMod.proxy.stopSounds();
+	}
+	
+	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
-		if (count > 71980) return;
+		if (72000-count < 20) return;
+		if (72000-count > 137) {
+			if ((72000-count) == 138 || (72000-count) % 43 == 0) {
+				player.playSound("farrago:minigun_spin", 1.0f, 1.0f);
+			}
+		}
+		if (player.isSneaking()) return;
 		if (count % getShotTime(72000-count) == 0) {
 			player.playSound("farrago:laser_fire", 0.75f, 2.0f);
 			InventoryPlayer inv = player.inventory;
@@ -128,6 +139,7 @@ public class ItemMinigun extends Item {
 			}
 		}
 		if (hasCell && player.hurtTime < 5) {
+			player.playSound("farrago:minigun_spin_up", 1.0f, 1.0f);
 			player.setItemInUse(gun, getMaxItemUseDuration(gun));
 		} else {
 			world.playSoundAtEntity(player, "random.click", 1.0f, 2.0f);
