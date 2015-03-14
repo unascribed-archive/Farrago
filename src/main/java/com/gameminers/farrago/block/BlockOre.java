@@ -32,6 +32,7 @@ public class BlockOre extends Block implements NameDelegate {
 		0
 	};
 	private IIcon[] icons = new IIcon[oreTypes.length];
+	private IIcon xenotimePole;
 	public BlockOre() {
 		super(Material.rock);
 		setBlockTextureName("farrago:watashi");
@@ -89,11 +90,15 @@ public class BlockOre extends Block implements NameDelegate {
 	
 	@Override
 	public IIcon getIcon(int side, int meta) {
+		if ((meta == 2 || meta == 1) && (side == 0 || side == 1)) {
+			return xenotimePole;
+		}
 		return meta >= oreTypes.length ? icons[0] : icons[meta];
 	}
 	
 	@Override
 	public void registerBlockIcons(IIconRegister registry) {
+		xenotimePole = registry.registerIcon("farrago:ore_xenotime_top");
 		for (int i = 0; i < oreTypes.length; i++) {
 			icons[i] = registry.registerIcon("farrago:ore_"+oreTypes[i]);
 		}
