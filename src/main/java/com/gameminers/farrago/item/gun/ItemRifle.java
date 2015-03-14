@@ -135,7 +135,9 @@ public class ItemRifle extends Item {
 	public IIcon getIcon(ItemStack item, int renderPass, EntityPlayer player, ItemStack itemInUse, int remaining) {
 		if (remaining == 0) return icons[0];
 		int useTime = getMaxItemUseDuration(itemInUse) - remaining;
-		return icons[Math.min(useTime/(getTicksToFire(item)/5), 5)];
+		int idx = Math.min(useTime/(getTicksToFire(item)/5), 5);
+		if (idx < 0 || idx > icons.length) return icons[0];
+		return icons[idx];
 	}
 	
 	public IIcon getIcon(ItemStack stack, int pass) {
