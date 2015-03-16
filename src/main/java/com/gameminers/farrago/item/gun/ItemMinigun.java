@@ -39,7 +39,7 @@ public class ItemMinigun extends Item {
 	
 	@Override
 	public int getMaxDamage() {
-		return 60;
+		return FarragoMod.config.getInt("minigun.cooldownTime");
 	}
 	
 	@Override
@@ -80,7 +80,7 @@ public class ItemMinigun extends Item {
 								stack.setItemDamage(getMaxDamage());
 								player.clearItemInUse();
 							}
-							EntityRifleProjectile proj = new EntityRifleProjectile(player.worldObj, player, 5.0f, 10.0f);
+							EntityRifleProjectile proj = new EntityRifleProjectile(player.worldObj, player, 5.0f * (float)FarragoMod.config.getDouble("minigun.projectileSpeedModifier"), 10.0f);
 							proj.setMode(null);
 							player.worldObj.spawnEntityInWorld(proj);
 						}

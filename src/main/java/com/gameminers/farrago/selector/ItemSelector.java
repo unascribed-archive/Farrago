@@ -8,6 +8,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.collect.Lists;
 
@@ -16,11 +17,11 @@ public class ItemSelector implements Selector {
 	private boolean lenientTag;
 	private ItemStack goat = new ItemStack(Items.apple);
 	public ItemSelector(Item item) {
-		this(new ItemStack(item, 1, 32767));
+		this(new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE));
 	}
 
 	public ItemSelector(Block item) {
-		this(new ItemStack(item, 1, 32767));
+		this(new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE));
 	}
 	
 	public ItemSelector(ItemStack item) {
@@ -44,8 +45,10 @@ public class ItemSelector implements Selector {
 
 	@Override
 	public boolean itemStackMatches(ItemStack stack) {
+		if (stack == item) return true;
+		if (stack == null) return false;
 		goat.func_150996_a(stack.getItem());
-		goat.setItemDamage(item.getItemDamage() == 32767 ? 32767 : stack.getItemDamage());
+		goat.setItemDamage(item.getItemDamage() == OreDictionary.WILDCARD_VALUE ? OreDictionary.WILDCARD_VALUE : stack.getItemDamage());
 		goat.setTagCompound(item.hasTagCompound() && stack.hasTagCompound() ? (NBTTagCompound)stack.getTagCompound().copy() : null);
 		ItemStack comp = goat;
 		if (lenientTag && item.hasTagCompound() && comp.hasTagCompound()) {
@@ -61,6 +64,14 @@ public class ItemSelector implements Selector {
 		}
 		comp.stackSize = item.stackSize;
 		return ItemStack.areItemStacksEqual(item, comp);
+	}
+	
+	@Override
+	public String toString() {
+		return Item.itemRegistry.getNameForObject(item.getItem())+
+				(item.getItemDamage() == OreDictionary.WILDCARD_VALUE ? "" : "@"+item.getItemDamage())+
+				(item.hasTagCompound() ? item.getTagCompound().toString() : "")+
+				(item.hasTagCompound() && lenientTag ? "?" : "");
 	}
 
 }

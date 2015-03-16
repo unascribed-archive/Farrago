@@ -197,7 +197,7 @@ public class ItemKahur extends Item {
 	
 	@Override
 	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target) {
-		if (player.isSneaking()) {
+		if (FarragoMod.config.getBoolean("kahur.allowPickingUpMobs") && player.isSneaking()) {
 			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityName")) {
 				return true;
 			}
@@ -270,7 +270,7 @@ public class ItemKahur extends Item {
 		        ent.prevRotationPitch = ent.rotationPitch = (float)(Math.atan2(ent.motionY, (double)f3) * 180.0D / Math.PI);
 				world.spawnEntityInWorld(ent);
 			}
-		} else if (!player.isSneaking()) {
+		} else if (!FarragoMod.config.getBoolean("kahur.allowPickingUpMobs") || !player.isSneaking()) {
 			ItemStack item = null;
 			int iter = 0;
 			int slot = 0;
@@ -390,6 +390,19 @@ public class ItemKahur extends Item {
 			copy = new ItemStack(Items.potato);
 		} else {
 			copy = player.inventory.decrStackSize(slot, 1);
+		}
+		if (!FarragoMod.config.getBoolean("kahur.allowShootingMundaneItems")) {
+			if (!(
+					(FarragoMod.config.getBoolean("kahur.special.potato.enable") && copy.getItem() == Items.potato) ||
+					(FarragoMod.config.getBoolean("kahur.special.poisonousPotato.enable") && copy.getItem() == Items.poisonous_potato) ||
+					(FarragoMod.config.getBoolean("kahur.special.bakedPotato.enable") && copy.getItem() == Items.baked_potato) ||
+					(FarragoMod.config.getBoolean("kahur.special.potion.enable") && copy.getItem() == Items.potionitem) ||
+					(FarragoMod.config.getBoolean("kahur.special.tnt.enable") && copy.getItem() == Item.getItemFromBlock(Blocks.tnt)) ||
+					(FarragoMod.config.getBoolean("kahur.special.torch.enable") && copy.getItem() == Item.getItemFromBlock(Blocks.torch)) ||
+					(FarragoMod.config.getBoolean("kahur.special.enderPearl.enable") && copy.getItem() == Items.ender_pearl)
+					)) {
+				return;
+			}
 		}
 		proj.setItem(copy);
 		proj.setDamage(Masses.getMass(copy)+(Masses.getMagic(copy)*2f));

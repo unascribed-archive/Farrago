@@ -1,7 +1,5 @@
 package com.gameminers.farrago.proxy;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ConcurrentModificationException;
 import java.util.Random;
 
@@ -19,8 +17,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.common.MinecraftForge;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -40,7 +37,6 @@ import com.gameminers.farrago.network.ModifyRifleModeMessage;
 import com.gameminers.farrago.pane.PaneBranding;
 import com.gameminers.farrago.pane.PaneOrbGlow;
 import com.gameminers.farrago.pane.PaneRifle;
-import com.google.common.base.Charsets;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -64,7 +60,7 @@ public class ClientProxy implements Proxy {
 		//new PaneVanityArmor().autoOverlay(GuiInventory.class);
 		new PaneOrbGlow().autoOverlay(GuiIngame.class);
 		new PaneRifle().autoOverlay(GuiIngame.class);
-		if (FarragoMod.brand != null) {
+		if (FarragoMod.showBrand && StringUtils.isNotBlank(FarragoMod.brand)) {
 			new PaneBranding().autoOverlay(GuiMainMenu.class);
 		}
 		RenderingRegistry.registerEntityRenderingHandler(EntityBlunderbussProjectile.class, new RenderBlunderbussProjectile());
@@ -81,18 +77,6 @@ public class ClientProxy implements Proxy {
 
 	@Override
 	public void preInit() {
-		File config = new File(Minecraft.getMinecraft().mcDataDir, "config");
-		if (config.exists() && config.isDirectory()) {
-			File brandFile = new File(config, "farrago-brand.txt");
-			if (brandFile.exists()) {
-				try {
-					FarragoMod.brand = StringEscapeUtils.unescapeJava(FileUtils.readFileToString(brandFile, Charsets.UTF_8));
-					FarragoMod.log.info("Brand loaded: "+FarragoMod.brand);
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
 	}
 
 	@Override
@@ -195,7 +179,7 @@ public class ClientProxy implements Proxy {
 	@SubscribeEvent
 	public void onFov(FOVUpdateEvent e) {
 		if (FarragoMod.scoped) {
-			e.newfov = 0.1f;
+			e.newfov = (float)FarragoMod.config.getDouble("rifle.scope.factor");
 		}
 	}
 	@SubscribeEvent
@@ -217,19 +201,19 @@ public class ClientProxy implements Proxy {
 							}
 							if (Keyboard.getEventCharacter() == '@') {
 								while (mc.gameSettings.keyBindsHotbar[1].isPressed()) {}
-								FarragoMod.RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(true, 1));
+								FarragoMod.CHANNEL.sendToServer(new ModifyRifleModeMessage(true, 1));
 								return;
 							}
 							if (Keyboard.getEventCharacter() == '^') {
 								while (mc.gameSettings.keyBindsHotbar[5].isPressed()) {}
-								FarragoMod.RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(true, 5));
+								FarragoMod.CHANNEL.sendToServer(new ModifyRifleModeMessage(true, 5));
 								return;
 							}
 						}
 						for (int i = 0; i < 9; i++) {
 							if (mc.gameSettings.keyBindsHotbar[i].isPressed()) {
 								while (mc.gameSettings.keyBindsHotbar[i].isPressed()) {} // drain pressTicks to zero to suppress vanilla behavior
-								FarragoMod.RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(true, i));
+								FarragoMod.CHANNEL.sendToServer(new ModifyRifleModeMessage(true, i));
 							}
 						}
 						return;
@@ -255,7 +239,7 @@ public class ClientProxy implements Proxy {
 							if (dWheel < 0) {
 								dWheel = -1;
 							}
-							FarragoMod.RIFLE_MODE_CHANNEL.sendToServer(new ModifyRifleModeMessage(false, dWheel*-1));
+							FarragoMod.CHANNEL.sendToServer(new ModifyRifleModeMessage(false, dWheel*-1));
 							return;
 						}
 					}

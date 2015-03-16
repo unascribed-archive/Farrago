@@ -29,13 +29,17 @@ public class Masses {
 	public static Map<Long, Float> bakedMass = Maps.newHashMap();
 	static boolean baked = false;
 	public static void calculateMass(Item i, int depth, int durability) {
+		if (!FarragoMod.config.getBoolean("kahur.calculateMasses")) {
+			updateMass(new ItemStack(i, 1, OreDictionary.WILDCARD_VALUE), 1.0f);
+			return;
+		}
 		if (depth > 100) {
 			throw new StackOverflowError();
 		}
 		for (IRecipe r : (List<IRecipe>)CraftingManager.getInstance().getRecipeList()) {
 			if (r == null) continue;
 			if (r.getRecipeOutput() == null) continue;
-			if (r.getRecipeOutput().getItem() == i && (durability == 32767 || r.getRecipeOutput().getItemDamage() == durability)) {
+			if (r.getRecipeOutput().getItem() == i && (durability == OreDictionary.WILDCARD_VALUE || r.getRecipeOutput().getItemDamage() == durability)) {
 				float mass = 0f;
 				try {
 					if (r instanceof ShapedRecipes) {
@@ -79,13 +83,13 @@ public class Masses {
 			}
 		}
 		for (Map.Entry<ItemStack, ItemStack> en : ((Map<ItemStack, ItemStack>)FurnaceRecipes.smelting().getSmeltingList()).entrySet()) {
-			if (en.getValue().getItem() == i && (durability == 32767 || en.getValue().getItemDamage() == durability)) {
+			if (en.getValue().getItem() == i && (durability == OreDictionary.WILDCARD_VALUE || en.getValue().getItemDamage() == durability)) {
 				ItemStack copy = en.getValue().copy();
 				copy.stackSize = 1;
 				updateMass(copy, getProtoMass(en.getKey(), depth)*0.75f);
 			}
 		}
-		updateMass(new ItemStack(i, 1, 32767), 1.0f);
+		updateMass(new ItemStack(i, 1, OreDictionary.WILDCARD_VALUE), 1.0f);
 	}
 
 	
@@ -197,7 +201,7 @@ public class Masses {
 				return array(mass.get(hash));
 			}
 		}
-		goat.setItemDamage(32767);
+		goat.setItemDamage(OreDictionary.WILDCARD_VALUE);
 		hash = FarragoMod.hashItemStack(goat);
 		if (baked && allowBaked) {
 			if (bakedMass.containsKey(hash)) {

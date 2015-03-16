@@ -11,11 +11,7 @@ import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Keyboard;
@@ -24,8 +20,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.gameminers.farrago.FarragoMod;
-import com.gameminers.farrago.selector.ItemSelector;
-import com.gameminers.farrago.selector.NullSelector;
 import com.gameminers.farrago.selector.Selector;
 import com.google.common.collect.Lists;
 
@@ -84,36 +78,17 @@ public class Encyclopedia implements IResourceManagerReloadListener {
 			for (int i = 0; i < rootnl.getLength(); i++) {
 				Node node = rootnl.item(i);
 				if ("entry".equals(node.getNodeName())) {
-					Selector selector = parseDef(node.getAttributes().getNamedItem("def").getNodeValue());
+					Selector selector = FarragoMod.parseSelector(node.getAttributes().getNamedItem("def").getNodeValue());
 					String body = node.getTextContent().replaceAll("^\n", "").replace("\n", " ").replace("\t", "");
 					entries.add(new EncyclopediaEntry(selector, body));
 				} else if ("ignore".equals(node.getNodeName())) {
-					Selector selector = parseDef(node.getAttributes().getNamedItem("def").getNodeValue());
+					Selector selector = FarragoMod.parseSelector(node.getAttributes().getNamedItem("def").getNodeValue());
 					entries.add(new EncyclopediaEntry(selector, null));
 				}
 			}
 		} catch (Exception e) {
 			FarragoMod.log.error("Failed to load encyclopedia", e);
 		}
-	}
-
-	private Selector parseDef(String def) throws NBTException {
-		int meta = 32767;
-		NBTTagCompound tag = null;
-		boolean lenientTag = def.endsWith("}?");
-		if (def.contains("{") && def.contains("}")) {
-			String mojangson = def.substring(def.indexOf('{'), def.indexOf('}')+1);
-			tag = (NBTTagCompound) JsonToNBT.func_150315_a(mojangson);
-			def = def.substring(0, def.indexOf('{'));
-		}
-		if (def.contains("@")) {
-			meta = Integer.parseInt(def.substring(def.indexOf('@')+1));
-			def = def.substring(0, def.indexOf('@'));
-		}
-		ItemStack stack = new ItemStack((Item) Item.itemRegistry.getObject(def), 1, meta);
-		if (stack.getItem() == null) return new NullSelector();
-		stack.setTagCompound(tag);
-		return new ItemSelector(stack, lenientTag);
 	}
 
 }

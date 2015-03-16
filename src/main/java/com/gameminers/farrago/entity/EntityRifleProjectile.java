@@ -22,6 +22,7 @@ import net.minecraftforge.event.world.BlockEvent;
 
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.enums.RifleMode;
+import com.typesafe.config.Config;
 
 public class EntityRifleProjectile extends EntityThrowable {
 	public EntityRifleProjectile(World p_i1773_1_) {
@@ -62,7 +63,7 @@ public class EntityRifleProjectile extends EntityThrowable {
 				worldObj.setBlock((int)posX, (int)posY, (int)posZ, Blocks.fire);
 			}
     	}
-    	if (ticksExisted > 250) {
+    	if (ticksExisted > (getMode() == null ? FarragoMod.config.getInt("minigun.projectileLifetime") : FarragoMod.config.getInt("rifle.projectile.lifetime"))) {
     		setDead();
     	}
     }
@@ -74,10 +75,15 @@ public class EntityRifleProjectile extends EntityThrowable {
     
     @Override
     protected float getGravityVelocity() {
-    	if (getMode() == RifleMode.TELEPORT) return 0.015f;
-    	return 0f;
+    	return (float)getConfigSection().getDouble("gravity");
     }
     
+	private Config getConfigSection() {
+		RifleMode mode = getMode();
+		if (mode == null) return FarragoMod.config.getConfig("minigun");
+		return FarragoMod.config.getConfig("rifle.modes."+mode.name().toLowerCase());
+	}
+
 	@Override
 	protected void onImpact(MovingObjectPosition pos) {
 		if (!worldObj.isRemote) {
@@ -116,10 +122,11 @@ public class EntityRifleProjectile extends EntityThrowable {
 			Block hitBlock = worldObj.getBlock(hitBlockX, hitBlockY, hitBlockZ);
 			Block targetBlock = worldObj.getBlock(targetBlockX, targetBlockY, targetBlockZ);
 			if (getMode() == null) {
+				int cost = 0;
 				if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
-					((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 4f);
-					ticksExisted += 25;
-				} else {
+					((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), (float)FarragoMod.config.getDouble("minigun.damage"));
+					cost = FarragoMod.getPassThruCost("minigun.passThruCost.entity");
+				} else if (FarragoMod.config.getBoolean("minigun.breakPlants")) {
 					if (hitBlock.getMaterial() == Material.plants || hitBlock.getMaterial() == Material.leaves ||
 							hitBlock.isReplaceable(worldObj, hitBlockX, hitBlockY, hitBlockZ) || hitBlock.getMaterial() == Material.glass) {
 						if (pos.typeOfHit == MovingObjectType.BLOCK && getThrower() instanceof EntityPlayerMP) {
@@ -128,59 +135,56 @@ public class EntityRifleProjectile extends EntityThrowable {
 							return;
 						}
 					}
-					setDead();
+					cost = FarragoMod.getPassThruCost("minigun.passThruCost.block");
 				}
+				applyCost(cost);
 				return;
 			}
 			switch (getMode()) {
 				case RIFLE: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
-						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 10f);
-						ticksExisted += 10;
-					} else {
-						ticksExisted += 15;
+						float damage = (float)getConfigSection().getDouble("damage");
+						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), damage);
 					}
 					break;
 				}
 				case SCATTER: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
-						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 8f);
-						ticksExisted += 15;
-					} else {
-						ticksExisted += 20;
+						float damage = (float)getConfigSection().getDouble("damage");
+						((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), damage);
 					}
 					break;
 				}
 				case BAZOOKA: {
-					worldObj.createExplosion(this, (int)pos.hitVec.xCoord, (int)pos.hitVec.yCoord, (int)pos.hitVec.zCoord, 3.0f, false);
-					setDead();
+					float radius = (float)getConfigSection().getDouble("explosionRadius");
+					worldObj.createExplosion(this, (int)pos.hitVec.xCoord, (int)pos.hitVec.yCoord, (int)pos.hitVec.zCoord, radius, false);
 					break;
 				} 
 				case BLAZE: {
 					if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
-						((EntityLivingBase)pos.entityHit).setFire(40);
+						((EntityLivingBase)pos.entityHit).setFire(getConfigSection().getInt("fireTicks"));
 						if (pos.entityHit instanceof EntityAnimal) {
-							((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 20f);
+							float damage = (float)getConfigSection().getDouble("damageToAnimals");
+							((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), damage);
 						} else {
-							((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), 9f);
+							float damage = (float)getConfigSection().getDouble("damage");
+							((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("laser", this, getThrower()), damage);
 						}
-						ticksExisted += 20;
 					} else {
-						if (targetBlock == null || targetBlock.isAir(worldObj, targetBlockX, targetBlockY, targetBlockZ) ||
+						if (getConfigSection().getBoolean("setsFiresOnBlockHit") && targetBlock == null || targetBlock.isAir(worldObj, targetBlockX, targetBlockY, targetBlockZ) ||
 								targetBlock.isReplaceable(worldObj, targetBlockX, targetBlockY, targetBlockZ) || !targetBlock.isCollidable()) {
 							worldObj.setBlock(targetBlockX, targetBlockY, targetBlockZ, Blocks.fire);
 						}
-						if (hitBlock == Blocks.tnt) {
+						if (getConfigSection().getBoolean("ignitesTnt") && hitBlock == Blocks.tnt) {
 							((BlockTNT)Blocks.tnt).func_150114_a(worldObj, hitBlockX, hitBlockY, hitBlockZ, 1, getThrower());
 							worldObj.setBlockToAir(hitBlockX, hitBlockY, hitBlockZ);
 						}
-						ticksExisted += 25;
 					}
 					break;
 				}
 				case EXPLOSIVE: {
-					worldObj.createExplosion(this, pos.hitVec.xCoord, pos.hitVec.yCoord, pos.hitVec.zCoord, 4.0f, true);
-					setDead();
+					float radius = (float)getConfigSection().getDouble("explosionRadius");
+					worldObj.createExplosion(this, pos.hitVec.xCoord, pos.hitVec.yCoord, pos.hitVec.zCoord, radius, true);
 					break;
 				} 
 				case MINING: {
@@ -190,36 +194,37 @@ public class EntityRifleProjectile extends EntityThrowable {
 							for (int y = pos.blockY-1; y <= pos.blockY+1; y++) {
 								for (int z = pos.blockZ-1; z <= pos.blockZ+1; z++) {
 									if (!worldObj.isAirBlock(x, y, z) && worldObj.canMineBlock(player, x, y, z)) {
-										harvest(player, x, y, z);
-										ticksExisted += 3;
+										if (harvest(player, x, y, z)) {
+											ticksExisted += FarragoMod.getPassThruCost("rifle.modes.mining.harvestCost.harvestable");
+										} else {
+											ticksExisted += FarragoMod.getPassThruCost("rifle.modes.mining.harvestCost.unharvestable");
+										}
 									}
 								}
 							}
 						}
 					}
-					break;
+					return;
 				}
 				case PRECISION_MINING: {
 					if (pos.typeOfHit == MovingObjectType.BLOCK && getThrower() instanceof EntityPlayerMP) {
 						EntityPlayerMP player = ((EntityPlayerMP)getThrower());
 						if (!worldObj.isAirBlock(pos.blockX, pos.blockY, pos.blockZ) && worldObj.canMineBlock(player, pos.blockX, pos.blockY, pos.blockZ)) {
 							if (harvest(player, pos.blockX, pos.blockY, pos.blockZ)) {
-								ticksExisted += 8;
+								ticksExisted += FarragoMod.getPassThruCost("rifle.modes.precision_mining.harvestCost.harvestable");
 							} else {
-								ticksExisted += 12;
+								ticksExisted += FarragoMod.getPassThruCost("rifle.modes.precision_mining.harvestCost.unharvestable");
 							}
 						}
 					}
-					break;
+					return;
 				}
 				case GLOW: {
 					if (pos.typeOfHit == MovingObjectType.BLOCK) {
-						setDead();
 						if (targetBlock == null || targetBlock.isAir(worldObj, targetBlockX, targetBlockY, targetBlockZ) ||
 								targetBlock.isReplaceable(worldObj, targetBlockX, targetBlockY, targetBlockZ) || !targetBlock.isCollidable()) {
 							worldObj.setBlock(targetBlockX, targetBlockY, targetBlockZ, FarragoMod.GLOW);
 							worldObj.setBlockMetadataWithNotify(targetBlockX, targetBlockY, targetBlockZ, pos.sideHit, 3);
-							return;
 						}
 					}
 					break;
@@ -248,12 +253,27 @@ public class EntityRifleProjectile extends EntityThrowable {
 			                    getThrower().attackEntityFrom(DamageSource.fall, event.attackDamage);
 		                    }
 			            }
-			            setDead();
 			        }
-					break;
+			        setDead();
+					return;
 				}
 			}
 			worldObj.playSoundAtEntity(this, "farrago:laser_impact", 1.0f, 1.0f);
+			int cost;
+			if (pos.typeOfHit == MovingObjectType.ENTITY) {
+				cost = FarragoMod.getPassThruCost(getConfigSection(), "passThruCost.entity");
+			} else {
+				cost = FarragoMod.getPassThruCost(getConfigSection(), "passThruCost.block");
+			}
+			applyCost(cost);
+		}
+	}
+
+	private void applyCost(int cost) {
+		if (cost == -1) {
+			setDead();
+		} else {
+			ticksExisted += cost;
 		}
 	}
 

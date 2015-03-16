@@ -45,7 +45,7 @@ public class ItemMinigunCell extends Item {
 		return stack.getItemDamage() < getCapacity()+1;
 	}
 	public int getCapacity() {
-		return 128;
+		return FarragoMod.config.getInt("minigun.shotsPerDrum");
 	}
 	@Override
 	public int getMaxDamage() {

@@ -37,6 +37,13 @@ minecraft {
 	replaceIn "src/main/java/com/gameminers/farrago/FarragoMod.java"
 	replace "@VERSION@", project.version
 	replace "@MCVERSION@", project.minecraft.version
+	
+	srgExtra "PK: com/typesafe/config com/gameminers/farrago/repackage/com/typesafe/config"
+}
+
+configurations {
+	external
+	compile.extendsFrom external
 }
 
 dependencies {
@@ -46,7 +53,11 @@ dependencies {
 	compile 'codechicken:NotEnoughItems:1.7.10-1.0.3.74:dev'
     compile 'com.gameminers:glasspane:1.0:dev'
     compile 'com.gameminers:kitchensink:1.0:dev'
+	external 'com.typesafe:config:1.2.1'
 
+}
+jar {
+	from { configurations.external.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
 processResources {

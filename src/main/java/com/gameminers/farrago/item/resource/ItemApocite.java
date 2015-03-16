@@ -61,7 +61,9 @@ public class ItemApocite extends Item {
 	}
 	
 	private boolean rot(ItemStack stack, int i) {
+		if (!FarragoMod.config.getBoolean("resources.apocite.decay")) return false;
 		if (stack.hasTagCompound() && stack.getTagCompound().getBoolean("Stable")) return false;
+		i /= FarragoMod.config.getDouble("resources.apocite.decayRate");
 		if (itemRand.nextInt(i) == 0) {
 			stack.setItemDamage(stack.getItemDamage()+1);
 		}

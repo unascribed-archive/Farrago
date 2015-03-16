@@ -46,7 +46,7 @@ public class ItemRifle extends Item {
 	
 	@Override
 	public int getMaxDamage() {
-		return 1250;
+		return FarragoMod.config.getInt("rifle.durability");
 	}
 	
 	@Override
@@ -107,12 +107,15 @@ public class ItemRifle extends Item {
 					}
 					if (mode == RifleMode.SCATTER) {
 						spread = 10f;
-						count = itemRand.nextInt(10)+5;
+						int min = FarragoMod.config.getInt("rifle.modes.scatter.count.min");
+						int max = FarragoMod.config.getInt("rifle.modes.scatter.count.max");
+						count = itemRand.nextInt((max-min)+1)+min;
 					} else if (mode == RifleMode.TELEPORT) {
 						speed = 3f;
 					} else if (mode == RifleMode.PRECISION_MINING || mode == RifleMode.MINING) {
 						speed = 0.9f;
 					}
+					speed *= (float)FarragoMod.config.getDouble("rifle.projectile.speedModifier");
 					for (int i = 0; i < count; i++) {
 						EntityRifleProjectile proj = new EntityRifleProjectile(world, player, speed, spread);
 						proj.setMode(mode);
@@ -151,7 +154,7 @@ public class ItemRifle extends Item {
 	
 	@Override
 	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
-		if (entityLiving instanceof EntityPlayer) {
+		if (FarragoMod.config.getBoolean("rifle.scope.enabled") && entityLiving instanceof EntityPlayer) {
 			EntityPlayer player = ((EntityPlayer)entityLiving);
 			if (player.isSneaking()) {
 				if (player.worldObj.isRemote) {

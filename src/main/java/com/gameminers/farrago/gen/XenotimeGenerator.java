@@ -24,7 +24,9 @@ public class XenotimeGenerator implements IWorldGenerator {
         	int z = random.nextInt(16);
         	if (c.getBlock(x, y, z) == Blocks.stone) {
         		xenotime.generate(world, random, (chunkX*16)+x, y, (chunkZ*16)+z);
-        		apocite.generate(world, random, (chunkX*16)+x, y, (chunkZ*16)+z);
+        		if (FarragoMod.config.getBoolean("worldGen.apociteOre.generate")) {
+        			apocite.generate(world, random, (chunkX*16)+x, y, (chunkZ*16)+z);
+        		}
         	}
         }
 	}

@@ -9,6 +9,8 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
+import com.gameminers.farrago.FarragoMod;
+
 public class TileEntityCombustor extends TileEntityMachineFurnaceLike implements ISidedInventory {
 	public TileEntityCombustor() {
 		super("container.combustor");
@@ -59,7 +61,7 @@ public class TileEntityCombustor extends TileEntityMachineFurnaceLike implements
 					if (this.cookTime >= (quick ? 2 : 7)) {
 						this.cookTime = 0;
 						this.smeltItem();
-						if (worldObj.rand.nextBoolean()) {
+						if (FarragoMod.config.getBoolean("machines.combustor.enableMultiSmelt") && worldObj.rand.nextBoolean()) {
 							smeltItem();
 							if (worldObj.rand.nextBoolean()) {
 								smeltItem();

@@ -54,9 +54,9 @@ public class ItemFondue extends ItemFood {
 	@Override
 	public void onUpdate(ItemStack p_77663_1_, World p_77663_2_,
 			Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
-		super.onUpdate(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
 		if (!p_77663_2_.isRemote) return;
 		if (p_77663_1_.getItemDamage() != 4) return;
+		if (!FarragoMod.config.getBoolean("fondue.cyberCider.jingle")) return;
 		if (p_77663_3_ instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)p_77663_3_;
 			if (player.getCurrentEquippedItem() == p_77663_1_) {

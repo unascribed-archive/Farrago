@@ -266,23 +266,25 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 			}
 			boolean dustable = false;
 			boolean dirt = furnaceItemStacks[0].getItem() == Item.getItemFromBlock(Blocks.dirt);
-			int[] ids = OreDictionary.getOreIDs(furnaceItemStacks[0]);
-			for (int id : ids) {
-				String nm = OreDictionary.getOreName(id);
-				String bare = null;
-				if (nm.startsWith("ingot")) {
-					bare = nm.substring(5);
-				} else if (nm.startsWith("gem")) {
-					bare = nm.substring(3);
-				} else if (nm.startsWith("block")) {
-					bare = nm.substring(5);
-				}
-				if (bare != null) {
-					String dnm = "dust"+bare;
-					List<ItemStack> dustos = OreDictionary.getOres(dnm);
-					if (!dustos.isEmpty()) {
-						dustable = true;
-						break;
+			if (FarragoMod.config.getBoolean("machines.scrapper.enableDustConversion")) {
+				int[] ids = OreDictionary.getOreIDs(furnaceItemStacks[0]);
+				for (int id : ids) {
+					String nm = OreDictionary.getOreName(id);
+					String bare = null;
+					if (nm.startsWith("ingot")) {
+						bare = nm.substring(5);
+					} else if (nm.startsWith("gem")) {
+						bare = nm.substring(3);
+					} else if (nm.startsWith("block")) {
+						bare = nm.substring(5);
+					}
+					if (bare != null) {
+						String dnm = "dust"+bare;
+						List<ItemStack> dustos = OreDictionary.getOres(dnm);
+						if (!dustos.isEmpty()) {
+							dustable = true;
+							break;
+						}
 					}
 				}
 			}
@@ -335,7 +337,7 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 		if (itemstack == null) return 1;
 		if (depth >= 14) return 0;
 		debug(prefix+Item.itemRegistry.getNameForObject(itemstack.getItem())+"@"+itemstack.getItemDamage()+" x"+itemstack.stackSize);
-		if (depth == 0) {
+		if (FarragoMod.config.getBoolean("machines.scrapper.enableDustConversion") && depth == 0) {
 			int[] ids = OreDictionary.getOreIDs(itemstack);
 			ItemStack dust = null;
 			boolean nine = false;

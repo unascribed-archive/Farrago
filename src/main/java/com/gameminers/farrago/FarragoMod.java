@@ -1,11 +1,17 @@
 package com.gameminers.farrago;
 
+import gminers.kitchensink.Files;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
@@ -18,8 +24,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Timer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.chunk.Chunk;
@@ -34,6 +43,9 @@ import net.minecraftforge.oredict.RecipeSorter.Category;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,7 +66,6 @@ import com.gameminers.farrago.gen.XenotimeGenerator;
 import com.gameminers.farrago.gen.YttriumGenerator;
 import com.gameminers.farrago.item.ItemFondue;
 import com.gameminers.farrago.item.ItemUndefined;
-import com.gameminers.farrago.item.chromatic.Chromatics;
 import com.gameminers.farrago.item.chromatic.ItemChromaticArmor;
 import com.gameminers.farrago.item.chromatic.ItemChromaticAxe;
 import com.gameminers.farrago.item.chromatic.ItemChromaticHoe;
@@ -78,9 +89,18 @@ import com.gameminers.farrago.network.ModifyRifleModeMessage;
 import com.gameminers.farrago.proxy.Proxy;
 import com.gameminers.farrago.recipes.RecipeChromatic;
 import com.gameminers.farrago.recipes.RecipesVividOrbDyes;
+import com.gameminers.farrago.selector.ItemSelector;
+import com.gameminers.farrago.selector.NullSelector;
+import com.gameminers.farrago.selector.Selector;
 import com.gameminers.farrago.tileentity.TileEntityCellFiller;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
+import com.google.common.collect.Maps;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValue;
+import com.typesafe.config.ConfigValueType;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IFuelHandler;
@@ -144,10 +164,13 @@ public class FarragoMod {
 	public static ItemChromaticArmor CHROMATIC_LEGGINGS;
 	public static ItemChromaticArmor CHROMATIC_BOOTS;
 	
-	public static SimpleNetworkWrapper RIFLE_MODE_CHANNEL;
+	public static SimpleNetworkWrapper CHANNEL;
 	
 	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
-	public static String brand;
+	
+	public static String brand = null;
+	public static boolean showBrand = true;
+	
 	public static boolean copperlessEnvironment;
 	public static CreativeTabs creativeTab = new CreativeTabs("farrago") {
 		private ItemStack iconItemStack;
@@ -167,17 +190,51 @@ public class FarragoMod {
 	public static int scopeTicks;
 	private YttriumGenerator yttrGen;
 	private XenotimeGenerator xenoGen;
+	private Map<Selector, String> disabled = Maps.newHashMap();
+	public static Config config;
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
+		File configFile = new File(Minecraft.getMinecraft().mcDataDir, "config/farrago.conf");
+		if (!configFile.exists()) {
+			saveDefaultConfig(configFile);
+		}
+		config = ConfigFactory.parseFile(configFile);
+		try {
+			brand = config.getString("modpack.brand");
+		} catch (ConfigException.Null ex) {
+			brand = null;
+		}
+		showBrand = config.getBoolean("modpack.showBrand");
+		if (!config.getBoolean("modified")) {
+			saveDefaultConfig(configFile);
+			config = ConfigFactory.parseFile(configFile);
+		}
 		proxy.preInit();
 	}
 	
+	private void saveDefaultConfig(File configFile) {
+		try {
+			Files.mkdirs(configFile.getParentFile());
+			Files.createNewFile(configFile);
+			ResourceLocation defaultConfig = new ResourceLocation("farrago", "farrago.conf");
+			InputStream in = Minecraft.getMinecraft().getResourceManager().getResource(defaultConfig).getInputStream();
+			String config = IOUtils.toString(in);
+			in.close();
+			config = config
+					.replace("@MODPACK_BRAND@", String.valueOf(brand))
+					.replace("@SHOW_BRAND@", Boolean.toString(showBrand));
+			FileUtils.writeStringToFile(configFile, config);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
 	@EventHandler
 	public void onInit(FMLInitializationEvent e) {
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new FarragoGuiHandler());
-		RIFLE_MODE_CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel("Farrago");
-		RIFLE_MODE_CHANNEL.registerMessage(ModifyRifleModeHandler.class, ModifyRifleModeMessage.class, 0, Side.SERVER);
+		CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel("Farrago");
+		CHANNEL.registerMessage(ModifyRifleModeHandler.class, ModifyRifleModeMessage.class, 0, Side.SERVER);
 		
 		COMBUSTOR = new BlockCombustor();
 		SCRAPPER = new BlockScrapper();
@@ -251,7 +308,9 @@ public class FarragoMod {
 		GameRegistry.registerItem(APOCITE, "apocite");
 		GameRegistry.registerItem(MINIGUN, "minigun");
 		GameRegistry.registerItem(MINIGUN_CELL, "minigunCell");
-		GameRegistry.registerItem(UNDEFINED, "undefined");
+		if (config.getBoolean("eegg.undefined")) {
+			GameRegistry.registerItem(UNDEFINED, "undefined");
+		}
 		
 		GameRegistry.registerItem(CHROMATIC_PICKAXE, "chromaticPickaxe");
 		GameRegistry.registerItem(CHROMATIC_AXE, "chromaticAxe");
@@ -271,11 +330,13 @@ public class FarragoMod {
 		DUST.registerOres();
 		INGOT.registerOres();
 		RESOURCE.registerOres();
-		for (String s : new String[] {ChestGenHooks.DUNGEON_CHEST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, ChestGenHooks.PYRAMID_DESERT_CHEST, ChestGenHooks.STRONGHOLD_LIBRARY, ChestGenHooks.MINESHAFT_CORRIDOR}) {
-			for (int color : new int[] {0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF}) {
-				ItemStack orb = new ItemStack(VIVID_ORB);
-				VIVID_ORB.setColor(orb, color);
-				ChestGenHooks.addItem(s, new WeightedRandomChestContent(orb, 0, 2, 25));
+		if (config.getBoolean("chromatics.orb.spawnInDungeons")) {
+			for (String s : new String[] {ChestGenHooks.DUNGEON_CHEST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, ChestGenHooks.PYRAMID_DESERT_CHEST, ChestGenHooks.STRONGHOLD_LIBRARY, ChestGenHooks.MINESHAFT_CORRIDOR}) {
+				for (int color : new int[] {0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF}) {
+					ItemStack orb = new ItemStack(VIVID_ORB);
+					VIVID_ORB.setColor(orb, color);
+					ChestGenHooks.addItem(s, new WeightedRandomChestContent(orb, 0, 2, 25));
+				}
 			}
 		}
 		GameRegistry.addRecipe(new RecipesVividOrbDyes());
@@ -288,8 +349,13 @@ public class FarragoMod {
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 7), new ItemStack(INGOT, 1, 2), 0);
 		GameRegistry.addSmelting(new ItemStack(DUST, 1, 8), new ItemStack(Items.ender_pearl), 0);
 		GameRegistry.addSmelting(new ItemStack(ORE, 1, 0), new ItemStack(INGOT, 1, 0), 0);
-		GameRegistry.registerWorldGenerator(yttrGen = new YttriumGenerator(), 5);
-		GameRegistry.registerWorldGenerator(xenoGen = new XenotimeGenerator(), 4);
+		GameRegistry.addSmelting(new ItemStack(ORE, 1, 1), new ItemStack(APOCITE), 0);
+		if (config.getBoolean("worldGen.yttriumOre.generate")) {
+			GameRegistry.registerWorldGenerator(yttrGen = new YttriumGenerator(), 5);
+		}
+		if (config.getBoolean("worldGen.xenotime.generate")) {
+			GameRegistry.registerWorldGenerator(xenoGen = new XenotimeGenerator(), 4);
+		}
 		
 		RecipeSorter.register("farrago:chromatic_shaped", RecipeChromatic.class, Category.SHAPED, "before:minecraft:shapeless");
 		RecipeSorter.register("farrago:vivid_orb_dyes", RecipesVividOrbDyes.class, Category.SHAPELESS, "after:minecraft:shapeless");
@@ -301,284 +367,437 @@ public class FarragoMod {
 		
 		RESOURCE.registerRecipes();
 		
-		ItemStack eow = new ItemStack(CHROMATIC_SWORD);
-		NBTTagCompound compound = new NBTTagCompound();
-		NBTTagList ench = new NBTTagList();
-		{
-	        NBTTagCompound enchCompound = new NBTTagCompound();
-	        enchCompound.setShort("id", (short)Enchantment.sharpness.effectId);
-	        enchCompound.setShort("lvl", (short)2149);
-	        ench.appendTag(enchCompound);
+		if (config.getBoolean("eegg.allowEaterOfWorldsCrafting")) {
+			ItemStack eow = new ItemStack(CHROMATIC_SWORD);
+			NBTTagCompound compound = new NBTTagCompound();
+			NBTTagList ench = new NBTTagList();
+			{
+		        NBTTagCompound enchCompound = new NBTTagCompound();
+		        enchCompound.setShort("id", (short)Enchantment.sharpness.effectId);
+		        enchCompound.setShort("lvl", (short)2149);
+		        ench.appendTag(enchCompound);
+			}
+			{
+		        NBTTagCompound enchCompound = new NBTTagCompound();
+		        enchCompound.setShort("id", (short)Enchantment.looting.effectId);
+		        enchCompound.setShort("lvl", (short)10);
+		        ench.appendTag(enchCompound);
+			}
+			{
+		        NBTTagCompound enchCompound = new NBTTagCompound();
+		        enchCompound.setShort("id", (short)Enchantment.knockback.effectId);
+		        enchCompound.setShort("lvl", (short)12);
+		        ench.appendTag(enchCompound);
+			}
+	        compound.setTag("ench", ench);
+			compound.setBoolean("Unbreakable", true);
+			eow.setTagCompound(compound);
+			eow.setStackDisplayName("\u00A7cEater of Worlds");
+			GameRegistry.addShapelessRecipe(new ItemStack(MACHINE, 1, 0), COMBUSTOR);
+			GameRegistry.addShapelessRecipe(new ItemStack(MACHINE, 1, 1), SCRAPPER);
+			GameRegistry.addRecipe(new RecipeChromatic(eow,
+					"DVD",
+					"+y+",
+					"d+d",
+					'D', new ItemStack(DUST, 1, 4),
+					'y', "blockYttriumCopper",
+					'd', "blockDiamond",
+					'+', "blockNetherStar",
+					'V', VIVID_ORB
+					));
 		}
-		{
-	        NBTTagCompound enchCompound = new NBTTagCompound();
-	        enchCompound.setShort("id", (short)Enchantment.looting.effectId);
-	        enchCompound.setShort("lvl", (short)10);
-	        ench.appendTag(enchCompound);
+		
+		if (config.getBoolean("fondue.cider.craftable")) {
+			GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 3),
+					"A",
+					"C",
+					'A', Items.apple,
+					'C', CAQUELON
+					);
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(FONDUE, 1, 3)), config.getString("fondue.cider.disableReason"));
 		}
-		{
-	        NBTTagCompound enchCompound = new NBTTagCompound();
-	        enchCompound.setShort("id", (short)Enchantment.knockback.effectId);
-	        enchCompound.setShort("lvl", (short)12);
-	        ench.appendTag(enchCompound);
+		
+		if (config.getBoolean("fondue.cheese.craftable")) {
+			GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 0),
+					"M",
+					"C",
+					'M', Items.milk_bucket,
+					'C', CAQUELON
+					);
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(FONDUE, 1, 0)), config.getString("fondue.cheese.disableReason"));
 		}
-        compound.setTag("ench", ench);
-		compound.setBoolean("Unbreakable", true);
-		eow.setTagCompound(compound);
-		Chromatics.setColor(eow, 0xFF0000);
-		eow.setStackDisplayName("\u00A7cEater of Worlds");
-		GameRegistry.addShapelessRecipe(new ItemStack(MACHINE, 1, 0), COMBUSTOR);
-		GameRegistry.addShapelessRecipe(new ItemStack(MACHINE, 1, 1), SCRAPPER);
-		GameRegistry.addRecipe(new RecipeChromatic(eow,
-				"DVD",
-				"+y+",
-				"d+d",
-				'D', new ItemStack(DUST, 1, 4),
-				'y', "blockYttriumCopper",
-				'd', "blockDiamond",
-				'+', "blockNetherStar",
-				'V', VIVID_ORB
-				));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(VIVID_ORB),
-				"QIQ",
-				"IEI",
-				"QIQ",
-				'E', "gemEnderPearl",
-				'I', "ingotIron",
-				'Q', "gemQuartz"
-				));
-		GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 3),
-				"A",
-				"C",
-				'A', Items.apple,
-				'C', CAQUELON
-				);
-		GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 0),
-				"M",
-				"C",
-				'M', Items.milk_bucket,
-				'C', CAQUELON
-				);
-		GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 1),
-				"cWB",
-				" Cw",
-				'W', Items.water_bucket,
-				'w', Items.wheat,
-				'c', Items.chicken,
-				'B', Items.beef,
-				'C', CAQUELON
-				);
-		GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 2),
-				"ccc",
-				" C ",
-				'c', new ItemStack(Items.dye, 1, 3),
-				'C', CAQUELON
-				);
-		GameRegistry.addRecipe(new ShapedOreRecipe(CAQUELON, 
-				"IBI",
-				" I ",
-				'I', "ingotIron",
-				'B', Items.bucket
-				));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(MACHINE, 1, 0),
-				"III",
-				"IBI",
-				"IGI",
-				'I', "ingotYttrium",
-				'B', Blocks.iron_bars,
-				'G', Items.gunpowder
-				));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(MACHINE, 1, 1),
-				"III",
-				"QPQ",
-				"BDB",
-				'I', "ingotYttrium",
-				'Q', "gemQuartz",
-				'B', "blockYttrium",
-				'D', "gemDiamond",
-				'P', "ingotYttriumCopper"
-				));
-		GameRegistry.addRecipe(new ShapedOreRecipe(BLUNDERBUSS, 
-				" I ",
-				"IYG",
-				" BC",
-				'I', "ingotIron",
-				'Y', "ingotYttrium",
-				'C', "ingotYttriumCopper",
-				'G', Items.gunpowder,
-				'B', Items.blaze_rod
-				));
-		GameRegistry.addRecipe(new ShapedOreRecipe(RIFLE, 
-				"D  ",
-				" C ",
-				" BC",
-				'D', "gemApocite",
-				'C', "ingotYttriumCopper",
-				'B', Items.blaze_rod
-				));
-		GameRegistry.addRecipe(new ShapedOreRecipe(MINIGUN, 
-				"I  ",
-				" B ",
-				" bD",
-				'B', "blockYttriumCopper",
-				'I', "ingotYttriumCopper",
-				'D', new ItemStack(MINIGUN_CELL, 1, MINIGUN_CELL.getCapacity()+1),
-				'b', Items.blaze_rod
-				));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(MINIGUN_CELL, 1, MINIGUN_CELL.getCapacity()+1), 
-				"ICI",
-				"CBC",
-				"ICI",
-				'B', "blockYttriumCopper",
-				'I', "ingotYttriumCopper",
-				'C', new ItemStack(CELL, 1, 0)
-				));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(MINIGUN_CELL, 1, 0),
-				new ItemStack(MINIGUN_CELL, 1, MINIGUN_CELL.getCapacity()+1),
-				"blockRedstone", "blockRedstone",
-				"blockCopper", "blockCopper"
-				));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(CELL, 4, 0), 
-				"YGY",
-				"YGY",
-				"YCY",
-				'Y', "ingotYttrium",
-				'C', "ingotYttriumCopper",
-				'G', "paneGlass"
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_PICKAXE,
-				"III",
-				" / ",
-				" V ",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB,
-				'/', "stickWood"
-				));
-		ItemStack diaChromaticPick = new ItemStack(CHROMATIC_PICKAXE);
-		diaChromaticPick.setTagCompound(new NBTTagCompound());
-		diaChromaticPick.getTagCompound().setBoolean("Diamond", true);
-		GameRegistry.addRecipe(new RecipeChromatic(diaChromaticPick,
-				"III",
-				"D/D",
-				" V ",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB,
-				'/', "stickWood",
-				'D', "gemDiamond"
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_AXE,
-				"II ",
-				"I/ ",
-				" V ",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB,
-				'/', "stickWood"
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_AXE,
-				" II",
-				" /I",
-				" V ",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB,
-				'/', "stickWood"
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_SWORD,
-				" I ",
-				" I ",
-				" V ",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_SHOVEL,
-				" I ",
-				" / ",
-				" V ",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB,
-				'/', "stickWood"
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_HOE,
-				"II ",
-				" / ",
-				" V ",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB,
-				'/', "stickWood"
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_HOE,
-				" II",
-				" / ",
-				" V ",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB,
-				'/', "stickWood"
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_HELMET,
-				"IVI",
-				"I I",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_CHESTPLATE,
-				"I I",
-				"IVI",
-				"III",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_LEGGINGS,
-				"IVI",
-				"I I",
-				"I I",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB
-				));
-		GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_BOOTS,
-				"I I",
-				"IVI",
-				'I', "ingotYttrium",
-				'V', VIVID_ORB
-				));
-		ItemStack stableApocite = new ItemStack(APOCITE, 1, 0);
-		stableApocite.setTagCompound(new NBTTagCompound());
-		stableApocite.getTagCompound().setBoolean("Stable", true);
-		GameRegistry.addRecipe(new ShapelessOreRecipe(stableApocite, "gemApocite", "dustEnderPearl", "dustEmerald", "dustRedstone"));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 1),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone"));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 2),  new ItemStack(CELL, 1, 0), "dustYttrium", "dustGlowstone"));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 2, 3),  new ItemStack(CELL, 1, 0), new ItemStack(CELL, 1, 0), "dustGold", "dustGold", "dustDiamond"));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 4),  new ItemStack(CELL, 1, 0), "dustIron", Items.gunpowder));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 5),  new ItemStack(CELL, 1, 0), "dustEnderPearl", "dustEmerald"));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 6),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone", Items.blaze_powder));
+		
+		if (config.getBoolean("fondue.chinese.craftable")) {
+			GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 1),
+					"cWB",
+					" Cw",
+					'W', Items.water_bucket,
+					'w', Items.wheat,
+					'c', Items.chicken,
+					'B', Items.beef,
+					'C', CAQUELON
+					);
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(FONDUE, 1, 1)), config.getString("fondue.chinese.disableReason"));
+		}
+		
+		if (config.getBoolean("fondue.chocolate.craftable")) {
+			GameRegistry.addRecipe(new ItemStack(FONDUE, 1, 2),
+					"ccc",
+					" C ",
+					'c', new ItemStack(Items.dye, 1, 3),
+					'C', CAQUELON
+					);
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(FONDUE, 1, 2)), config.getString("fondue.chocolate.disableReason"));
+		}
+		
+		if (config.getBoolean("misc.caquelon.craftable")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(CAQUELON, 
+					"IBI",
+					" I ",
+					'I', "ingotIron",
+					'B', Items.bucket
+					));
+		} else {
+			disabled.put(new ItemSelector(CAQUELON), config.getString("misc.caquelon.disableReason"));
+		}
+		
+		if (config.getBoolean("machines.combustor.craftable")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(MACHINE, 1, 0),
+					"III",
+					"IBI",
+					"IGI",
+					'I', "ingotYttrium",
+					'B', Blocks.iron_bars,
+					'G', Items.gunpowder
+					));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(MACHINE, 1, 0)), config.getString("machines.combustor.disableReason"));
+		}
+		
+		if (config.getBoolean("machines.scrapper.craftable")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(MACHINE, 1, 1),
+					"III",
+					"QPQ",
+					"BDB",
+					'I', "ingotYttrium",
+					'Q', "gemQuartz",
+					'B', "blockYttrium",
+					'D', "gemDiamond",
+					'P', "ingotYttriumCopper"
+					));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(MACHINE, 1, 1)), config.getString("machines.scrapper.disableReason"));
+		}
+		
+		if (config.getBoolean("blunderbuss.craftable")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(BLUNDERBUSS, 
+					" I ",
+					"IYG",
+					" BC",
+					'I', "ingotIron",
+					'Y', "ingotYttrium",
+					'C', "ingotYttriumCopper",
+					'G', Items.gunpowder,
+					'B', Items.blaze_rod
+					));
+		} else {
+			disabled.put(new ItemSelector(BLUNDERBUSS), config.getString("blunderbuss.disableReason"));
+		}
+		
+		if (config.getBoolean("rifle.craftable")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(RIFLE, 
+					"D  ",
+					" C ",
+					" BC",
+					'D', "gemApocite",
+					'C', "ingotYttriumCopper",
+					'B', Items.blaze_rod
+					));
+		} else {
+			disabled.put(new ItemSelector(RIFLE), config.getString("rifle.disableReason"));
+		}
+		
+		if (config.getBoolean("minigun.craftable")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(MINIGUN, 
+					"I  ",
+					" B ",
+					" bD",
+					'B', "blockYttriumCopper",
+					'I', "ingotYttriumCopper",
+					'D', new ItemStack(MINIGUN_CELL, 1, MINIGUN_CELL.getCapacity()+1),
+					'b', Items.blaze_rod
+					));
+		} else {
+			disabled.put(new ItemSelector(MINIGUN), config.getString("minigun.disableReason"));
+		}
+		if (config.getBoolean("minigun.drum.craftable")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(MINIGUN_CELL, 1, MINIGUN_CELL.getCapacity()+1), 
+					"ICI",
+					"CBC",
+					"ICI",
+					'B', "blockYttriumCopper",
+					'I', "ingotYttriumCopper",
+					'C', new ItemStack(CELL, 1, 0)
+					));
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(MINIGUN_CELL, 1, 0),
+					new ItemStack(MINIGUN_CELL, 1, MINIGUN_CELL.getCapacity()+1),
+					"blockRedstone", "blockRedstone",
+					"blockCopper", "blockCopper"
+					));
+		} else {
+			disabled.put(new ItemSelector(MINIGUN_CELL), config.getString("minigun.drum.disableReason"));
+		}
+		if (!config.getBoolean("chromatics.disallowCrafting")) {
+			if (config.getBoolean("chromatics.pickaxe.craftable")) {
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_PICKAXE,
+						"III",
+						" / ",
+						" V ",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB,
+						'/', "stickWood"
+						));
+			} else {
+				disabled.put(new ItemSelector(CHROMATIC_PICKAXE), config.getString("chromatics.pickaxe.disableReason"));
+			}
+			ItemStack diaChromaticPick = new ItemStack(CHROMATIC_PICKAXE);
+			diaChromaticPick.setTagCompound(new NBTTagCompound());
+			diaChromaticPick.getTagCompound().setBoolean("Diamond", true);
+			if (config.getBoolean("chromatics.diamondTippedPickaxe.craftable")) {
+				GameRegistry.addRecipe(new RecipeChromatic(diaChromaticPick,
+						"III",
+						"D/D",
+						" V ",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB,
+						'/', "stickWood",
+						'D', "gemDiamond"
+						));
+			} else {
+				disabled.put(new ItemSelector(diaChromaticPick), config.getString("chromatics.diamondTippedPickaxe.disableReason"));
+			}
+			if (config.getBoolean("chromatics.axe.craftable")) {
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_AXE,
+						"II ",
+						"I/ ",
+						" V ",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB,
+						'/', "stickWood"
+						));
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_AXE,
+						" II",
+						" /I",
+						" V ",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB,
+						'/', "stickWood"
+						));
+			} else {
+				disabled.put(new ItemSelector(CHROMATIC_AXE), config.getString("chromatics.axe.disableReason"));
+			}
+			if (config.getBoolean("chromatics.sword.craftable")) {
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_SWORD,
+						" I ",
+						" I ",
+						" V ",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB
+						));
+			} else {
+				disabled.put(new ItemSelector(CHROMATIC_SWORD), config.getString("chromatics.sword.disableReason"));
+			}
+			if (config.getBoolean("chromatics.shovel.craftable")) {
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_SHOVEL,
+						" I ",
+						" / ",
+						" V ",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB,
+						'/', "stickWood"
+						));
+			} else {
+				disabled.put(new ItemSelector(CHROMATIC_SHOVEL), config.getString("chromatics.shovel.disableReason"));
+			}
+			if (config.getBoolean("chromatics.hoe.craftable")) {
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_HOE,
+						"II ",
+						" / ",
+						" V ",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB,
+						'/', "stickWood"
+						));
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_HOE,
+						" II",
+						" / ",
+						" V ",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB,
+						'/', "stickWood"
+						));
+			} else {
+				disabled.put(new ItemSelector(CHROMATIC_HOE), config.getString("chromatics.hoe.disableReason"));
+			}
+			if (config.getBoolean("chromatics.helmet.craftable")) {
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_HELMET,
+						"IVI",
+						"I I",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB
+						));
+			} else {
+				disabled.put(new ItemSelector(CHROMATIC_HELMET), config.getString("chromatics.helmet.disableReason"));
+			}
+			if (config.getBoolean("chromatics.chestplate.craftable")) {
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_CHESTPLATE,
+						"I I",
+						"IVI",
+						"III",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB
+						));
+			} else {
+				disabled.put(new ItemSelector(CHROMATIC_CHESTPLATE), config.getString("chromatics.chestplate.disableReason"));
+			}
+			if (config.getBoolean("chromatics.leggings.craftable")) {
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_LEGGINGS,
+						"IVI",
+						"I I",
+						"I I",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB
+						));
+			} else {
+				disabled.put(new ItemSelector(CHROMATIC_LEGGINGS), config.getString("chromatics.leggings.disableReason"));
+			}
+			if (config.getBoolean("chromatics.boots.craftable")) {
+				GameRegistry.addRecipe(new RecipeChromatic(CHROMATIC_BOOTS,
+						"I I",
+						"IVI",
+						'I', "ingotYttrium",
+						'V', VIVID_ORB
+						));
+			} else {
+				disabled.put(new ItemSelector(CHROMATIC_BOOTS), config.getString("chromatics.boots.disableReason"));
+			}
+			if (config.getBoolean("chromatics.orb.craftable")) {
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(VIVID_ORB),
+						"QIQ",
+						"IEI",
+						"QIQ",
+						'E', "gemEnderPearl",
+						'I', "ingotIron",
+						'Q', "gemQuartz"
+						));
+			} else {
+				disabled.put(new ItemSelector(VIVID_ORB), config.getString("chromatics.orb.disableReason"));
+			}
+		} else {
+			String reason = config.getString("chromatics.disallowReason");
+			disabled.put(new ItemSelector(CHROMATIC_PICKAXE), reason);
+			disabled.put(new ItemSelector(CHROMATIC_AXE), reason);
+			disabled.put(new ItemSelector(CHROMATIC_SWORD), reason);
+			disabled.put(new ItemSelector(CHROMATIC_SHOVEL), reason);
+			disabled.put(new ItemSelector(CHROMATIC_HOE), reason);
+			disabled.put(new ItemSelector(CHROMATIC_HELMET), reason);
+			disabled.put(new ItemSelector(CHROMATIC_CHESTPLATE), reason);
+			disabled.put(new ItemSelector(CHROMATIC_LEGGINGS), reason);
+			disabled.put(new ItemSelector(CHROMATIC_BOOTS), reason);
+			disabled.put(new ItemSelector(VIVID_ORB), reason);
+		}
+		if (config.getBoolean("resources.apocite.decay")) {
+			ItemStack stableApocite = new ItemStack(APOCITE, 1, 0);
+			stableApocite.setTagCompound(new NBTTagCompound());
+			stableApocite.getTagCompound().setBoolean("Stable", true);
+			GameRegistry.addRecipe(new ShapelessOreRecipe(stableApocite, "gemApocite", "dustEnderPearl", "dustEmerald", "dustRedstone"));
+		}
+		if (config.getBoolean("rifle.magazine.craftable")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(CELL, 4, 0), 
+					"YGY",
+					"YGY",
+					"YCY",
+					'Y', "ingotYttrium",
+					'C', "ingotYttriumCopper",
+					'G', "paneGlass"
+					));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(CELL, 1, 0)), config.getString("rifle.magazine.disableReason"));
+		}
+		if (config.getBoolean("rifle.magazine.highVelocity.craftable")) {
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 1),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone"));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(CELL, 1, 1)), config.getString("rifle.magazine.highVelocity.disableReason"));
+		}
+		
+		if (config.getBoolean("rifle.magazine.luminescent.craftable")) {
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 2),  new ItemStack(CELL, 1, 0), "dustYttrium", "dustGlowstone"));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(CELL, 1, 2)), config.getString("rifle.magazine.luminescent.disableReason"));
+		}
+		
+		if (config.getBoolean("rifle.magazine.mining.craftable")) {
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 2, 3),  new ItemStack(CELL, 1, 0), new ItemStack(CELL, 1, 0), "dustGold", "dustGold", "dustDiamond"));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(CELL, 1, 3)), config.getString("rifle.magazine.mining.disableReason"));
+		}
+		
+		if (config.getBoolean("rifle.magazine.explosive.craftable")) {
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 4),  new ItemStack(CELL, 1, 0), "dustIron", Items.gunpowder));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(CELL, 1, 4)), config.getString("rifle.magazine.explosive.disableReason"));
+		}
+		
+		if (config.getBoolean("rifle.magazine.teleportation.craftable")) {
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 5),  new ItemStack(CELL, 1, 0), "dustEnderPearl", "dustEmerald"));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(CELL, 1, 5)), config.getString("rifle.magazine.teleportation.disableReason"));
+		}
+		
+		if (config.getBoolean("rifle.magazine.incendiary.craftable")) {
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(CELL, 1, 6),  new ItemStack(CELL, 1, 0), "dustCopper", "dustRedstone", Items.blaze_powder));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(CELL, 1, 6)), config.getString("rifle.magazine.incendiary.disableReason"));
+		}
 		
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
-		for (WoodColor body : WoodColor.values()) {
-			for (WoodColor drum : WoodColor.values()) {
-				for (MineralColor pump : MineralColor.values()) {
-					if (pump.getSelector().getRepresentation() == null) continue;
-					ItemStack kahur = new ItemStack(KAHUR);
-					NBTTagCompound tag = new NBTTagCompound();
-					tag.setString("KahurBodyMaterial", body.name());
-					tag.setString("KahurDrumMaterial", drum.name());
-					tag.setString("KahurPumpMaterial", pump.name());
-					kahur.setTagCompound(tag);
-					GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
-							"B  ",
-							"PD ",
-							" /B",
-							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
-							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-							'P', pump.getSelector().getRepresentation(),
-							'/', "stickWood"));
-					GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
-							"  B",
-							" DP",
-							"B/ ",
-							'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
-							'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-							'P', pump.getSelector().getRepresentation(),
-							'/', "stickWood"));
+		
+		if (config.getBoolean("kahur.craftable")) {
+			for (WoodColor body : WoodColor.values()) {
+				for (WoodColor drum : WoodColor.values()) {
+					for (MineralColor pump : MineralColor.values()) {
+						if (pump.getSelector().getRepresentation() == null) continue;
+						ItemStack kahur = new ItemStack(KAHUR);
+						NBTTagCompound tag = new NBTTagCompound();
+						tag.setString("KahurBodyMaterial", body.name());
+						tag.setString("KahurDrumMaterial", drum.name());
+						tag.setString("KahurPumpMaterial", pump.name());
+						kahur.setTagCompound(tag);
+						GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
+								"B  ",
+								"PD ",
+								" /B",
+								'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
+								'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
+								'P', pump.getSelector().getRepresentation(),
+								'/', "stickWood"));
+						GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
+								"  B",
+								" DP",
+								"B/ ",
+								'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
+								'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
+								'P', pump.getSelector().getRepresentation(),
+								'/', "stickWood"));
+					}
 				}
 			}
+		} else {
+			disabled.put(new ItemSelector(KAHUR), config.getString("kahur.disableReason"));
 		}
 		for (IRecipe recipe : (List<IRecipe>)CraftingManager.getInstance().getRecipeList()) {
 			if (recipe == null) continue;
@@ -601,6 +820,7 @@ public class FarragoMod {
 	@SubscribeEvent
 	public void onLightning(EntityStruckByLightningEvent e) {
 		if (e.entity.worldObj.isRemote) return;
+		if (!config.getBoolean("fondue.cyberCider.craftable")) return;
 		if (e.entity instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) e.entity;
 			boolean sting = false;
@@ -634,6 +854,24 @@ public class FarragoMod {
 		if (e.itemStack.getItem() == Item.getItemFromBlock(COMBUSTOR) || e.itemStack.getItem() == Item.getItemFromBlock(SCRAPPER)) {
 			e.toolTip.add("\u00A74DEPRECATED. Place in a crafting window to update.");
 			e.toolTip.add("\u00A7cIF THIS ITEM IS NOT UPDATED IT WILL BE LOST IN FARRAGO 1.1");
+		}
+		for (Entry<Selector, String> en : disabled.entrySet()) {
+			if (en.getKey().itemStackMatches(e.itemStack)) {
+				String reason = en.getValue();
+				e.toolTip.add("\u00A74This item has been disabled in the config file.");
+				if (StringUtils.isNotBlank(reason)) {
+					e.toolTip.add("The reason given is:");
+					for (String s : (List<String>)Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(reason, 250)) {
+						e.toolTip.add("\u00A77"+s);
+					}
+				} else {
+					e.toolTip.add("A reason was not given.");
+				}
+				if (brand != null) {
+					e.toolTip.add("\u00A74Contact the creator of your modpack if you think this is a mistake.");
+				}
+				return;
+			}
 		}
 		Encyclopedia.process(e.itemStack, e.entityPlayer, e.toolTip, e.showAdvancedItemTooltips);
 	}
@@ -677,6 +915,25 @@ public class FarragoMod {
 			log.warn("We are running in a copperless environment; enabling fallback copper dust drops from Yttrium ore");
 		}
 	}
+	public static Selector parseSelector(String def) throws NBTException {
+		int meta = 32767;
+		NBTTagCompound tag = null;
+		boolean lenientTag = def.endsWith("}?");
+		if (def.contains("{") && def.contains("}")) {
+			String mojangson = def.substring(def.indexOf('{'), def.indexOf('}')+1);
+			tag = (NBTTagCompound) JsonToNBT.func_150315_a(mojangson);
+			def = def.substring(0, def.indexOf('{'));
+		}
+		if (def.contains("@")) {
+			meta = Integer.parseInt(def.substring(def.indexOf('@')+1));
+			def = def.substring(0, def.indexOf('@'));
+		}
+		ItemStack stack = new ItemStack((Item) Item.itemRegistry.getObject(def), 1, meta);
+		if (stack.getItem() == null) return new NullSelector();
+		stack.setTagCompound(tag);
+		return new ItemSelector(stack, lenientTag);
+	}
+
 	public static long hashItemStack(ItemStack toHash) {
 		if (toHash == null) return 0;
 		long hash = 0;
@@ -686,5 +943,14 @@ public class FarragoMod {
 			hash |= (toHash.getTagCompound().hashCode() << 32);
 		}
 		return hash;
+	}
+
+	public static int getPassThruCost(String key) {
+		return getPassThruCost(config, key);
+	}
+
+	public static int getPassThruCost(Config config, String key) {
+		ConfigValue val = config.getValue(key);
+		return val.valueType() == ConfigValueType.STRING ? -1 : ((Number)val.unwrapped()).intValue();
 	}
 }

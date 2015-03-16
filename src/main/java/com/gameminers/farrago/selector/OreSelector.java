@@ -72,4 +72,9 @@ public class OreSelector implements Selector {
 		return oresPresent;
 	}
 
+	@Override
+	public String toString() {
+		return "#"+ore+"("+fallback+")";
+	}
+
 }

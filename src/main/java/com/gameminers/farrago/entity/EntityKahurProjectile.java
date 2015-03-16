@@ -23,6 +23,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
+import com.gameminers.farrago.FarragoMod;
+
 public class EntityKahurProjectile extends EntityThrowable {
 	private float damage = 2;
 	
@@ -94,145 +96,168 @@ public class EntityKahurProjectile extends EntityThrowable {
 	@Override
 	protected void onImpact(MovingObjectPosition pos) {
 		float dropChance = 0.8f;
-		if (pos.entityHit != null) {
-			if (pos.entityHit.isDead) return;
-			if (pos.entityHit instanceof EntityLivingBase) {
-				EntityLivingBase living = ((EntityLivingBase)pos.entityHit);
-				if (getItem().getItem() == Items.potato && living instanceof EntityPlayerMP) {
-					((EntityPlayerMP)living).getFoodStats().addStats(1, 0.2f);
-					worldObj.playSoundAtEntity(living, "random.burp", 0.8f, 1.0f);
-					dropChance = 0.0f;
-				} else {
-					living.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), damage);
-					dropChance = 0.4f;
-					if (getItem().getItem() == Items.poisonous_potato) {
-						living.addPotionEffect(new PotionEffect(Potion.poison.getId(), 100, 1));
-					} else if (getItem().getItem() == Items.baked_potato) {
-						living.setFire(5);
+		setDead();
+		if (!FarragoMod.config.getBoolean("kahur.special.disable")) {
+			if (pos.entityHit != null) {
+				if (pos.entityHit.isDead) return;
+				if (pos.entityHit instanceof EntityLivingBase) {
+					EntityLivingBase living = ((EntityLivingBase)pos.entityHit);
+					if (FarragoMod.config.getBoolean("kahur.special.potato.enable") && getItem().getItem() == Items.potato && living instanceof EntityPlayerMP) {
+						((EntityPlayerMP)living).getFoodStats().addStats(1, 0.2f);
+						worldObj.playSoundAtEntity(living, "random.burp", 0.8f, 1.0f);
+						dropChance = 0.0f;
+					} else {
+						living.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), damage);
+						dropChance = 0.4f;
+						if (FarragoMod.config.getBoolean("kahur.special.poisonousPotato.enable") && getItem().getItem() == Items.poisonous_potato) {
+							living.addPotionEffect(new PotionEffect(Potion.poison.getId(), 100, 1));
+						} else if (FarragoMod.config.getBoolean("kahur.special.bakedPotato.enable") && getItem().getItem() == Items.baked_potato) {
+							living.setFire(5);
+						}
 					}
 				}
 			}
-		}
-		setDead();
-		if (getItem().getItem() == Items.potionitem) {
-			if (!this.worldObj.isRemote) {
-				List list = Items.potionitem.getEffects(getItem());
-
-				if (list != null && !list.isEmpty()) {
-					AxisAlignedBB axisalignedbb = this.boundingBox.expand(4.0D,
-							2.0D, 4.0D);
-					List list1 = this.worldObj.getEntitiesWithinAABB(
-							EntityLivingBase.class, axisalignedbb);
-
-					if (list1 != null && !list1.isEmpty()) {
-						Iterator iterator = list1.iterator();
-
-						while (iterator.hasNext()) {
-							EntityLivingBase entitylivingbase = (EntityLivingBase) iterator
-									.next();
-							double d0 = this
-									.getDistanceSqToEntity(entitylivingbase);
-
-							if (d0 < 16.0D) {
-								double d1 = 1.0D - Math.sqrt(d0) / 4.0D;
-
-								if (entitylivingbase == pos.entityHit) {
-									d1 = 1.0D;
-								}
-
-								Iterator iterator1 = list.iterator();
-
-								while (iterator1.hasNext()) {
-									PotionEffect potioneffect = (PotionEffect) iterator1
-											.next();
-									int i = potioneffect.getPotionID();
-
-									if (Potion.potionTypes[i].isInstant()) {
-										Potion.potionTypes[i]
-												.affectEntity(
-														this.getThrower(),
-														entitylivingbase,
-														potioneffect
-																.getAmplifier(),
-														d1);
-									} else {
-										int j = (int) (d1
-												* (double) potioneffect
-														.getDuration() + 0.5D);
-
-										if (j > 20) {
-											entitylivingbase
-													.addPotionEffect(new PotionEffect(
-															i,
-															j,
+			if (FarragoMod.config.getBoolean("kahur.special.potion.enable") && getItem().getItem() == Items.potionitem) {
+				if (!this.worldObj.isRemote) {
+					List list = Items.potionitem.getEffects(getItem());
+	
+					if (list != null && !list.isEmpty()) {
+						AxisAlignedBB axisalignedbb = this.boundingBox.expand(4.0D,
+								2.0D, 4.0D);
+						List list1 = this.worldObj.getEntitiesWithinAABB(
+								EntityLivingBase.class, axisalignedbb);
+	
+						if (list1 != null && !list1.isEmpty()) {
+							Iterator iterator = list1.iterator();
+	
+							while (iterator.hasNext()) {
+								EntityLivingBase entitylivingbase = (EntityLivingBase) iterator
+										.next();
+								double d0 = this
+										.getDistanceSqToEntity(entitylivingbase);
+	
+								if (d0 < 16.0D) {
+									double d1 = 1.0D - Math.sqrt(d0) / 4.0D;
+	
+									if (entitylivingbase == pos.entityHit) {
+										d1 = 1.0D;
+									}
+	
+									Iterator iterator1 = list.iterator();
+	
+									while (iterator1.hasNext()) {
+										PotionEffect potioneffect = (PotionEffect) iterator1
+												.next();
+										int i = potioneffect.getPotionID();
+	
+										if (Potion.potionTypes[i].isInstant()) {
+											Potion.potionTypes[i]
+													.affectEntity(
+															this.getThrower(),
+															entitylivingbase,
 															potioneffect
-																	.getAmplifier()));
+																	.getAmplifier(),
+															d1);
+										} else {
+											int j = (int) (d1
+													* (double) potioneffect
+															.getDuration() + 0.5D);
+	
+											if (j > 20) {
+												entitylivingbase
+														.addPotionEffect(new PotionEffect(
+																i,
+																j,
+																potioneffect
+																		.getAmplifier()));
+											}
 										}
 									}
 								}
 							}
 						}
 					}
+	
+					this.worldObj.playAuxSFX(2002, (int) Math.round(this.posX),
+							(int) Math.round(this.posY),
+							(int) Math.round(this.posZ), getItem().getItemDamage());
+					dropChance = 0.0f;
 				}
-
-				this.worldObj.playAuxSFX(2002, (int) Math.round(this.posX),
-						(int) Math.round(this.posY),
-						(int) Math.round(this.posZ), getItem().getItemDamage());
-				dropChance = 0.0f;
 			}
-		}
-		if (Block.getBlockFromItem(getItem().getItem()) == Blocks.tnt) {
-			if (!this.worldObj.isRemote) {
-				worldObj.createExplosion(this, posX, posY, posZ, 2.7f, true);
-			}
-			return;
-		}
-		if (getItem().getItem() == Item.getItemFromBlock(Blocks.torch)) {
-			if (worldObj.isRemote) return;
-			int posX = pos.blockX;
-			int posY = pos.blockY;
-			int posZ = pos.blockZ;
-			int meta = 0;
-			switch (pos.sideHit) {
-			case -1:
-				// none
-				return;
-			case 0:
-				// bottom
-				return;
-			case 1:
-				// top
-				posY += 1;
-				meta = 5;
-				break;
-			case 2:
-				// east
-				posZ -= 1;
-				meta = 4;
-				break;
-			case 3:
-				// west
-				posZ += 1;
-				meta = 3;
-				break;
-			case 4:
-				// north
-				posX -= 1;
-				meta = 2;
-				break;
-			case 5:
-				// south
-				posX += 1;
-				meta = 1;
-				break;
-			}
-			Block block = worldObj.getBlock(posX, posY, posZ);
-			if (block == null || block.isAir(worldObj, posX, posY, posZ) || !block.isCollidable()) {
-				worldObj.setBlock(posX, posY, posZ, Blocks.torch);
-				worldObj.setBlockMetadataWithNotify(posX, posY, posZ, meta, 3);
+			if (FarragoMod.config.getBoolean("kahur.special.tnt.enable") && Block.getBlockFromItem(getItem().getItem()) == Blocks.tnt) {
+				if (!this.worldObj.isRemote) {
+					worldObj.createExplosion(this, posX, posY, posZ, 2.7f, true);
+				}
 				return;
 			}
+			if (FarragoMod.config.getBoolean("kahur.special.torch.enable") && getItem().getItem() == Item.getItemFromBlock(Blocks.torch)) {
+				if (worldObj.isRemote) return;
+				int posX = pos.blockX;
+				int posY = pos.blockY;
+				int posZ = pos.blockZ;
+				int meta = 0;
+				switch (pos.sideHit) {
+				case -1:
+					// none
+					return;
+				case 0:
+					// bottom
+					return;
+				case 1:
+					// top
+					posY += 1;
+					meta = 5;
+					break;
+				case 2:
+					// east
+					posZ -= 1;
+					meta = 4;
+					break;
+				case 3:
+					// west
+					posZ += 1;
+					meta = 3;
+					break;
+				case 4:
+					// north
+					posX -= 1;
+					meta = 2;
+					break;
+				case 5:
+					// south
+					posX += 1;
+					meta = 1;
+					break;
+				}
+				Block block = worldObj.getBlock(posX, posY, posZ);
+				if (block == null || block.isAir(worldObj, posX, posY, posZ) || !block.isCollidable()) {
+					worldObj.setBlock(posX, posY, posZ, Blocks.torch);
+					worldObj.setBlockMetadataWithNotify(posX, posY, posZ, meta, 3);
+					return;
+				}
+			}
+			if (FarragoMod.config.getBoolean("kahur.special.enderPearl.enable") && getItem().getItem() == Items.ender_pearl) {
+				if (!worldObj.isRemote) {
+					if (getThrower() != null && getThrower() instanceof EntityPlayerMP) {
+		                EntityPlayerMP entityplayermp = (EntityPlayerMP)getThrower();
+		                if (entityplayermp.playerNetServerHandler.func_147362_b().isChannelOpen() && entityplayermp.worldObj == worldObj) {
+		                    EnderTeleportEvent event = new EnderTeleportEvent(entityplayermp, posX, posY, posZ, 5.0F);
+		                    if (!MinecraftForge.EVENT_BUS.post(event)) {
+			                    if (getThrower().isRiding()) {
+			                        getThrower().mountEntity((Entity)null);
+			                    }
+		
+			                    getThrower().setPositionAndUpdate(event.targetX, event.targetY, event.targetZ);
+			                    getThrower().fallDistance = 0.0F;
+			                    getThrower().attackEntityFrom(DamageSource.fall, event.attackDamage);
+			                    return;
+		                    }
+		                }
+		            }
+				}
+			}
 		}
+		
 		if (getItem().isItemStackDamageable()) {
 			if (getThrower() != null) {
 				getItem().damageItem(20, getThrower());
@@ -240,26 +265,6 @@ public class EntityKahurProjectile extends EntityThrowable {
 					playSound("random.break", 0.8F, 0.8F + this.worldObj.rand.nextFloat() * 0.4F);
 					return;
 				}
-			}
-		}
-		if (getItem().getItem() == Items.ender_pearl) {
-			if (!worldObj.isRemote) {
-				if (getThrower() != null && getThrower() instanceof EntityPlayerMP) {
-	                EntityPlayerMP entityplayermp = (EntityPlayerMP)getThrower();
-	                if (entityplayermp.playerNetServerHandler.func_147362_b().isChannelOpen() && entityplayermp.worldObj == worldObj) {
-	                    EnderTeleportEvent event = new EnderTeleportEvent(entityplayermp, posX, posY, posZ, 5.0F);
-	                    if (!MinecraftForge.EVENT_BUS.post(event)) {
-		                    if (getThrower().isRiding()) {
-		                        getThrower().mountEntity((Entity)null);
-		                    }
-	
-		                    getThrower().setPositionAndUpdate(event.targetX, event.targetY, event.targetZ);
-		                    getThrower().fallDistance = 0.0F;
-		                    getThrower().attackEntityFrom(DamageSource.fall, event.attackDamage);
-		                    return;
-	                    }
-	                }
-	            }
 			}
 		}
 		if (!worldObj.isRemote) {

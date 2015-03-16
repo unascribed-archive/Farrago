@@ -14,7 +14,7 @@ item.cell_rifle.name=High-Velocity Rifle Magazine
 item.cell_glow.name=Luminescent Rifle Magazine
 item.cell_mine.name=Mining Rifle Magazine
 item.cell_explode.name=Explosive Rifle Magazine
-item.cell_teleport.name=Teleposition Rifle Magazine
+item.cell_teleport.name=Teleportation Rifle Magazine
 item.cell_blaze.name=Incendiary Rifle Magazine
 
 item.cell_minigun_empty.name=Empty Minigun Drum

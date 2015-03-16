@@ -36,7 +36,7 @@ public class ItemBlunderbuss extends Item {
 	
 	@Override
 	public int getMaxDamage() {
-		return 840;
+		return FarragoMod.config.getInt("blunderbuss.durability");
 	}
 	
 	@Override
@@ -66,13 +66,15 @@ public class ItemBlunderbuss extends Item {
 						player.inventory.consumeInventoryItem(Item.getItemFromBlock(Blocks.gravel));
 					}
 					if (itemRand.nextInt(12) == 1) {
-						player.attackEntityFrom(new DamageSource("blunderbuss_backfire"), 2f);
+						player.attackEntityFrom(new DamageSource("blunderbuss_backfire"), (float)FarragoMod.config.getDouble("blunderbuss.backfireDamage"));
 					}
 					player.inventory.consumeInventoryItem(Item.getItemFromBlock(Blocks.gravel));
 					gun.damageItem(itemRand.nextInt(3)+1, player);
 					world.playSoundAtEntity(player, "random.break", 1.0F, (itemRand.nextFloat() * 0.8F));
 					world.playSoundAtEntity(player, "random.explode", 0.6F, (itemRand.nextFloat() * 0.8F + 0.3F));
-					for (int i = 0; i < itemRand.nextInt(30)+15; i++) {
+					int max = FarragoMod.config.getInt("blunderbuss.count.max");
+					int min = FarragoMod.config.getInt("blunderbuss.count.min");
+					for (int i = 0; i < itemRand.nextInt((max-min)+1)+min; i++) {
 						EntityBlunderbussProjectile proj = new EntityBlunderbussProjectile(world, player);
 						world.spawnEntityInWorld(proj);
 					}

@@ -10,6 +10,8 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
+import com.gameminers.farrago.FarragoMod;
+
 public class EntityBlunderbussProjectile extends EntityThrowable {
 	public EntityBlunderbussProjectile(World p_i1773_1_) {
         super(p_i1773_1_);
@@ -45,7 +47,9 @@ public class EntityBlunderbussProjectile extends EntityThrowable {
 		setDead();
 		if (!worldObj.isRemote) {
 			if (pos.entityHit != null && pos.entityHit instanceof EntityLivingBase) {
-				((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("blunderbuss", this, getThrower()), (rand.nextFloat()*1f)+0.6f);
+				float min = (float)FarragoMod.config.getDouble("blunderbuss.damage.min");
+				float max = (float)FarragoMod.config.getDouble("blunderbuss.damage.max");
+				((EntityLivingBase)pos.entityHit).attackEntityFrom(new EntityDamageSourceIndirect("blunderbuss", this, getThrower()), (rand.nextFloat()*(max-min))+min);
 				((EntityLivingBase)pos.entityHit).hurtResistantTime = 1;
 			}
 			if (worldObj instanceof WorldServer) {

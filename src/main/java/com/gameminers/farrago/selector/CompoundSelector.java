@@ -9,14 +9,23 @@ public class CompoundSelector implements Selector {
 			public boolean result(boolean a, boolean b) {
 				return a && b;
 			}
+			@Override
+			public String getRepresentation() {
+				return "&&";
+			}
 		},
 		OR {
 			@Override
 			public boolean result(boolean a, boolean b) {
 				return a || b;
 			}
+			@Override
+			public String getRepresentation() {
+				return "||";
+			}
 		};
 		public abstract boolean result(boolean a, boolean b);
+		public abstract String getRepresentation();
 	}
 	private final Selector a;
 	private final Selector b;
@@ -40,6 +49,11 @@ public class CompoundSelector implements Selector {
 	@Override
 	public boolean itemStackMatches(ItemStack stack) {
 		return mode.result(a.itemStackMatches(stack), b.itemStackMatches(stack));
+	}
+	
+	@Override
+	public String toString() {
+		return a.toString() + " " + mode.getRepresentation() + " " + b.toString();
 	}
 
 }

@@ -101,8 +101,14 @@ public class BlockResource extends BlockCompressed implements NameDelegate {
 			}
 			ItemStack stack = li.get(0).copy();
 			stack.stackSize = 9;
-			GameRegistry.addRecipe(new ShapelessOreRecipe(stack, new ItemStack(this, 1, i)));
-			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(this, 1, i), nm, nm, nm, nm, nm, nm, nm, nm, nm));
+			String configName = Strings.formatTitleCase(resourceTypes[i]).replace(" ", "");
+			configName = Character.toLowerCase(configName.charAt(0)) + configName.substring(1);
+			if (FarragoMod.config.getBoolean("compressedBlocks."+configName+".uncraftable")) {
+				GameRegistry.addRecipe(new ShapelessOreRecipe(stack, new ItemStack(this, 1, i)));
+			}
+			if (FarragoMod.config.getBoolean("compressedBlocks."+configName+".craftable")) {
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(this, 1, i), nm, nm, nm, nm, nm, nm, nm, nm, nm));
+			}
 		}
 	}
 }

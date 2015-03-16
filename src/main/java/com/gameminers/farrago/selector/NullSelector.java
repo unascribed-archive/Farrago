@@ -19,5 +19,10 @@ public class NullSelector implements Selector {
 	public boolean itemStackMatches(ItemStack stack) {
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		return "null";
+	}
 
 }
