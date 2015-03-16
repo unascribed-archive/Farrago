@@ -1,5 +1,4 @@
-# ![Farrago](http://i.imgur.com/5ynIdH1.png)
-
+# ![Farrago](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-logo.png)
 A confused variety of random things, from blocks to items to entities. The point is there is no point.
 
 ## Modpacks
