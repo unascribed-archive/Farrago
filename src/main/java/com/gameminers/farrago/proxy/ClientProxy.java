@@ -32,6 +32,7 @@ import com.gameminers.farrago.client.init.InitScreen;
 import com.gameminers.farrago.client.render.RenderBlunderbussProjectile;
 import com.gameminers.farrago.client.render.RenderNull;
 import com.gameminers.farrago.client.render.RifleItemRenderer;
+import com.gameminers.farrago.client.render.UndefinedItemRenderer;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
 import com.gameminers.farrago.enums.RifleMode;
@@ -69,6 +70,7 @@ public class ClientProxy implements Proxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityBlunderbussProjectile.class, new RenderBlunderbussProjectile());
 		RenderingRegistry.registerEntityRenderingHandler(EntityRifleProjectile.class, new RenderNull());
 		MinecraftForgeClient.registerItemRenderer(FarragoMod.RIFLE, new RifleItemRenderer());
+		MinecraftForgeClient.registerItemRenderer(FarragoMod.UNDEFINED, new UndefinedItemRenderer());
 		IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
 		if (manager instanceof IReloadableResourceManager) {
 			((IReloadableResourceManager)manager).registerReloadListener(new Encyclopedia());

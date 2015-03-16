@@ -1,22 +1,17 @@
 package com.gameminers.farrago.client.render;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.Timer;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
 import com.gameminers.farrago.FarragoMod;
 
-import cpw.mods.fml.common.ObfuscationReflectionHelper;
-
 public class RifleItemRenderer implements IItemRenderer {
-	private final Timer timer = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), 16);
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
 		return item.getItem() == FarragoMod.RIFLE && (type == ItemRenderType.EQUIPPED_FIRST_PERSON);
@@ -30,7 +25,7 @@ public class RifleItemRenderer implements IItemRenderer {
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 		EntityClientPlayerMP player = ((EntityClientPlayerMP) data[1]);
-		float scopeMult = Math.min((FarragoMod.scopeTicks+timer.renderPartialTicks)/5f, 1.0f);
+		float scopeMult = Math.min((FarragoMod.scopeTicks+FarragoMod.timer.renderPartialTicks)/5f, 1.0f);
 		GL11.glTranslatef(1.0f, 0f, 0f);
 		GL11.glRotatef(180F, 1.0f, 0.0f, 0.0f);
 		GL11.glRotatef(180F, 0.0f, 0.0f, 1.0f);

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +20,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.Timer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ChestGenHooks;
@@ -51,6 +53,7 @@ import com.gameminers.farrago.enums.WoodColor;
 import com.gameminers.farrago.gen.XenotimeGenerator;
 import com.gameminers.farrago.gen.YttriumGenerator;
 import com.gameminers.farrago.item.ItemFondue;
+import com.gameminers.farrago.item.ItemUndefined;
 import com.gameminers.farrago.item.chromatic.Chromatics;
 import com.gameminers.farrago.item.chromatic.ItemChromaticArmor;
 import com.gameminers.farrago.item.chromatic.ItemChromaticAxe;
@@ -84,6 +87,7 @@ import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -97,7 +101,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="1.0")
+@Mod(name="Farrago",modid="farrago",dependencies="required-after:KitchenSink;after:GlassPane",version="@VERSION@",acceptedMinecraftVersions="@MCVERSION@")
 public class FarragoMod {
 	public static final Logger log = LogManager.getLogger("Farrago");
 	@SidedProxy(clientSide="com.gameminers.farrago.proxy.ClientProxy", serverSide="com.gameminers.farrago.proxy.ServerProxy")
@@ -127,6 +131,7 @@ public class FarragoMod {
 	public static ItemApocite APOCITE;
 	public static ItemMinigun MINIGUN;
 	public static ItemMinigunCell MINIGUN_CELL;
+	public static ItemUndefined UNDEFINED;
 	
 	public static ItemChromaticPickaxe CHROMATIC_PICKAXE;
 	public static ItemChromaticAxe CHROMATIC_AXE;
@@ -194,6 +199,7 @@ public class FarragoMod {
 		APOCITE = new ItemApocite();
 		MINIGUN = new ItemMinigun();
 		MINIGUN_CELL = new ItemMinigunCell();
+		UNDEFINED = new ItemUndefined();
 		
 		CHROMATIC_PICKAXE = new ItemChromaticPickaxe();
 		CHROMATIC_AXE = new ItemChromaticAxe().setUnlocalizedName("chromatic_axe");
@@ -245,6 +251,7 @@ public class FarragoMod {
 		GameRegistry.registerItem(APOCITE, "apocite");
 		GameRegistry.registerItem(MINIGUN, "minigun");
 		GameRegistry.registerItem(MINIGUN_CELL, "minigunCell");
+		GameRegistry.registerItem(UNDEFINED, "undefined");
 		
 		GameRegistry.registerItem(CHROMATIC_PICKAXE, "chromaticPickaxe");
 		GameRegistry.registerItem(CHROMATIC_AXE, "chromaticAxe");
@@ -612,6 +619,7 @@ public class FarragoMod {
 		}
 	}
 	private Deque<GenData> chunksToGen = new ArrayDeque<GenData>();
+	public static final Timer timer = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), 16);
 	@SubscribeEvent
 	public void onTooltip(ItemTooltipEvent e) {
 		if (e.showAdvancedItemTooltips) {
