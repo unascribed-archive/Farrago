@@ -19,7 +19,7 @@ public class InitThread extends Thread {
 	private final PaneProgressRing	progress;
 
 	public InitThread(final PaneLabel infoLabel, final PaneProgressRing progress) {
-		super("Kahur Initialization Thread");
+		super("Farrago Initialization Thread");
 		setDaemon(true);
 		setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 
