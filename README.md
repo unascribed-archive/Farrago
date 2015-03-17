@@ -19,12 +19,12 @@ Release builds are for modpacks and the unadventurous, pre-releases are for the 
 ![Teleportation](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/teleportation.png)
 ![Mining](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/mining.png)
 ![Glow](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/glow.png)
-![Combustor GUI](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/fondue.png)
-![Combustor](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/fondue.png)
-![Scrapper](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/fondue.png)
-![Smelting with Rubble](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/fondue.png)
-![Rubble ran out](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/fondue.png)
-![Chromatics](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/fondue.png)
+![Combustor GUI](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/combustor-gui.png)
+![Combustor](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/combustor.png)
+![Scrapper](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/scrapper.png)
+![Smelting with Rubble](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/rubble-smelt.png)
+![Rubble ran out](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/rubble-smelt-out.png)
+![Chromatics](https://raw.githubusercontent.com/AesenV/Farrago/master/readme-screenshots/chromatics.png)
 
 ## Compiling
 `./gradlew build`. Your file is at ./build/libs/Farrago-&lt;version&gt;.jar
