@@ -11,7 +11,7 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
-import com.gameminers.farrago.FarragoMod;
+import com.gameminers.farrago.proxy.ClientProxy;
 
 public class UndefinedItemRenderer implements IItemRenderer {
 	private final Random rand = new Random();
@@ -32,7 +32,7 @@ public class UndefinedItemRenderer implements IItemRenderer {
 			mult = 16;
 		}
 		if (Minecraft.getMinecraft().thePlayer != null) {
-			rand.setSeed((Minecraft.getMinecraft().thePlayer.ticksExisted^(int)(FarragoMod.timer.renderPartialTicks*65536)));
+			rand.setSeed((Minecraft.getMinecraft().thePlayer.ticksExisted^(int)(ClientProxy.timer.renderPartialTicks*65536)));
 		}
 		IIcon icon = item.getIconIndex();
 		for (int i = 0; i < rand.nextInt(80)+30; i++) {

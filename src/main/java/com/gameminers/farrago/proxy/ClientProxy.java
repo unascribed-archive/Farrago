@@ -1,6 +1,13 @@
 package com.gameminers.farrago.proxy;
 
+import gminers.kitchensink.Files;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
@@ -12,11 +19,16 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Timer;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.input.Keyboard;
@@ -37,9 +49,13 @@ import com.gameminers.farrago.network.ModifyRifleModeMessage;
 import com.gameminers.farrago.pane.PaneBranding;
 import com.gameminers.farrago.pane.PaneOrbGlow;
 import com.gameminers.farrago.pane.PaneRifle;
+import com.gameminers.farrago.selector.Selector;
+import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigFactory;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.MouseInputEvent;
@@ -49,7 +65,7 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class ClientProxy implements Proxy {
 	private boolean linuxNag = true;
-	
+	public static final Timer timer = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), 16);
 	@Override
 	public void postInit() {
 		InitScreen.init();
@@ -77,6 +93,38 @@ public class ClientProxy implements Proxy {
 
 	@Override
 	public void preInit() {
+		File configFile = new File(Minecraft.getMinecraft().mcDataDir, "config/farrago.conf");
+		if (!configFile.exists()) {
+			saveDefaultConfig(configFile);
+		}
+		FarragoMod.config = ConfigFactory.parseFile(configFile);
+		try {
+			FarragoMod.brand = FarragoMod.config.getString("modpack.brand");
+		} catch (ConfigException.Null ex) {
+			FarragoMod.brand = null;
+		}
+		FarragoMod.showBrand = FarragoMod.config.getBoolean("modpack.showBrand");
+		if (!FarragoMod.config.getBoolean("modified")) {
+			saveDefaultConfig(configFile);
+			FarragoMod.config = ConfigFactory.parseFile(configFile);
+		}
+	}
+	
+	private void saveDefaultConfig(File configFile) {
+		try {
+			Files.mkdirs(configFile.getParentFile());
+			Files.createNewFile(configFile);
+			ResourceLocation defaultConfig = new ResourceLocation("farrago", "farrago.conf");
+			InputStream in = Minecraft.getMinecraft().getResourceManager().getResource(defaultConfig).getInputStream();
+			String config = IOUtils.toString(in);
+			in.close();
+			config = config
+					.replace("@MODPACK_BRAND@", String.valueOf(FarragoMod.brand))
+					.replace("@SHOW_BRAND@", Boolean.toString(FarragoMod.showBrand));
+			FileUtils.writeStringToFile(configFile, config);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	@Override
@@ -247,6 +295,29 @@ public class ClientProxy implements Proxy {
 			}
 			mc.thePlayer.inventory.changeCurrentItem(dWheel);
 		}
+	}
+
+	@Override
+	public void tooltip(ItemTooltipEvent e) {
+		for (Entry<Selector, String> en : FarragoMod.disabled.entrySet()) {
+			if (en.getKey().itemStackMatches(e.itemStack)) {
+				String reason = en.getValue();
+				e.toolTip.add("\u00A74This item has been disabled in the config file.");
+				if (StringUtils.isNotBlank(reason)) {
+					e.toolTip.add("The reason given is:");
+					for (String s : (List<String>)Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(reason, 250)) {
+						e.toolTip.add("\u00A77"+s);
+					}
+				} else {
+					e.toolTip.add("A reason was not given.");
+				}
+				if (FarragoMod.brand != null) {
+					e.toolTip.add("\u00A74Contact the creator of your modpack if you think this is a mistake.");
+				}
+				return;
+			}
+		}
+		Encyclopedia.process(e.itemStack, e.entityPlayer, e.toolTip, e.showAdvancedItemTooltips);
 	}
 
 }

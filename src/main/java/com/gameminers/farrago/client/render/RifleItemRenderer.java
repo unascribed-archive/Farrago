@@ -10,6 +10,7 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 import com.gameminers.farrago.FarragoMod;
+import com.gameminers.farrago.proxy.ClientProxy;
 
 public class RifleItemRenderer implements IItemRenderer {
 	@Override
@@ -25,7 +26,7 @@ public class RifleItemRenderer implements IItemRenderer {
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 		EntityClientPlayerMP player = ((EntityClientPlayerMP) data[1]);
-		float scopeMult = Math.min((FarragoMod.scopeTicks+FarragoMod.timer.renderPartialTicks)/5f, 1.0f);
+		float scopeMult = Math.min((FarragoMod.scopeTicks+ClientProxy.timer.renderPartialTicks)/5f, 1.0f);
 		GL11.glTranslatef(1.0f, 0f, 0f);
 		GL11.glRotatef(180F, 1.0f, 0.0f, 0.0f);
 		GL11.glRotatef(180F, 0.0f, 0.0f, 1.0f);

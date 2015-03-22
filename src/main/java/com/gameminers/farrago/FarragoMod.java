@@ -1,20 +1,13 @@
 package com.gameminers.farrago;
 
-import gminers.kitchensink.Files;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,8 +21,6 @@ import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Timer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ChestGenHooks;
@@ -43,9 +34,6 @@ import net.minecraftforge.oredict.RecipeSorter.Category;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,7 +44,6 @@ import com.gameminers.farrago.block.BlockOre;
 import com.gameminers.farrago.block.BlockResource;
 import com.gameminers.farrago.block.BlockScrapper;
 import com.gameminers.farrago.block.item.ItemBlockWithCustomName;
-import com.gameminers.farrago.client.encyclopedia.Encyclopedia;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityKahurProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
@@ -97,8 +84,6 @@ import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigException;
-import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueType;
 
@@ -107,7 +92,6 @@ import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -190,46 +174,14 @@ public class FarragoMod {
 	public static int scopeTicks;
 	private YttriumGenerator yttrGen;
 	private XenotimeGenerator xenoGen;
-	private Map<Selector, String> disabled = Maps.newHashMap();
+	public static Map<Selector, String> disabled = Maps.newHashMap();
 	public static Config config;
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
-		File configFile = new File(Minecraft.getMinecraft().mcDataDir, "config/farrago.conf");
-		if (!configFile.exists()) {
-			saveDefaultConfig(configFile);
-		}
-		config = ConfigFactory.parseFile(configFile);
-		try {
-			brand = config.getString("modpack.brand");
-		} catch (ConfigException.Null ex) {
-			brand = null;
-		}
-		showBrand = config.getBoolean("modpack.showBrand");
-		if (!config.getBoolean("modified")) {
-			saveDefaultConfig(configFile);
-			config = ConfigFactory.parseFile(configFile);
-		}
 		proxy.preInit();
 	}
 	
-	private void saveDefaultConfig(File configFile) {
-		try {
-			Files.mkdirs(configFile.getParentFile());
-			Files.createNewFile(configFile);
-			ResourceLocation defaultConfig = new ResourceLocation("farrago", "farrago.conf");
-			InputStream in = Minecraft.getMinecraft().getResourceManager().getResource(defaultConfig).getInputStream();
-			String config = IOUtils.toString(in);
-			in.close();
-			config = config
-					.replace("@MODPACK_BRAND@", String.valueOf(brand))
-					.replace("@SHOW_BRAND@", Boolean.toString(showBrand));
-			FileUtils.writeStringToFile(configFile, config);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-	}
-
 	@EventHandler
 	public void onInit(FMLInitializationEvent e) {
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new FarragoGuiHandler());
@@ -839,7 +791,7 @@ public class FarragoMod {
 		}
 	}
 	private Deque<GenData> chunksToGen = new ArrayDeque<GenData>();
-	public static final Timer timer = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), 16);
+	
 	@SubscribeEvent
 	public void onTooltip(ItemTooltipEvent e) {
 		if (e.showAdvancedItemTooltips) {
@@ -855,25 +807,7 @@ public class FarragoMod {
 			e.toolTip.add("\u00A74DEPRECATED. Place in a crafting window to update.");
 			e.toolTip.add("\u00A7cIF THIS ITEM IS NOT UPDATED IT WILL BE LOST IN FARRAGO 1.1");
 		}
-		for (Entry<Selector, String> en : disabled.entrySet()) {
-			if (en.getKey().itemStackMatches(e.itemStack)) {
-				String reason = en.getValue();
-				e.toolTip.add("\u00A74This item has been disabled in the config file.");
-				if (StringUtils.isNotBlank(reason)) {
-					e.toolTip.add("The reason given is:");
-					for (String s : (List<String>)Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(reason, 250)) {
-						e.toolTip.add("\u00A77"+s);
-					}
-				} else {
-					e.toolTip.add("A reason was not given.");
-				}
-				if (brand != null) {
-					e.toolTip.add("\u00A74Contact the creator of your modpack if you think this is a mistake.");
-				}
-				return;
-			}
-		}
-		Encyclopedia.process(e.itemStack, e.entityPlayer, e.toolTip, e.showAdvancedItemTooltips);
+		proxy.tooltip(e);
 	}
 	public void onDataLoad(ChunkDataEvent.Load e) {
 		if (!e.getChunk().isTerrainPopulated) return;
