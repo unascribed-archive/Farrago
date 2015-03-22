@@ -3,7 +3,6 @@ package com.gameminers.farrago.proxy;
 import java.io.File;
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
@@ -40,7 +39,7 @@ public class ServerProxy implements Proxy {
 	@Override public void init() {}
 	@Override
 	public void preInit() {
-		File configFile = new File(Minecraft.getMinecraft().mcDataDir, "config/farrago.conf");
+		File configFile = new File("config/farrago.conf");
 		FarragoMod.config = ConfigFactory.parseFile(configFile);
 		try {
 			FarragoMod.brand = FarragoMod.config.getString("modpack.brand");
