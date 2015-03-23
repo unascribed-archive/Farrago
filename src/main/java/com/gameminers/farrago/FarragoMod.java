@@ -316,6 +316,7 @@ public class FarragoMod {
 		OreDictionary.registerOre("gemEnderPearl", Items.ender_pearl);
 		OreDictionary.registerOre("gemNetherStar", Items.nether_star);
 		OreDictionary.registerOre("gemApocite", APOCITE);
+		OreDictionary.registerOre("gemApociteLenient", new ItemStack(APOCITE, 1, OreDictionary.WILDCARD_VALUE));
 		
 		RESOURCE.registerRecipes();
 		

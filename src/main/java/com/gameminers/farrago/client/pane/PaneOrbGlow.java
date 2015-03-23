@@ -1,4 +1,4 @@
-package com.gameminers.farrago.pane;
+package com.gameminers.farrago.client.pane;
 
 import gminers.glasspane.GlassPane;
 import net.minecraft.client.Minecraft;

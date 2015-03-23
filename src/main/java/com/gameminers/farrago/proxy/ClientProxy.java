@@ -38,6 +38,10 @@ import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.client.effect.EntityRifleFX;
 import com.gameminers.farrago.client.encyclopedia.Encyclopedia;
 import com.gameminers.farrago.client.init.InitScreen;
+import com.gameminers.farrago.client.pane.PaneBranding;
+import com.gameminers.farrago.client.pane.PaneOrbGlow;
+import com.gameminers.farrago.client.pane.PaneRifle;
+import com.gameminers.farrago.client.pane.PaneToolsOverlay;
 import com.gameminers.farrago.client.render.RenderBlunderbussProjectile;
 import com.gameminers.farrago.client.render.RenderNull;
 import com.gameminers.farrago.client.render.RifleItemRenderer;
@@ -46,9 +50,6 @@ import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
 import com.gameminers.farrago.enums.RifleMode;
 import com.gameminers.farrago.network.ModifyRifleModeMessage;
-import com.gameminers.farrago.pane.PaneBranding;
-import com.gameminers.farrago.pane.PaneOrbGlow;
-import com.gameminers.farrago.pane.PaneRifle;
 import com.gameminers.farrago.selector.Selector;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
@@ -74,6 +75,7 @@ public class ClientProxy implements Proxy {
 	@Override
 	public void init() {
 		//new PaneVanityArmor().autoOverlay(GuiInventory.class);
+		new PaneToolsOverlay().autoOverlay(GuiMainMenu.class);
 		new PaneOrbGlow().autoOverlay(GuiIngame.class);
 		new PaneRifle().autoOverlay(GuiIngame.class);
 		if (FarragoMod.showBrand && StringUtils.isNotBlank(FarragoMod.brand)) {
