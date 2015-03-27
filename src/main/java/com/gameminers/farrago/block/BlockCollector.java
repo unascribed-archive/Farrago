@@ -46,8 +46,8 @@ public class BlockCollector extends Block implements NameDelegate {
 	}
 	
 	@Override
-	public int tickRate(World p_149738_1_) {
-		return 5;
+	public int tickRate(World world) {
+		return 10;
 	}
 	
 	@Override
@@ -57,38 +57,49 @@ public class BlockCollector extends Block implements NameDelegate {
 		int time = (int) (world.getWorldTime() % 24000);
 		switch (meta) {
 			case 0:
-				operate = true;
+				operate = world.getLightBrightness(x, y, z) > 0.3;
 				break;
 			case 1:
-				operate = time > 0 && time < 12000;
+				operate = world.canBlockSeeTheSky(x, y, z) && time > 0 && time < 12000;
 				break;
 			case 2:
-				operate = time > 12000;
+				operate = world.canBlockSeeTheSky(x, y, z) && time > 12000;
 				break;
 			case 3:
-				operate = time > 14000;
+				operate = world.canBlockSeeTheSky(x, y, z) && time > 14000;
 				break;
 		}
 		if (!world.isRemote) {
-			
+			if (operate && world.getBlock(x, y-1, z) == FarragoMod.LIGHT_PIPE) {
+				int pipeMeta = world.getBlockMetadata(x, y-1, z);
+				if (pipeMeta == 0 || (pipeMeta-1)/3 == meta) {
+					int base = (meta*3);
+					int count = (pipeMeta == 0 ? 0 : pipeMeta-base);
+					if (count < 3) {
+						world.setBlockMetadataWithNotify(x, y-1, z, base+(count+1), 3);
+					}
+				}
+			}
 		} else {
 			if (operate) {
-				String particle = "angryVillager";
+				String particle = "smoke";
 				double vel = 0.05;
-				switch (meta) {
-					case 0:
-						particle = "instantSpell";
-						break;
-					case 1:
-						particle = "flame";
-						break;
-					case 2:
-						particle = "witchMagic";
-						break;
-					case 3:
-						particle = "magicCrit";
-						vel = 0.5;
-						break;
+				if (world.getBlock(x, y-1, z) == FarragoMod.LIGHT_PIPE) {
+					switch (meta) {
+						case 0:
+							particle = "instantSpell";
+							break;
+						case 1:
+							particle = "flame";
+							break;
+						case 2:
+							particle = "witchMagic";
+							break;
+						case 3:
+							particle = "magicCrit";
+							vel = 0.5;
+							break;
+					}
 				}
 				world.spawnParticle(particle, (x+0.5)+(rand.nextGaussian()/4D), y+0.25, (z+0.5)+(rand.nextGaussian()/4D), 0, vel, 0);
 			}

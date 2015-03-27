@@ -198,4 +198,7 @@
 		seems to be slowly fading into nothing as you hold it. Perhaps there's
 		some way to stabilize it?
 	</entry>
+	<entry def="farrago:undefined">
+		The most annoying debug item ever.
+	</entry>
 </encyclopedia>

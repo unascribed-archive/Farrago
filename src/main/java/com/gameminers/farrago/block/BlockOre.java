@@ -9,7 +9,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -73,10 +72,7 @@ public class BlockOre extends Block implements NameDelegate {
 		} else if (metadata == 1) {
 			drops.add(new ItemStack(FarragoMod.APOCITE, world.rand.nextInt(fortune+1)+1, 0));
 		} else if (metadata == 2) {
-			if (world.rand.nextInt(80) == 0) {
-				drops.add(new ItemStack(FarragoMod.DUST, 1, 5));
-			}
-			drops.add(new ItemStack(Blocks.cobblestone));
+			drops.add(new ItemStack(this, 1, 2));
 		}
 		return drops;
 	}

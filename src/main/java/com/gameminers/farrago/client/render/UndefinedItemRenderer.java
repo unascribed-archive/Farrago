@@ -32,14 +32,13 @@ public class UndefinedItemRenderer implements IItemRenderer {
 			mult = 16;
 		}
 		if (Minecraft.getMinecraft().thePlayer != null) {
-			rand.setSeed((Minecraft.getMinecraft().thePlayer.ticksExisted^(int)(ClientProxy.timer.renderPartialTicks*65536)));
+			rand.setSeed((int)((Minecraft.getMinecraft().thePlayer.ticksExisted+ClientProxy.timer.renderPartialTicks)*100)*item.hashCode());
 		}
 		IIcon icon = item.getIconIndex();
 		for (int i = 0; i < rand.nextInt(80)+30; i++) {
 			GL11.glPushMatrix();
 				GL11.glScalef(mult*rand.nextFloat(), mult*rand.nextFloat(), 0);
 				GL11.glTranslatef((mult*((rand.nextFloat()*4)-2)), (mult*((rand.nextFloat()*4)-2)), (mult*((rand.nextFloat()*4)-2)));
-				GL11.glRotatef(rand.nextFloat()*180f, rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
 				ItemRenderer.renderItemIn2D(Tessellator.instance, rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), icon.getIconWidth(), icon.getIconHeight(), rand.nextFloat());
 			GL11.glPopMatrix();
 		}

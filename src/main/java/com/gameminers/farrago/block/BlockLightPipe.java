@@ -2,18 +2,22 @@ package com.gameminers.farrago.block;
 
 import java.util.BitSet;
 import java.util.List;
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 import com.gameminers.farrago.FarragoMod;
+import com.gameminers.farrago.tileentity.TileEntityTicker;
 
 public class BlockLightPipe extends Block {
 	public static boolean rot = false;
@@ -37,6 +41,116 @@ public class BlockLightPipe extends Block {
 	}
 	
 	@Override
+	public boolean hasTileEntity(int meta) {
+		return true;
+	}
+	
+	@Override
+	public TileEntity createTileEntity(World world, int metadata) {
+		return new TileEntityTicker();
+	}
+	
+	@Override
+	public int tickRate(World world) {
+		return 5;
+	}
+	
+	@Override
+	public void updateTick(World world, int x, int y, int z, Random rand) {
+		if (!world.isRemote) {
+			int meta = world.getBlockMetadata(x, y, z);
+			int type = ((int) Math.ceil(meta/3f))-1;
+			int time = (int) (world.getWorldTime() % 24000);
+			boolean fizzle = false;
+			switch (type) {
+				case 1:
+					fizzle = !(time > 0 && time < 12000);
+					break;
+				case 2:
+					fizzle = !(time > 12000);
+					break;
+				case 3:
+					fizzle = !(time > 14000);
+					break;
+			}
+			if (fizzle) {
+				world.setBlockMetadataWithNotify(x, y, z, 0, 3);
+				world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.fizz", 0.1f, 0.5f);
+				if (world instanceof WorldServer) {
+					WorldServer ws = (WorldServer) world;
+					ws.func_147487_a("smoke", x+0.5, y+0.5, z+0.5, 20, 0.2, 0.2, 0.2, 0);
+				}
+			} else {
+				int base = type*3;
+				int count = (meta == 0 ? 0 : meta-base);
+				if (count == 0) return;
+				FarragoMod.log.info("== "+x+", "+y+", "+z+" ==");
+				int minSaw = -1;
+				EnumFacing minDir = null;
+				for (EnumFacing facing : EnumFacing.values()) {
+					int xO = facing.getFrontOffsetX();
+					int yO = facing.getFrontOffsetY();
+					int zO = facing.getFrontOffsetZ();
+					if (world.getBlock(x+xO, y+yO, z+zO) == this) {
+						int tMeta = world.getBlockMetadata(x+xO, y+yO, z+zO);
+						int tType = ((int) Math.ceil(tMeta/3f))-1;
+						if (tMeta == 0 || tType == type) {
+							FarragoMod.log.info(facing+" matches type");
+							int tBase = tType*3;
+							int tCount = (tMeta == 0 ? 0 : tMeta-tBase);
+							if (tCount < count && (minSaw == -1 || tCount < minSaw)) {
+								minSaw = tCount;
+								minDir = facing;
+							}
+						} else {
+							FarragoMod.log.info(facing+" does not match type");
+						}
+					}
+				}
+				if (minDir == null) {
+					FarragoMod.log.info("nowhere to send to");
+					return;
+				}
+				FarragoMod.log.info("sending "+minDir);
+				int xO = minDir.getFrontOffsetX();
+				int yO = minDir.getFrontOffsetY();
+				int zO = minDir.getFrontOffsetZ();
+				int mMeta = world.getBlockMetadata(x+xO, y+yO, z+zO);
+				int mType, mBase, mCount;
+				if (mMeta != 0) {
+					mType = ((int) Math.ceil(mMeta/3f))-1;
+					mBase = mType*3;
+					mCount = (mMeta == 0 ? 0 : mMeta-mBase);
+				} else {
+					mType = type;
+					mBase = base;
+					mCount = 0;
+				}
+				FarragoMod.log.info("count: "+count);
+				FarragoMod.log.info("mCount: "+mCount);
+				FarragoMod.log.info("base: "+base);
+				FarragoMod.log.info("mBase: "+mBase);
+				if (mCount < 3) {
+					count--;
+					mCount++;
+				}
+				FarragoMod.log.info("post count: "+count);
+				FarragoMod.log.info("post mCount: "+mCount);
+				if (count == 0) {
+					world.setBlockMetadataWithNotify(x, y, z, 0, 3);
+				} else {
+					world.setBlockMetadataWithNotify(x, y, z, base+count, 3);
+				}
+				if (mCount == 0) {
+					world.setBlockMetadataWithNotify(x+xO, y+yO, z+zO, 0, 3);
+				} else {
+					world.setBlockMetadataWithNotify(x+xO, y+yO, z+zO, mBase+mCount, 3);
+				}
+			}
+		}
+	}
+	
+	@Override
 	public boolean renderAsNormalBlock() {
 		return false;
 	}
@@ -49,6 +163,15 @@ public class BlockLightPipe extends Block {
 	@Override
 	public int getRenderType() {
 		return inventory ? 0 : FarragoMod.lightPipeRenderType;
+	}
+	
+	@Override
+	public int getLightValue(IBlockAccess world, int x, int y, int z) {
+		int meta = world.getBlockMetadata(x, y, z);
+		int type = ((int) Math.ceil(meta/3f))-1;;
+		int base = type*3;
+		int count = (meta == 0 ? 0 : meta-base);
+		return count*3;
 	}
 	
 	@Override
@@ -186,3 +309,4 @@ public class BlockLightPipe extends Block {
 	}
 
 }
+

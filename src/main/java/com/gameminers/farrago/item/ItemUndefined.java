@@ -6,11 +6,13 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemMapBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 
 import com.gameminers.farrago.FarragoMod;
@@ -67,14 +69,6 @@ public class ItemUndefined extends ItemMapBase {
 		return itemRand.nextBoolean();
 	}
 	@Override
-	public EnumAction getItemUseAction(ItemStack p_77661_1_) {
-		return EnumAction.eat;
-	}
-	@Override
-	public int getMaxItemUseDuration(ItemStack p_77626_1_) {
-		return itemRand.nextInt(240)+20;
-	}
-	@Override
 	public boolean isFull3D() {
 		return itemRand.nextBoolean();
 	}
@@ -93,9 +87,23 @@ public class ItemUndefined extends ItemMapBase {
 	@Override
 	public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_, List p_150895_3_) {}
 	@Override
-	public ItemStack onItemRightClick(ItemStack p_77659_1_, World p_77659_2_,
-			EntityPlayer p_77659_3_) {
-		p_77659_3_.setItemInUse(p_77659_1_, getMaxItemUseDuration(p_77659_1_));
-		return p_77659_1_;
+	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float xo, float yo, float zo) {
+		if (!world.isRemote) {
+			Block block = world.getBlock(x, y, z);
+			int id = Block.getIdFromBlock(block);
+			String name = Block.blockRegistry.getNameForObject(block);
+			int meta = world.getBlockMetadata(x, y, z);
+			TileEntity te = world.getTileEntity(x, y, z);
+			String tes = (te == null ? "undefined" : te.getClass().getName());
+			player.addChatMessage(new ChatComponentText("["+id+"] "+name+"@"+meta+" "+tes));
+		}
+		return true;
+	}
+	@Override
+	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer holder, EntityLivingBase entity) {
+		if (!holder.worldObj.isRemote) {
+			holder.addChatMessage(new ChatComponentText("["+entity.getEntityId()+"] "+entity.getClass().getName()));
+		}
+		return true;
 	}
 }

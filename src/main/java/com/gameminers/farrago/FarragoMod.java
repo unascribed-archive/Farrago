@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.gameminers.farrago.block.BlockCollector;
 import com.gameminers.farrago.block.BlockCombustor;
+import com.gameminers.farrago.block.BlockFarragoStairs;
 import com.gameminers.farrago.block.BlockGlow;
 import com.gameminers.farrago.block.BlockLightPipe;
 import com.gameminers.farrago.block.BlockMachine;
@@ -126,6 +127,7 @@ public class FarragoMod {
 	public static BlockMachine MACHINE;
 	public static BlockCollector COLLECTOR;
 	public static BlockLightPipe LIGHT_PIPE;
+	public static BlockFarragoStairs XENOTIME_STAIRS;
 	
 	public static ItemVividOrb VIVID_ORB;
 	public static Item CAQUELON;
@@ -202,6 +204,7 @@ public class FarragoMod {
 		MACHINE = new BlockMachine();
 		COLLECTOR = new BlockCollector();
 		LIGHT_PIPE = new BlockLightPipe();
+		XENOTIME_STAIRS = new BlockFarragoStairs(ORE, 2);
 		
 		CAQUELON = new Item().setTextureName("farrago:caquelon").setMaxStackSize(1).setUnlocalizedName("caquelon").setCreativeTab(creativeTab);
 		VIVID_ORB = new ItemVividOrb();
@@ -256,6 +259,7 @@ public class FarragoMod {
 		GameRegistry.registerBlock(RESOURCE, ItemBlockWithCustomName.class, "resource");
 		GameRegistry.registerBlock(COLLECTOR, ItemBlockWithCustomName.class, "collector");
 		GameRegistry.registerBlock(LIGHT_PIPE, "lightPipe");
+		GameRegistry.registerBlock(XENOTIME_STAIRS, "xenotimeStairs");
 		
 		
 		GameRegistry.registerItem(BLUNDERBUSS, "blunderbuss");
@@ -727,6 +731,13 @@ public class FarragoMod {
 		} else {
 			disabled.put(new ItemSelector(new ItemStack(CELL, 1, 6)), config.getString("rifle.magazine.incendiary.disableReason"));
 		}
+		
+		GameRegistry.addShapedRecipe(new ItemStack(XENOTIME_STAIRS, 4),
+				"X  ",
+				"XX ",
+				"XXX",
+				'X', new ItemStack(ORE, 1, 2)
+			);
 		
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(DUST, 2, 6), "dustCopper", "dustYttrium"));
 		

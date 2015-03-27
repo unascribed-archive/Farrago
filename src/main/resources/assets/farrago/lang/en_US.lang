@@ -54,6 +54,8 @@ tile.collector_unfiltered.name=Aggregator
 
 tile.light_pipe.name=Luminous Duct
 
+tile.xenotime_stairs.name=Xenotime Stairs
+
 item.rubble_1.name=Feckless Rubble
 item.rubble_2.name=Vain Debris
 item.rubble_3.name=Inutile Scrap
