@@ -41,7 +41,6 @@ import com.gameminers.farrago.client.init.InitScreen;
 import com.gameminers.farrago.client.pane.PaneBranding;
 import com.gameminers.farrago.client.pane.PaneOrbGlow;
 import com.gameminers.farrago.client.pane.PaneRifle;
-import com.gameminers.farrago.client.pane.PaneToolsOverlay;
 import com.gameminers.farrago.client.render.LightPipeBlockRenderer;
 import com.gameminers.farrago.client.render.RenderBlunderbussProjectile;
 import com.gameminers.farrago.client.render.RenderNull;
@@ -76,7 +75,7 @@ public class ClientProxy implements Proxy {
 	@Override
 	public void init() {
 		//new PaneVanityArmor().autoOverlay(GuiInventory.class);
-		new PaneToolsOverlay().autoOverlay(GuiMainMenu.class);
+		//new PaneToolsOverlay().autoOverlay(GuiMainMenu.class);
 		new PaneOrbGlow().autoOverlay(GuiIngame.class);
 		new PaneRifle().autoOverlay(GuiIngame.class);
 		if (FarragoMod.showBrand && StringUtils.isNotBlank(FarragoMod.brand)) {
