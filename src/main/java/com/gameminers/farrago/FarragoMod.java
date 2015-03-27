@@ -37,8 +37,10 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.gameminers.farrago.block.BlockCollector;
 import com.gameminers.farrago.block.BlockCombustor;
 import com.gameminers.farrago.block.BlockGlow;
+import com.gameminers.farrago.block.BlockLightPipe;
 import com.gameminers.farrago.block.BlockMachine;
 import com.gameminers.farrago.block.BlockOre;
 import com.gameminers.farrago.block.BlockResource;
@@ -82,6 +84,7 @@ import com.gameminers.farrago.selector.Selector;
 import com.gameminers.farrago.tileentity.TileEntityCellFiller;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
+import com.gameminers.farrago.tileentity.TileEntityTicker;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
@@ -121,6 +124,8 @@ public class FarragoMod {
 	public static BlockResource RESOURCE;
 	public static BlockGlow GLOW;
 	public static BlockMachine MACHINE;
+	public static BlockCollector COLLECTOR;
+	public static BlockLightPipe LIGHT_PIPE;
 	
 	public static ItemVividOrb VIVID_ORB;
 	public static Item CAQUELON;
@@ -176,6 +181,7 @@ public class FarragoMod {
 	private XenotimeGenerator xenoGen;
 	public static Map<Selector, String> disabled = Maps.newHashMap();
 	public static Config config;
+	public static int lightPipeRenderType;
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
@@ -194,6 +200,8 @@ public class FarragoMod {
 		GLOW = new BlockGlow();
 		RESOURCE = new BlockResource();
 		MACHINE = new BlockMachine();
+		COLLECTOR = new BlockCollector();
+		LIGHT_PIPE = new BlockLightPipe();
 		
 		CAQUELON = new Item().setTextureName("farrago:caquelon").setMaxStackSize(1).setUnlocalizedName("caquelon").setCreativeTab(creativeTab);
 		VIVID_ORB = new ItemVividOrb();
@@ -238,6 +246,7 @@ public class FarragoMod {
 		GameRegistry.registerTileEntity(TileEntityCombustor.class, "FarragoCombustor");
 		GameRegistry.registerTileEntity(TileEntityScrapper.class, "FarragoScrapper");
 		GameRegistry.registerTileEntity(TileEntityCellFiller.class, "FarragoCellFiller");
+		GameRegistry.registerTileEntity(TileEntityTicker.class, "FarragoTicker");
 		
 		GameRegistry.registerBlock(GLOW, null, "glow");
 		GameRegistry.registerBlock(COMBUSTOR, "combustor");
@@ -245,6 +254,8 @@ public class FarragoMod {
 		GameRegistry.registerBlock(MACHINE, ItemBlockWithCustomName.class, "machine");
 		GameRegistry.registerBlock(ORE, ItemBlockWithCustomName.class, "watashi");
 		GameRegistry.registerBlock(RESOURCE, ItemBlockWithCustomName.class, "resource");
+		GameRegistry.registerBlock(COLLECTOR, ItemBlockWithCustomName.class, "collector");
+		GameRegistry.registerBlock(LIGHT_PIPE, "lightPipe");
 		
 		
 		GameRegistry.registerItem(BLUNDERBUSS, "blunderbuss");

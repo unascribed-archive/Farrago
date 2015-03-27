@@ -47,6 +47,13 @@ tile.block_yttrium.name=Block of Yttrium
 tile.block_yttrium_copper.name=Block of Yttric Copper
 tile.block_copper.name=Block of Copper
 
+tile.collector_sunlight.name=Sunlight Aggregator
+tile.collector_moonlight.name=Moonlight Aggregator
+tile.collector_starlight.name=Starlight Aggregator
+tile.collector_unfiltered.name=Aggregator
+
+tile.light_pipe.name=Luminous Duct
+
 item.rubble_1.name=Feckless Rubble
 item.rubble_2.name=Vain Debris
 item.rubble_3.name=Inutile Scrap
