@@ -20,6 +20,7 @@ import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.tileentity.TileEntityTicker;
 
 public class BlockLightPipe extends Block {
+	private static final boolean DEBUG = false;
 	public static boolean rot = false;
 	public static boolean rot2 = false;
 	public static boolean inventory = false;
@@ -84,7 +85,7 @@ public class BlockLightPipe extends Block {
 				int base = type*3;
 				int count = (meta == 0 ? 0 : meta-base);
 				if (count == 0) return;
-				FarragoMod.log.info("== "+x+", "+y+", "+z+" ==");
+				debug("== "+x+", "+y+", "+z+" ==");
 				int minSaw = -1;
 				EnumFacing minDir = null;
 				for (EnumFacing facing : EnumFacing.values()) {
@@ -95,7 +96,7 @@ public class BlockLightPipe extends Block {
 						int tMeta = world.getBlockMetadata(x+xO, y+yO, z+zO);
 						int tType = ((int) Math.ceil(tMeta/3f))-1;
 						if (tMeta == 0 || tType == type) {
-							FarragoMod.log.info(facing+" matches type");
+							debug(facing+" matches type");
 							int tBase = tType*3;
 							int tCount = (tMeta == 0 ? 0 : tMeta-tBase);
 							if (tCount < count && (minSaw == -1 || tCount < minSaw)) {
@@ -103,15 +104,15 @@ public class BlockLightPipe extends Block {
 								minDir = facing;
 							}
 						} else {
-							FarragoMod.log.info(facing+" does not match type");
+							debug(facing+" does not match type");
 						}
 					}
 				}
 				if (minDir == null) {
-					FarragoMod.log.info("nowhere to send to");
+					debug("nowhere to send to");
 					return;
 				}
-				FarragoMod.log.info("sending "+minDir);
+				debug("sending "+minDir);
 				int xO = minDir.getFrontOffsetX();
 				int yO = minDir.getFrontOffsetY();
 				int zO = minDir.getFrontOffsetZ();
@@ -126,16 +127,16 @@ public class BlockLightPipe extends Block {
 					mBase = base;
 					mCount = 0;
 				}
-				FarragoMod.log.info("count: "+count);
-				FarragoMod.log.info("mCount: "+mCount);
-				FarragoMod.log.info("base: "+base);
-				FarragoMod.log.info("mBase: "+mBase);
+				debug("count: "+count);
+				debug("mCount: "+mCount);
+				debug("base: "+base);
+				debug("mBase: "+mBase);
 				if (mCount < 3) {
 					count--;
 					mCount++;
 				}
-				FarragoMod.log.info("post count: "+count);
-				FarragoMod.log.info("post mCount: "+mCount);
+				debug("post count: "+count);
+				debug("post mCount: "+mCount);
 				if (count == 0) {
 					world.setBlockMetadataWithNotify(x, y, z, 0, 3);
 				} else {
@@ -147,6 +148,12 @@ public class BlockLightPipe extends Block {
 					world.setBlockMetadataWithNotify(x+xO, y+yO, z+zO, mBase+mCount, 3);
 				}
 			}
+		}
+	}
+	
+	private void debug(String msg) {
+		if (DEBUG) {
+			FarragoMod.log.info(msg);
 		}
 	}
 	
