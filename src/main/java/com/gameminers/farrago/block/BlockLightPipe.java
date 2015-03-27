@@ -168,7 +168,9 @@ public class BlockLightPipe extends Block {
 			connectSides.set(1, world.getBlock(x, y+1, z) == FarragoMod.COLLECTOR);
 			sides.or(connectSides);
 		} else {
-			sides.set(1, world.getBlock(x, y+1, z) == FarragoMod.COLLECTOR);
+			if (world.getBlock(x, y+1, z) == FarragoMod.COLLECTOR) {
+				sides.set(1);
+			}
 		}
 		boolean junction = sides.isEmpty() || sides.cardinality() > 1;
 		if (sides.cardinality() == 2) {
