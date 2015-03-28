@@ -52,6 +52,7 @@ public class BlockCollector extends Block implements NameDelegate {
 	
 	@Override
 	public void updateTick(World world, int x, int y, int z, Random rand) {
+		if (!world.provider.isSurfaceWorld()) return;
 		int meta = world.getBlockMetadata(x, y, z);
 		boolean operate = false;
 		int time = (int) (world.getWorldTime() % 24000);
