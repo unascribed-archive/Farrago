@@ -118,6 +118,20 @@
 		Sneak and scroll or press a number key to change modes. Sneak and left
 		click to toggle the scope. Be careful not to overcharge it!
 	</entry>
+	<entry def="farrago:minigun">
+		This state-of-the-art minigun can use drums filled with redstone and
+		copper to fire beams very quickly. It will overheat and need to cool
+		down when the drum runs out. Sneak to spin the barrel without firing.
+	</entry>
+	<entry def="farrago:minigunCell@129">
+		An empty drum, made from Yttrium and Yttric Copper. Maybe you should
+		fill it?
+	</entry>
+	<ignore def="farrago:minigunCell@129"/>
+	<entry def="farrago:minigunCell">
+		A drum filled with Redstone and Copper. When fired, these cause
+		a powerful corrosive reaction.
+	</entry>
 	<entry def="farrago:dust">
 		Don't breathe this.
 	</entry>
