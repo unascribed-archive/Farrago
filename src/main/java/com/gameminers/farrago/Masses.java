@@ -175,7 +175,16 @@ public class Masses {
 		}
 	}
 	
+	private static boolean idioticModNag = true;
+	
 	public static float[] getMasses(ItemStack stack, boolean allowBaked) {
+		if (stack == null) {
+			if (idioticModNag) {
+				FarragoMod.log.error("Some poorly coded mod is stuffing nulls into the crafting manager! This message will only be shown once.");
+				idioticModNag = false;
+			}
+			return array(0);
+		}
 		goat.func_150996_a(stack.getItem());
 		goat.setItemDamage(stack.getItemDamage());
 		goat.setTagCompound(stack.getTagCompound());
@@ -183,7 +192,7 @@ public class Masses {
 		long hash = FarragoMod.hashItemStack(goat);
 		if (baked && allowBaked) {
 			if (bakedMass.containsKey(hash)) {
-				return dummy(bakedMass.get(hash));
+				return array(bakedMass.get(hash));
 			}
 		} else {
 			if (mass.containsKey(hash)) {
@@ -194,7 +203,7 @@ public class Masses {
 		hash = FarragoMod.hashItemStack(goat);
 		if (baked && allowBaked) {
 			if (bakedMass.containsKey(hash)) {
-				return dummy(bakedMass.get(hash));
+				return array(bakedMass.get(hash));
 			}
 		} else {
 			if (mass.containsKey(hash)) {
@@ -205,7 +214,7 @@ public class Masses {
 		hash = FarragoMod.hashItemStack(goat);
 		if (baked && allowBaked) {
 			if (bakedMass.containsKey(hash)) {
-				return dummy(bakedMass.get(hash));
+				return array(bakedMass.get(hash));
 			}
 		} else {
 			if (mass.containsKey(hash)) {
@@ -213,18 +222,16 @@ public class Masses {
 			}
 		}
 		if (baked) {
-			return dummy(0.25f);
+			return array(0.25f);
 		} else {
-			return dummy(0f);
+			return array(0f);
 		}
 	}
-	
-	private final static float[] dummyFloatArray = new float[1];
-	
-	private static float[] dummy(float f) {
-		dummyFloatArray[0] = f;
-		return dummyFloatArray;
+
+	private static float[] array(float... f) {
+		return f;
 	}
+
 
 	private static float[] array(List<Float> list) {
 		float[] array = new float[list.size()];
