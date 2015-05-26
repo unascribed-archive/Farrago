@@ -79,6 +79,7 @@ public class ItemFondue extends ItemFood {
 			}
 		}
 	}
+
 	@Override
 	public IIcon getIconFromDamage(int damage) {
 		return icons[damage];

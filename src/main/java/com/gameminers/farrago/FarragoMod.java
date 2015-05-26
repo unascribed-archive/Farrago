@@ -56,6 +56,7 @@ import com.gameminers.farrago.gen.XenotimeGenerator;
 import com.gameminers.farrago.gen.YttriumGenerator;
 import com.gameminers.farrago.item.ItemFondue;
 import com.gameminers.farrago.item.ItemUndefined;
+import com.gameminers.farrago.item.ItemUtilityBelt;
 import com.gameminers.farrago.item.chromatic.ItemChromaticArmor;
 import com.gameminers.farrago.item.chromatic.ItemChromaticAxe;
 import com.gameminers.farrago.item.chromatic.ItemChromaticHoe;
@@ -66,8 +67,10 @@ import com.gameminers.farrago.item.gun.ItemBlunderbuss;
 import com.gameminers.farrago.item.gun.ItemKahur;
 import com.gameminers.farrago.item.gun.ItemMinigun;
 import com.gameminers.farrago.item.gun.ItemRifle;
+import com.gameminers.farrago.item.modular.ItemModularChestplate;
 import com.gameminers.farrago.item.resource.ItemApocite;
 import com.gameminers.farrago.item.resource.ItemCell;
+import com.gameminers.farrago.item.resource.ItemCrafting;
 import com.gameminers.farrago.item.resource.ItemDust;
 import com.gameminers.farrago.item.resource.ItemIngot;
 import com.gameminers.farrago.item.resource.ItemMinigunCell;
@@ -143,6 +146,9 @@ public class FarragoMod {
 	public static ItemMinigun MINIGUN;
 	public static ItemMinigunCell MINIGUN_CELL;
 	public static ItemUndefined UNDEFINED;
+	public static ItemModularChestplate MODULAR_CHESTPLATE;
+	public static ItemCrafting CRAFTING;
+	public static ItemUtilityBelt UTILITY_BELT;
 	
 	public static ItemChromaticPickaxe CHROMATIC_PICKAXE;
 	public static ItemChromaticAxe CHROMATIC_AXE;
@@ -154,6 +160,7 @@ public class FarragoMod {
 	public static ItemChromaticArmor CHROMATIC_CHESTPLATE;
 	public static ItemChromaticArmor CHROMATIC_LEGGINGS;
 	public static ItemChromaticArmor CHROMATIC_BOOTS;
+	
 	
 	public static SimpleNetworkWrapper CHANNEL;
 	
@@ -220,6 +227,9 @@ public class FarragoMod {
 		MINIGUN = new ItemMinigun();
 		MINIGUN_CELL = new ItemMinigunCell();
 		UNDEFINED = new ItemUndefined();
+		MODULAR_CHESTPLATE = new ItemModularChestplate();
+		CRAFTING = new ItemCrafting();
+		UTILITY_BELT = new ItemUtilityBelt();
 		
 		CHROMATIC_PICKAXE = new ItemChromaticPickaxe();
 		CHROMATIC_AXE = new ItemChromaticAxe().setUnlocalizedName("chromatic_axe");
@@ -278,6 +288,9 @@ public class FarragoMod {
 		if (config.getBoolean("eegg.undefined")) {
 			GameRegistry.registerItem(UNDEFINED, "undefined");
 		}
+		GameRegistry.registerItem(MODULAR_CHESTPLATE, "modularChestplate");
+		GameRegistry.registerItem(CRAFTING, "crafting");
+		GameRegistry.registerItem(UTILITY_BELT, "utilityBelt");
 		
 		GameRegistry.registerItem(CHROMATIC_PICKAXE, "chromaticPickaxe");
 		GameRegistry.registerItem(CHROMATIC_AXE, "chromaticAxe");

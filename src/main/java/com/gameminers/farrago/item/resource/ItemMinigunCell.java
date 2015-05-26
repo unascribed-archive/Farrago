@@ -30,7 +30,7 @@ public class ItemMinigunCell extends Item {
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
 		list.add(new ItemStack(item, 1, 0));
-		list.add(new ItemStack(item, 1, 129));
+		list.add(new ItemStack(item, 1, getCapacity()+1));
 	}
 	@Override
 	public IIcon getIconFromDamage(int meta) {

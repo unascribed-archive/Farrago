@@ -1,6 +1,5 @@
-package com.gameminers.farrago.client.pane;
+package com.gameminers.farrago.client;
 
-import gminers.glasspane.GlassPane;
 import gminers.glasspane.component.PaneImage;
 import gminers.kitchensink.Rendering;
 
@@ -12,7 +11,6 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.GuiIngameForge;
 
 import org.lwjgl.opengl.GL11;
 
@@ -20,7 +18,7 @@ import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.enums.RifleMode;
 import com.google.common.collect.Maps;
 
-public class PaneRifle extends GlassPane {
+public class RifleRenderer {
 	private static final ResourceLocation[] crosshairs = new ResourceLocation[26];
 	private static final Map<RifleMode, ResourceLocation> modeIcons = Maps.newEnumMap(RifleMode.class);
 	private static final ResourceLocation wadjets = new ResourceLocation("textures/gui/widgets.png");
@@ -32,30 +30,13 @@ public class PaneRifle extends GlassPane {
 			modeIcons.put(rm, new ResourceLocation("farrago", "textures/riflemode/"+rm.name().toLowerCase(Locale.ENGLISH)+".png"));
 		}
 	}
-	@Override
-	protected void doRender(int mouseX, int mouseY, float partialTicks) {
-		Minecraft mc = Minecraft.getMinecraft();
-		if (mc.thePlayer != null) {
-			if (mc.thePlayer.getHeldItem() != null) {
-				ItemStack held = mc.thePlayer.getHeldItem();
-				if (held.getItem() == FarragoMod.RIFLE) {
-					GuiIngameForge.renderCrosshairs = false;
-					renderCrosshairs(mc, held, partialTicks);
-					renderHotbar(mc, held, partialTicks);
-					return;
-				}
-			}
-		}
-		GuiIngameForge.renderCrosshairs = true;
-	}
-	
-	private void renderHotbar(Minecraft mc, ItemStack held, float partialTicks) {
+	public static void renderHotbar(Minecraft mc, ItemStack held, float partialTicks, int width, int height) {
 		RifleMode mode = FarragoMod.RIFLE.getMode(held);
 		GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			mc.renderEngine.bindTexture(wadjets);
-			Rendering.drawTexturedModalRect(width / 2 - 91, 0, 0, 0, 182, 22);
+			Rendering.drawTexturedModalRect(width / 2 - 91, 0, 0, 0, 182, 22);  
 			Rendering.drawTexturedModalRect(width / 2 - 91 - 1 + mode.ordinal() * 20, -1, 0, 22, 24, 22);
 		GL11.glDisable(GL11.GL_BLEND);
 		RifleMode[] vals = RifleMode.values();
@@ -85,10 +66,10 @@ public class PaneRifle extends GlassPane {
 				mc.fontRenderer.drawStringWithShadow(scount, (x+17)-mc.fontRenderer.getStringWidth(scount), y+9, -1);
 			}
 		}
-		Rendering.drawCenteredString(mc.fontRenderer, mode.getDisplayName(), getWidth()/2, 24, -1);
+		Rendering.drawCenteredString(mc.fontRenderer, mode.getDisplayName(), width/2, 24, -1);
 	}
 
-	private void renderCrosshairs(Minecraft mc, ItemStack held, float partialTicks) {
+	public static void renderCrosshairs(Minecraft mc, ItemStack held, float partialTicks, int width, int height) {
 		int idx = 0;
 		int idx2 = 0;
 		boolean overloadImminent = false;
@@ -111,16 +92,16 @@ public class PaneRifle extends GlassPane {
 	        OpenGlHelper.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR, 1, 0);
 		}
 		int textColor = ready ? overloadImminent ? 0xFFFF0000 : 0xFF00FF00 : -1;
-		PaneImage.render(crosshairs[Math.min(25, idx)], (getWidth()/2)-8, (getHeight()/2)-8, 0, 0, 16, 16, 256, 256, -1, 1.0f, true);
+		PaneImage.render(crosshairs[Math.min(25, idx)], (width/2)-8, (height/2)-8, 0, 0, 16, 16, 256, 256, -1, 1.0f, true);
 		if (ready) {
-			PaneImage.render(crosshairs[Math.min(25, idx2)], (getWidth()/2)-8, (getHeight()/2)-8, 0, 0, 16, 16, 256, 256, 0xFF0000, 1.0f, true);
+			PaneImage.render(crosshairs[Math.min(25, idx2)], (width/2)-8, (height/2)-8, 0, 0, 16, 16, 256, 256, 0xFF0000, 1.0f, true);
 		}
 		GL11.glPushMatrix();
         	GL11.glScalef(0.5f, 0.5f, 1.0f);
         	if (overloadImminent) {
-        		Rendering.drawCenteredString(mc.fontRenderer, "\u00A7lOVERLOAD IMMINENT", getWidth()-2, getHeight()-28, textColor);
+        		Rendering.drawCenteredString(mc.fontRenderer, "\u00A7lOVERLOAD IMMINENT", width-2, height-28, textColor);
         	} else if (ready) {
-        		Rendering.drawCenteredString(mc.fontRenderer, "\u00A7lREADY", getWidth()-2, getHeight()-28, textColor);
+        		Rendering.drawCenteredString(mc.fontRenderer, "\u00A7lREADY", width-2, height-28, textColor);
         	}
         GL11.glPopMatrix();
 		if (!(overloadImminent || ready)) {
@@ -128,7 +109,7 @@ public class PaneRifle extends GlassPane {
 			GL11.glDisable(GL11.GL_BLEND);
 		}
 		if (ready) {
-			PaneImage.render(crosshairs[0], (getWidth()/2)-8, (getHeight()/2)-8, 0, 0, 16, 16, 256, 256, textColor, 1.0f, true);
+			PaneImage.render(crosshairs[0], (width/2)-8, (height/2)-8, 0, 0, 16, 16, 256, 256, textColor, 1.0f, true);
 		}
 	}
 }

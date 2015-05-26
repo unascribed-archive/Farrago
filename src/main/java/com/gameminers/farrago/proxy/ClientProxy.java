@@ -16,6 +16,7 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -24,6 +25,8 @@ import net.minecraft.util.Timer;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.FOVUpdateEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 
@@ -35,12 +38,13 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import com.gameminers.farrago.FarragoMod;
+import com.gameminers.farrago.client.RifleRenderer;
+import com.gameminers.farrago.client.UtilityBeltRenderer;
 import com.gameminers.farrago.client.effect.EntityRifleFX;
 import com.gameminers.farrago.client.encyclopedia.Encyclopedia;
 import com.gameminers.farrago.client.init.InitScreen;
 import com.gameminers.farrago.client.pane.PaneBranding;
 import com.gameminers.farrago.client.pane.PaneOrbGlow;
-import com.gameminers.farrago.client.pane.PaneRifle;
 import com.gameminers.farrago.client.render.LightPipeBlockRenderer;
 import com.gameminers.farrago.client.render.RenderBlunderbussProjectile;
 import com.gameminers.farrago.client.render.RenderNull;
@@ -54,6 +58,7 @@ import com.gameminers.farrago.selector.Selector;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
@@ -67,6 +72,8 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 public class ClientProxy implements Proxy {
 	private boolean linuxNag = true;
 	public static final Timer timer = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), 16);
+	private KeyBinding prevHotbar;
+	private KeyBinding nextHotbar;
 	@Override
 	public void postInit() {
 		InitScreen.init();
@@ -77,7 +84,6 @@ public class ClientProxy implements Proxy {
 		//new PaneVanityArmor().autoOverlay(GuiInventory.class);
 		//new PaneToolsOverlay().autoOverlay(GuiMainMenu.class);
 		new PaneOrbGlow().autoOverlay(GuiIngame.class);
-		new PaneRifle().autoOverlay(GuiIngame.class);
 		if (FarragoMod.showBrand && StringUtils.isNotBlank(FarragoMod.brand)) {
 			new PaneBranding().autoOverlay(GuiMainMenu.class);
 		}
@@ -85,6 +91,11 @@ public class ClientProxy implements Proxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityRifleProjectile.class, new RenderNull());
 		MinecraftForgeClient.registerItemRenderer(FarragoMod.RIFLE, new RifleItemRenderer());
 		MinecraftForgeClient.registerItemRenderer(FarragoMod.UNDEFINED, new UndefinedItemRenderer());
+		prevHotbar = new KeyBinding("key.farrago.utility_belt.prev_hotbar", Keyboard.KEY_PRIOR, "key.categories.farrago.utility_belt");
+		nextHotbar = new KeyBinding("key.farrago.utility_belt.next_hotbar", Keyboard.KEY_NEXT, "key.categories.farrago.utility_belt");
+		nextHotbar = new KeyBinding("key.farrago.utility_belt.rename_hotbar", Keyboard.KEY_INSERT, "key.categories.farrago.utility_belt");
+		ClientRegistry.registerKeyBinding(prevHotbar);
+		ClientRegistry.registerKeyBinding(nextHotbar);
 		FarragoMod.lightPipeRenderType = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(new LightPipeBlockRenderer());
 		IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
@@ -269,6 +280,30 @@ public class ClientProxy implements Proxy {
 							}
 						}
 						return;
+					}
+				}
+			}
+		}
+	}
+	@SubscribeEvent
+	public void onPreRenderGameOverlay(RenderGameOverlayEvent.Pre e) {
+		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.thePlayer != null) {
+			if (e.type == ElementType.CROSSHAIRS) {
+				if (mc.thePlayer.getHeldItem() != null) {
+					ItemStack held = mc.thePlayer.getHeldItem();
+					if (held.getItem() == FarragoMod.RIFLE) {
+						RifleRenderer.renderCrosshairs(mc, held, e.partialTicks, e.resolution.getScaledWidth(), e.resolution.getScaledHeight());
+						RifleRenderer.renderHotbar(mc, held, e.partialTicks, e.resolution.getScaledWidth(), e.resolution.getScaledHeight());
+						e.setCanceled(true);
+					}
+				}
+			} else if (e.type == ElementType.HOTBAR) {
+				if (mc.thePlayer.inventory.armorInventory[1] != null) {
+					ItemStack legs = mc.thePlayer.inventory.armorInventory[1];
+					if (legs.getItem() == FarragoMod.UTILITY_BELT) {
+						UtilityBeltRenderer.render(mc, legs, e.partialTicks, e.resolution.getScaledWidth(), e.resolution.getScaledHeight());
+						e.setCanceled(true);
 					}
 				}
 			}
