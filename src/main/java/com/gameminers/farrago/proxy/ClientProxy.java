@@ -74,6 +74,7 @@ public class ClientProxy implements Proxy {
 	public static final Timer timer = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), 16);
 	private KeyBinding prevHotbar;
 	private KeyBinding nextHotbar;
+	private KeyBinding renameHotbar;
 	@Override
 	public void postInit() {
 		InitScreen.init();
@@ -93,9 +94,10 @@ public class ClientProxy implements Proxy {
 		MinecraftForgeClient.registerItemRenderer(FarragoMod.UNDEFINED, new UndefinedItemRenderer());
 		prevHotbar = new KeyBinding("key.farrago.utility_belt.prev_hotbar", Keyboard.KEY_PRIOR, "key.categories.farrago.utility_belt");
 		nextHotbar = new KeyBinding("key.farrago.utility_belt.next_hotbar", Keyboard.KEY_NEXT, "key.categories.farrago.utility_belt");
-		nextHotbar = new KeyBinding("key.farrago.utility_belt.rename_hotbar", Keyboard.KEY_INSERT, "key.categories.farrago.utility_belt");
+		renameHotbar = new KeyBinding("key.farrago.utility_belt.rename_hotbar", Keyboard.KEY_INSERT, "key.categories.farrago.utility_belt");
 		ClientRegistry.registerKeyBinding(prevHotbar);
 		ClientRegistry.registerKeyBinding(nextHotbar);
+		ClientRegistry.registerKeyBinding(renameHotbar);
 		FarragoMod.lightPipeRenderType = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(new LightPipeBlockRenderer());
 		IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
