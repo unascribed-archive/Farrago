@@ -97,5 +97,14 @@
 				"stream": false
 			}
 		]
+	},
+	"switch_hotbar": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "switch_hotbar",
+				"stream": false
+			}
+		]
 	}
 }

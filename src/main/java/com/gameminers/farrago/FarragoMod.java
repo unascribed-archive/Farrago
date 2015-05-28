@@ -76,9 +76,13 @@ import com.gameminers.farrago.item.resource.ItemIngot;
 import com.gameminers.farrago.item.resource.ItemMinigunCell;
 import com.gameminers.farrago.item.resource.ItemRubble;
 import com.gameminers.farrago.item.resource.ItemVividOrb;
+import com.gameminers.farrago.network.ChangeSelectedHotbarHandler;
+import com.gameminers.farrago.network.ChangeSelectedHotbarMessage;
 import com.gameminers.farrago.network.FarragoGuiHandler;
 import com.gameminers.farrago.network.ModifyRifleModeHandler;
 import com.gameminers.farrago.network.ModifyRifleModeMessage;
+import com.gameminers.farrago.network.RenameHotbarHandler;
+import com.gameminers.farrago.network.RenameHotbarMessage;
 import com.gameminers.farrago.proxy.Proxy;
 import com.gameminers.farrago.recipes.RecipeChromatic;
 import com.gameminers.farrago.recipes.RecipesVividOrbDyes;
@@ -202,6 +206,8 @@ public class FarragoMod {
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new FarragoGuiHandler());
 		CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel("Farrago");
 		CHANNEL.registerMessage(ModifyRifleModeHandler.class, ModifyRifleModeMessage.class, 0, Side.SERVER);
+		CHANNEL.registerMessage(ChangeSelectedHotbarHandler.class, ChangeSelectedHotbarMessage.class, 1, Side.SERVER);
+		CHANNEL.registerMessage(RenameHotbarHandler.class, RenameHotbarMessage.class, 2, Side.SERVER);
 		
 		COMBUSTOR = new BlockCombustor();
 		SCRAPPER = new BlockScrapper();

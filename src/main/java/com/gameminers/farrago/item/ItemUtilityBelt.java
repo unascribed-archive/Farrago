@@ -4,9 +4,11 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 
 public class ItemUtilityBelt extends ItemArmor {
 	public ItemUtilityBelt() {
@@ -16,8 +18,7 @@ public class ItemUtilityBelt extends ItemArmor {
 	}
 	
 	@Override
-	public String getArmorTexture(ItemStack stack, Entity entity, int slot,
-			String type) {
+	public String getArmorTexture(ItemStack stack, Entity entity, int slot, String type) {
 		return "farrago:textures/items/blank.png";
 	}
 	
@@ -47,8 +48,64 @@ public class ItemUtilityBelt extends ItemArmor {
 	}
 
 	public String getRowName(ItemStack belt, int idx) {
-		// TODO Auto-generated method stub
-		return null;
+		if (!belt.hasTagCompound() || !belt.getTagCompound().hasKey("Row"+idx+"Name", 8)) {
+			return "#"+idx;
+		}
+		return belt.getTagCompound().getString("Row"+idx+"Name");
+	}
+	
+	public void setRowName(ItemStack stack, int row, String name) {
+		if (!stack.hasTagCompound()) {
+			stack.setTagCompound(new NBTTagCompound());
+		}
+		stack.getTagCompound().setString("Row"+row+"Name", name);
+	}
+	
+	public int getCurrentRow(ItemStack stack) {
+		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey("Row", 3)) {
+			return 0;
+		}
+		return stack.getTagCompound().getInteger("Row");
+	}
+	
+	public void setCurrentRow(ItemStack stack, int row) {
+		if (!stack.hasTagCompound()) {
+			stack.setTagCompound(new NBTTagCompound());
+		}
+		stack.getTagCompound().setInteger("Row", row);
+	}
+
+	public ItemStack[] getRowContents(ItemStack stack, int idx) {
+		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey("Row"+idx+"Content", 9)) {
+			return new ItemStack[InventoryPlayer.getHotbarSize()];
+		}
+		ItemStack[] row = new ItemStack[InventoryPlayer.getHotbarSize()];
+		NBTTagList list = stack.getTagCompound().getTagList("Row"+idx+"Content", 10);
+		for (int i = 0; i < list.tagCount(); i++) {
+			NBTTagCompound tag = list.getCompoundTagAt(i);
+			row[tag.getInteger("Slot")] = ItemStack.loadItemStackFromNBT(tag);
+		}
+		return row;
+	}
+	
+	public void setRowContents(ItemStack stack, int idx, ItemStack[] contents) {
+		if (!stack.hasTagCompound()) {
+			stack.setTagCompound(new NBTTagCompound());
+		}
+		NBTTagList list = new NBTTagList();
+		for (int i = 0; i < contents.length; i++) {
+			if (contents[i] == null) continue;
+			NBTTagCompound tag = contents[i].writeToNBT(new NBTTagCompound());
+			tag.setInteger("Slot", i);
+			list.appendTag(tag);
+		}
+		stack.getTagCompound().setTag("Row"+idx+"Content", list);
+	}
+
+	public void deleteRow(ItemStack stack, int idx) {
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Row"+idx+"Content")) {
+			stack.getTagCompound().removeTag("Row"+idx+"Content");
+		}
 	}
 	
 }

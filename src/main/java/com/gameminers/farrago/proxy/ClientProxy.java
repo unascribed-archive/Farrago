@@ -45,6 +45,7 @@ import com.gameminers.farrago.client.encyclopedia.Encyclopedia;
 import com.gameminers.farrago.client.init.InitScreen;
 import com.gameminers.farrago.client.pane.PaneBranding;
 import com.gameminers.farrago.client.pane.PaneOrbGlow;
+import com.gameminers.farrago.client.pane.PaneRenameHotbar;
 import com.gameminers.farrago.client.render.LightPipeBlockRenderer;
 import com.gameminers.farrago.client.render.RenderBlunderbussProjectile;
 import com.gameminers.farrago.client.render.RenderNull;
@@ -53,6 +54,7 @@ import com.gameminers.farrago.client.render.UndefinedItemRenderer;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
 import com.gameminers.farrago.enums.RifleMode;
+import com.gameminers.farrago.network.ChangeSelectedHotbarMessage;
 import com.gameminers.farrago.network.ModifyRifleModeMessage;
 import com.gameminers.farrago.selector.Selector;
 import com.typesafe.config.ConfigException;
@@ -223,22 +225,38 @@ public class ClientProxy implements Proxy {
 	
 	@SubscribeEvent
 	public void onClientTick(ClientTickEvent e) {
+		Minecraft mc = Minecraft.getMinecraft();
 		if (e.phase == Phase.START) {
 			if (FarragoMod.scoped) {
-				if (Minecraft.getMinecraft().thePlayer == null) {
+				if (mc.thePlayer == null) {
 					FarragoMod.scoped = false;
 					return;
 				}
-				if (Minecraft.getMinecraft().thePlayer.getHeldItem() == null) {
+				if (mc.thePlayer.getHeldItem() == null) {
 					FarragoMod.scoped = false;
 					return;
 				}
-				if (Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() != FarragoMod.RIFLE) {
+				if (mc.thePlayer.getHeldItem().getItem() != FarragoMod.RIFLE) {
 					FarragoMod.scoped = false;
 					return;
 				}
 			}
 			FarragoMod.scopeTicks++;
+			if (mc.thePlayer != null) {
+				if (mc.thePlayer.inventory.armorInventory[1] != null) {
+					ItemStack legs = mc.thePlayer.inventory.armorInventory[1];
+					if (legs.getItem() == FarragoMod.UTILITY_BELT) {
+						UtilityBeltRenderer.tick(mc, legs);
+						if (nextHotbar.isPressed()) {
+							FarragoMod.CHANNEL.sendToServer(new ChangeSelectedHotbarMessage(true));
+						} else if (prevHotbar.isPressed()) {
+							FarragoMod.CHANNEL.sendToServer(new ChangeSelectedHotbarMessage(false));
+						} else if (renameHotbar.isPressed()) {
+							new PaneRenameHotbar(FarragoMod.UTILITY_BELT.getCurrentRow(legs), legs).show();
+						}
+					}
+				}
+			}
 		}
 	}
 	@SubscribeEvent
