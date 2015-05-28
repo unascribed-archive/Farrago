@@ -2,6 +2,7 @@ package com.gameminers.farrago.item;
 
 import java.util.List;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -9,10 +10,12 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.IIcon;
 
 public class ItemUtilityBelt extends ItemArmor {
+	private IIcon buckle;
 	public ItemUtilityBelt() {
-		super(ArmorMaterial.CHAIN, 0, 2);
+		super(ArmorMaterial.CLOTH, 0, 2);
 		setTextureName("farrago:utility_belt");
 		setUnlocalizedName("utility_belt");
 	}
@@ -106,6 +109,27 @@ public class ItemUtilityBelt extends ItemArmor {
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Row"+idx+"Content")) {
 			stack.getTagCompound().removeTag("Row"+idx+"Content");
 		}
+	}
+	
+	@Override
+	public boolean requiresMultipleRenderPasses() {
+		return true;
+	}
+	
+	@Override
+	public IIcon getIconFromDamageForRenderPass(int meta, int pass) {
+		return pass == 1 ? buckle : super.getIconFromDamageForRenderPass(meta, pass);
+	}
+	
+	@Override
+	public int getColorFromItemStack(ItemStack stack, int pass) {
+		return pass == 1 ? getColor(stack) : -1;
+	}
+	
+	@Override
+	public void registerIcons(IIconRegister p_94581_1_) {
+		super.registerIcons(p_94581_1_);
+		buckle = p_94581_1_.registerIcon("farrago:utility_belt_buckle");
 	}
 	
 }

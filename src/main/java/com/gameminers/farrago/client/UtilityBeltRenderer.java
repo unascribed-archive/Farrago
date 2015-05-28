@@ -33,14 +33,14 @@ public class UtilityBeltRenderer {
 			float scale2 = 1;
 			float trans = 0;
 			float trans2 = 0;
-			float alpha = 1.0f;
-			float alpha2 = 1.0f;
 			if (dir) {
 				trans = lastHotbar > cur ? ticks*2f : (11-ticks)*2f;
 			} else {
-				alpha = (ticks/11f);
-				scale = alpha*0.5f;
-				scale += 0.5f;
+				scale = ((ticks/11f)*0.5f)+0.5f;
+				trans = (6-ticks) * 2f;
+				if (trans < 0) {
+					trans = 0;
+				}
 				if (scale > 1) {
 					scale = 1;
 				}
@@ -51,9 +51,8 @@ public class UtilityBeltRenderer {
 					if (!dir) {
 						trans2 = lastHotbar > cur ? ticks*2f : (11-ticks)*2f;
 					} else {
-						alpha2 = ((11-ticks)/11f);
-						scale2 = alpha2*0.5f;
-						scale2 += 0.5f;
+						scale2 = (((11-ticks)/11f)*0.5f)+0.5f;
+						trans2 = ticks * 2f;
 						if (scale2 > 1) {
 							scale2 = 1;
 						}
@@ -73,12 +72,10 @@ public class UtilityBeltRenderer {
 				if (i == 1) {
 					GL11.glTranslatef(0, trans, 0);
 					GL11.glScalef(scale, scale, 1);
-					GL11.glColor4f(1.0F, 1.0F, 1.0F, alpha);
 					renderHotbar(mc, belt, partialTicks, (int)(width*(1f/scale)), (int)(height*(1f/scale)), cur, mc.thePlayer.inventory.mainInventory);
 				} else if (i == 2) {
 					GL11.glTranslatef(0, trans2, 0);
 					GL11.glScalef(scale2, scale2, 1);
-					GL11.glColor4f(1.0F, 1.0F, 1.0F, alpha2);
 					renderHotbar(mc, belt, partialTicks, (int)(width*(1f/scale2)), (int)(height*(1f/scale2)), lastHotbar, lastHotbarContent);
 				}
 				GL11.glPopMatrix();

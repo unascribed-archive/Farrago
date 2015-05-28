@@ -31,7 +31,7 @@ public class ChangeSelectedHotbarHandler implements IMessageHandler<ChangeSelect
 					} else if (nextIdx > max) {
 						nextIdx = 0;
 					}
-					player.worldObj.playSoundAtEntity(player, "farrago:switch_hotbar", 0.65f, message.getDirection() ? 1.25f : 1.5f);
+					player.worldObj.playSoundAtEntity(player, "farrago:switch_hotbar", 0.4f, 0.75f);
 					System.arraycopy(FarragoMod.UTILITY_BELT.getRowContents(legs, nextIdx), 0, player.inventory.mainInventory, 0, hotbarSize);
 					FarragoMod.UTILITY_BELT.deleteRow(legs, nextIdx);
 					FarragoMod.UTILITY_BELT.setCurrentRow(legs, nextIdx);
