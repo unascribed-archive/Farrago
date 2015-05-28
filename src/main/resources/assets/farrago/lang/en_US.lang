@@ -33,8 +33,8 @@ tile.scrapper.name=§mScrapper§r
 tile.machine_scrapper.name=Scrapper
 container.scrapper=Scrapper
 
-tile.machine_cell_filler.name=Cell Filler [NYI]
-container.cell_filler=Cell Filler
+tile.machine_cell_filler.name=Injector [NYI]
+container.cell_filler=Injector
 
 tile.ore_yttrium.name=Yttrium Ore
 tile.ore_xenotime.name=Xenotime

@@ -13,7 +13,7 @@ import com.gameminers.farrago.FarragoMod;
 
 public class TileEntityCombustor extends TileEntityMachineFurnaceLike implements ISidedInventory {
 	public TileEntityCombustor() {
-		super("container.combustor");
+		super("container.combustor", 3);
 	}
 
 	private boolean quick = false;

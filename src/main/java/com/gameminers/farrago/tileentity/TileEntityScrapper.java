@@ -16,7 +16,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -32,7 +31,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityScrapper extends TileEntityMachine implements ISidedInventory {
 	public TileEntityScrapper() {
-		super("container.scrapper");
+		super("container.scrapper", 12);
 	}
 
 	private static final int[] slotsTop = new int[] { 0 };
@@ -43,68 +42,12 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 		return TileEntityFurnace.getItemBurnTime(p_145952_0_) / 2;
 	}
 
-	private ItemStack[] furnaceItemStacks = new ItemStack[12];
 	public int furnaceBurnTime;
     public int currentItemBurnTime;
     public int furnaceCookTime;
     public int operationLength = 400;
 	private String inventoryName;
 	private static final boolean DEBUG = false;
-
-	@Override
-	public int getSizeInventory() {
-		return this.furnaceItemStacks.length;
-	}
-
-	@Override
-	public ItemStack getStackInSlot(int p_70301_1_) {
-		return this.furnaceItemStacks[p_70301_1_];
-	}
-
-	@Override
-	public ItemStack decrStackSize(int p_70298_1_, int p_70298_2_) {
-		if (this.furnaceItemStacks[p_70298_1_] != null) {
-			ItemStack itemstack;
-
-			if (this.furnaceItemStacks[p_70298_1_].stackSize <= p_70298_2_) {
-				itemstack = this.furnaceItemStacks[p_70298_1_];
-				this.furnaceItemStacks[p_70298_1_] = null;
-				return itemstack;
-			} else {
-				itemstack = this.furnaceItemStacks[p_70298_1_]
-						.splitStack(p_70298_2_);
-
-				if (this.furnaceItemStacks[p_70298_1_].stackSize == 0) {
-					this.furnaceItemStacks[p_70298_1_] = null;
-				}
-
-				return itemstack;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public ItemStack getStackInSlotOnClosing(int p_70304_1_) {
-		if (this.furnaceItemStacks[p_70304_1_] != null) {
-			ItemStack itemstack = this.furnaceItemStacks[p_70304_1_];
-			this.furnaceItemStacks[p_70304_1_] = null;
-			return itemstack;
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public void setInventorySlotContents(int p_70299_1_, ItemStack p_70299_2_) {
-		this.furnaceItemStacks[p_70299_1_] = p_70299_2_;
-
-		if (p_70299_2_ != null
-				&& p_70299_2_.stackSize > this.getInventoryStackLimit()) {
-			p_70299_2_.stackSize = this.getInventoryStackLimit();
-		}
-	}
 
 	@Override
 	public String getInventoryName() {
@@ -123,22 +66,10 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 	@Override
 	public void readFromNBT(NBTTagCompound p_145839_1_) {
 		super.readFromNBT(p_145839_1_);
-		NBTTagList nbttaglist = p_145839_1_.getTagList("Items", 10);
-		this.furnaceItemStacks = new ItemStack[this.getSizeInventory()];
-
-		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
-			byte b0 = nbttagcompound1.getByte("Slot");
-
-			if (b0 >= 0 && b0 < this.furnaceItemStacks.length) {
-				this.furnaceItemStacks[b0] = ItemStack
-						.loadItemStackFromNBT(nbttagcompound1);
-			}
-		}
 
 		this.furnaceBurnTime = p_145839_1_.getShort("BurnTime");
 		this.furnaceCookTime = p_145839_1_.getShort("CookTime");
-		this.currentItemBurnTime = TileEntityScrapper.getItemBurnTime(this.furnaceItemStacks[1]);
+		this.currentItemBurnTime = TileEntityScrapper.getItemBurnTime(getStackInSlot(1));
 
 		if (p_145839_1_.hasKey("CustomName", 8)) {
 			this.inventoryName = p_145839_1_.getString("CustomName");
@@ -150,18 +81,6 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 		super.writeToNBT(p_145841_1_);
 		p_145841_1_.setShort("BurnTime", (short) this.furnaceBurnTime);
 		p_145841_1_.setShort("CookTime", (short) this.furnaceCookTime);
-		NBTTagList nbttaglist = new NBTTagList();
-
-		for (int i = 0; i < this.furnaceItemStacks.length; ++i) {
-			if (this.furnaceItemStacks[i] != null) {
-				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-				nbttagcompound1.setByte("Slot", (byte) i);
-				this.furnaceItemStacks[i].writeToNBT(nbttagcompound1);
-				nbttaglist.appendTag(nbttagcompound1);
-			}
-		}
-
-		p_145841_1_.setTag("Items", nbttaglist);
 
 		if (this.hasCustomInventoryName()) {
 			p_145841_1_.setString("CustomName", this.inventoryName);
@@ -201,21 +120,21 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 			--this.furnaceBurnTime;
 		}
 		if (!this.worldObj.isRemote) {
-			if (this.furnaceBurnTime != 0 || this.furnaceItemStacks[1] != null
-					&& this.furnaceItemStacks[0] != null) {
+			if (this.furnaceBurnTime != 0 || getStackInSlot(1) != null
+					&& getStackInSlot(0) != null) {
 				if (this.furnaceBurnTime == 0 && this.canScrap()) {
-					this.currentItemBurnTime = this.furnaceBurnTime = TileEntityScrapper.getItemBurnTime(this.furnaceItemStacks[1]);
+					this.currentItemBurnTime = this.furnaceBurnTime = TileEntityScrapper.getItemBurnTime(getStackInSlot(1));
 
 					if (this.furnaceBurnTime > 0) {
 						flag1 = true;
 
-						if (this.furnaceItemStacks[1] != null) {
-							--this.furnaceItemStacks[1].stackSize;
+						if (getStackInSlot(1) != null) {
+							--getStackInSlot(1).stackSize;
 
-							if (this.furnaceItemStacks[1].stackSize == 0) {
-								this.furnaceItemStacks[1] = furnaceItemStacks[1]
+							if (getStackInSlot(1).stackSize == 0) {
+								setInventorySlotContents(1, getStackInSlot(1)
 										.getItem().getContainerItem(
-												furnaceItemStacks[1]);
+												getStackInSlot(1)));
 							}
 						}
 					}
@@ -252,10 +171,10 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 	 * destination stack isn't full, etc.
 	 */
 	private boolean canScrap() {
-		if (this.furnaceItemStacks[0] == null) {
+		if (getStackInSlot(0) == null) {
 			return false;
 		} else {
-			int result = furnaceItemStacks[2] == null ? 1 : furnaceItemStacks[2].stackSize + 1;
+			int result = getStackInSlot(2) == null ? 1 : getStackInSlot(2).stackSize + 1;
 			boolean spaceInOutput = false;
 			for (int i = 3; i <= 11; i++) {
 				ItemStack slot = getStackInSlot(i);
@@ -265,9 +184,9 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 				}
 			}
 			boolean dustable = false;
-			boolean dirt = furnaceItemStacks[0].getItem() == Item.getItemFromBlock(Blocks.dirt);
+			boolean dirt = getStackInSlot(0).getItem() == Item.getItemFromBlock(Blocks.dirt);
 			if (FarragoMod.config.getBoolean("machines.scrapper.enableDustConversion")) {
-				int[] ids = OreDictionary.getOreIDs(furnaceItemStacks[0]);
+				int[] ids = OreDictionary.getOreIDs(getStackInSlot(0));
 				for (int id : ids) {
 					String nm = OreDictionary.getOreName(id);
 					String bare = null;
@@ -290,15 +209,15 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 			}
 			operationLength = DEBUG ? 20 : (dirt ? 10 : (dustable ? 100 : 400));
 			if (worldObj.isRemote) return false;
-			boolean scrappable = dirt || dustable || FarragoMod.recipes.containsKey(FarragoMod.hashItemStack(furnaceItemStacks[0]));
+			boolean scrappable = dirt || dustable || FarragoMod.recipes.containsKey(FarragoMod.hashItemStack(getStackInSlot(0)));
 			if (!scrappable) {
-				ItemStack copy = furnaceItemStacks[0].copy();
+				ItemStack copy = getStackInSlot(0).copy();
 				copy.setTagCompound(null);
 				scrappable = FarragoMod.recipes.containsKey(FarragoMod.hashItemStack(copy));
 			}
 			return scrappable &&
 					result <= getInventoryStackLimit()
-					&& (furnaceItemStacks[2] == null || result <= this.furnaceItemStacks[2].getMaxStackSize())
+					&& (getStackInSlot(2) == null || result <= getStackInSlot(2).getMaxStackSize())
 					&& spaceInOutput;
 		}
 	}
@@ -309,23 +228,23 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 	 */
 	public void scrapItem() {
 		if (this.canScrap()) {
-			ItemStack itemstack = this.furnaceItemStacks[0];
+			ItemStack itemstack = getStackInSlot(0);
 
 			boolean dirt = itemstack.getItem() == Item.getItemFromBlock(Blocks.dirt);
 			int rubbleCount = dirt ? 1 : (worldObj.rand.nextInt(3) * processRecipes(itemstack, null, null, 0));
 			
 			if (rubbleCount > 0) {
-				if (this.furnaceItemStacks[2] == null) {
-					this.furnaceItemStacks[2] = new ItemStack(FarragoMod.RUBBLE, rubbleCount, worldObj.rand.nextInt(ItemRubble.typeCount));
-				} else if (this.furnaceItemStacks[2].getItem() == FarragoMod.RUBBLE) {
-					this.furnaceItemStacks[2].stackSize = Math.min(64, furnaceItemStacks[2].stackSize+rubbleCount);
+				if (getStackInSlot(2) == null) {
+					setInventorySlotContents(2, new ItemStack(FarragoMod.RUBBLE, rubbleCount, worldObj.rand.nextInt(ItemRubble.typeCount)));
+				} else if (getStackInSlot(2).getItem() == FarragoMod.RUBBLE) {
+					getStackInSlot(2).stackSize = Math.min(64, getStackInSlot(2).stackSize+rubbleCount);
 				}
 			}
 
-			--this.furnaceItemStacks[0].stackSize;
+			--getStackInSlot(0).stackSize;
 
-			if (this.furnaceItemStacks[0].stackSize <= 0) {
-				this.furnaceItemStacks[0] = null;
+			if (getStackInSlot(0).stackSize <= 0) {
+				setInventorySlotContents(0, null);
 			}
 			
 		}
