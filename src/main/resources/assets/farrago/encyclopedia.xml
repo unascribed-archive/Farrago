@@ -24,18 +24,8 @@
 		<entry def="farrago:potato">Potato</entry>
 		results in 'Potato:5'
 	
-	All tags must have a 'def' field. A def must start with a fully qualified
-	block or item name; e.g. 'minecraft:stone', 'farrago:rifle'. An @ sign is
-	a separator between the item's name and it's required damage value. If
-	the damage value is omitted, all damage values are accepted. A value of
-	32767 also acts as a wildcard.
-	Finally, a Mojangson NBT definition can be enclosed in curly braces at the
-	end to require certain NBT tags to be present. As with damage values, if
-	omitted, any values are accepted. If trailed by a '?', then any extra tags
-	on the item are ignored. So, {Foo:Bar} matches {Foo:Bar} but not
-	{Foo:Bar,Baz:Quux}, but {Foo:Bar}? will match both.
-	
-	('Mojangson' here means the format used by command blocks.)
+	All tags must have a 'def' field. The 'def' field defines a selector, as
+	described in the javadoc for the parseSelector method in FarragoMod.
  -->
 <!--              this file is formatted to fit in 80 columns               -->
 <encyclopedia>
@@ -204,13 +194,15 @@
 		&#x00A7;kSaiba sanda saida, saiba sanda saida
 	</entry>
 	<entry def="farrago:apocite{Stable:1b}?">
-		You have successfully stabilized this Apocite gem. Well done.
+		This gem has been coated with a mixture of emerald dust, ender pearl
+		dust, and redstone dust. This seems to be close enough to the
+		composition of Xenotime, and keeps the gem from decaying.
 	</entry>
 	<ignore def="farrago:apocite{Stable:1b}?"/>
 	<entry def="farrago:apocite">
-		The existence of this gem appears to be inherently paradoxical; it
-		seems to be slowly fading into nothing as you hold it. Perhaps there's
-		some way to stabilize it?
+		This gem appears to decay when it is not encased in Xenotime;
+		maybe some materials you have could simulate it's natural
+		environment?
 	</entry>
 	<entry def="farrago:undefined">
 		The most annoying debug item ever.

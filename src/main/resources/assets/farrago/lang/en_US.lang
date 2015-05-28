@@ -46,6 +46,7 @@ tile.block_ender_pearl.name=Ender Pearl Block
 tile.block_yttrium.name=Block of Yttrium
 tile.block_yttrium_copper.name=Block of Yttric Copper
 tile.block_copper.name=Block of Copper
+tile.block_apocite.name=Block of Apocite
 
 tile.collector_sunlight.name=Sunlight Aggregator [WIP]
 tile.collector_moonlight.name=Moonlight Aggregator [WIP]
@@ -86,7 +87,7 @@ item.circuit_board.name=Circuit Board [NYO]
 item.small_plate_blank.name=Blank Shoulder Plate [NYO]
 item.plate_blank.name=Blank Plate [NYO]
 
-item.utility_belt.name=Utility Belt [WIP]
+item.utility_belt.name=Utility Belt
 
 item.chromatic_helmet.name=Chromatic Yttrium Helmet
 item.chromatic_chestplate.name=Chromatic Yttrium Chestplate

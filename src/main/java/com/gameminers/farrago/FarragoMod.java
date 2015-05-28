@@ -18,7 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.WeightedRandomChestContent;
@@ -50,7 +49,6 @@ import com.gameminers.farrago.block.item.ItemBlockWithCustomName;
 import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityKahurProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
-import com.gameminers.farrago.enums.MineralColor;
 import com.gameminers.farrago.enums.WoodColor;
 import com.gameminers.farrago.gen.XenotimeGenerator;
 import com.gameminers.farrago.gen.YttriumGenerator;
@@ -88,13 +86,17 @@ import com.gameminers.farrago.recipes.RecipeChromatic;
 import com.gameminers.farrago.recipes.RecipesVividOrbDyes;
 import com.gameminers.farrago.selector.ItemSelector;
 import com.gameminers.farrago.selector.NullSelector;
+import com.gameminers.farrago.selector.OreSelector;
 import com.gameminers.farrago.selector.Selector;
 import com.gameminers.farrago.tileentity.TileEntityCellFiller;
 import com.gameminers.farrago.tileentity.TileEntityCombustor;
 import com.gameminers.farrago.tileentity.TileEntityScrapper;
 import com.gameminers.farrago.tileentity.TileEntityTicker;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigList;
+import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueType;
 
@@ -195,6 +197,8 @@ public class FarragoMod {
 	public static Map<Selector, String> disabled = Maps.newHashMap();
 	public static Config config;
 	public static int lightPipeRenderType;
+	public static List<Material> materials = Lists.newArrayList();
+	public static Map<String, Material> monikerLookup = Maps.newHashMap();
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
@@ -248,6 +252,15 @@ public class FarragoMod {
 		CHROMATIC_LEGGINGS = new ItemChromaticArmor(2).setTextureName("farrago:chromatic_leggings").setUnlocalizedName("chromatic_leggings");
 		CHROMATIC_BOOTS = new ItemChromaticArmor(3).setTextureName("farrago:chromatic_boots").setUnlocalizedName("chromatic_boots");
 		
+		ConfigList li = config.getList("materials");
+		for (ConfigValue cv : li) {
+			Config obj = ((ConfigObject) cv).toConfig();
+			Material mat = new Material(obj);
+			materials.add(mat);
+			if (mat.moniker != null) {
+				monikerLookup.put(mat.moniker, mat);
+			}
+		}
 		
 		GameRegistry.registerFuelHandler(new IFuelHandler() {
 			private Random rand = new Random();
@@ -763,13 +776,21 @@ public class FarragoMod {
 		if (config.getBoolean("kahur.craftable")) {
 			for (WoodColor body : WoodColor.values()) {
 				for (WoodColor drum : WoodColor.values()) {
-					for (MineralColor pump : MineralColor.values()) {
-						if (pump.getSelector().getRepresentation() == null) continue;
+					for (Material mat : materials) {
+						if (!mat.validForKahur) continue;
+						if (mat.ingot.getRepresentation() == null) continue;
 						ItemStack kahur = new ItemStack(KAHUR);
 						NBTTagCompound tag = new NBTTagCompound();
 						tag.setString("KahurBodyMaterial", body.name());
 						tag.setString("KahurDrumMaterial", drum.name());
-						tag.setString("KahurPumpMaterial", pump.name());
+						tag.setString("KahurPumpName", mat.name);
+						tag.setInteger("KahurDurability", mat.kahurDurability);
+						tag.setInteger("KahurPumpColor", mat.color);
+						tag.setBoolean("KahurDeterministic", mat.kahurDeterministic);
+						if (mat.kahurSpecial != null) {
+							tag.setString("KahurAbility", mat.kahurSpecial.name());
+						}
+						tag.setBoolean("KahurCanPickUpMobs", mat.kahurMobs);
 						kahur.setTagCompound(tag);
 						GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
 								"B  ",
@@ -777,7 +798,7 @@ public class FarragoMod {
 								" /B",
 								'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
 								'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-								'P', pump.getSelector().getRepresentation(),
+								'P', mat.ingot.getRepresentation(),
 								'/', "stickWood"));
 						GameRegistry.addRecipe(new ShapedOreRecipe(kahur,
 								"  B",
@@ -785,13 +806,31 @@ public class FarragoMod {
 								"B/ ",
 								'B', new ItemStack(Blocks.planks, 1, body.ordinal()),
 								'D', new ItemStack(Blocks.planks, 1, drum.ordinal()),
-								'P', pump.getSelector().getRepresentation(),
+								'P', mat.ingot.getRepresentation(),
 								'/', "stickWood"));
 					}
 				}
 			}
 		} else {
 			disabled.put(new ItemSelector(KAHUR), config.getString("kahur.disableReason"));
+		}
+		if (config.getBoolean("utilityBelt.craftable")) {
+			for (Material mat : materials) {
+				if (!mat.validForBelt) continue;
+				if (mat.block.getRepresentation() == null) continue;
+				ItemStack stack = UTILITY_BELT.setExtraRows(new ItemStack(UTILITY_BELT, 1, 0), mat.beltRows);
+				stack.getTagCompound().setTag("display", new NBTTagCompound());
+				stack.getTagCompound().getCompoundTag("display").setInteger("color", mat.color);
+				stack.setStackDisplayName("\u00A7f"+mat.name+" Utility Belt");
+				GameRegistry.addRecipe(new ShapedOreRecipe(stack,
+						"LLL",
+						"CMC",
+						'L', Items.leather,
+						'C', Blocks.chest,
+						'M', mat.block.getRepresentation()));
+			}
+		} else {
+			disabled.put(new ItemSelector(UTILITY_BELT), config.getString("utilityBelt.disableReason"));
 		}
 		for (IRecipe recipe : (List<IRecipe>)CraftingManager.getInstance().getRecipeList()) {
 			if (recipe == null) continue;
@@ -891,23 +930,80 @@ public class FarragoMod {
 			log.warn("We are running in a copperless environment; enabling fallback copper dust drops from Yttrium ore");
 		}
 	}
-	public static Selector parseSelector(String def) throws NBTException {
-		int meta = 32767;
-		NBTTagCompound tag = null;
-		boolean lenientTag = def.endsWith("}?");
-		if (def.contains("{") && def.contains("}")) {
-			String mojangson = def.substring(def.indexOf('{'), def.indexOf('}')+1);
-			tag = (NBTTagCompound) JsonToNBT.func_150315_a(mojangson);
-			def = def.substring(0, def.indexOf('{'));
+	/**
+	 * A selector must start with either a fully qualified block or item name
+	 * (e.g. 'minecraft:stone', 'farrago:rifle'), a hash ("#"), a dollar sign ("$"),
+	 * or be the string "x".
+	 * <p>
+	 * "x" indicates to return a {@link NullSelector}.
+	 * <p>
+	 * For a hash, the string is expected to be an {@link OreDictionary} name
+	 * prefixed with a hash symbol. If the name has an | at the end, another
+	 * selector string will be parsed as a fallback if no items are registered
+	 * under that name. So, "#ingotYttrium" will match an yttrium ingot, if it
+	 * exists, or nothing. "#ingotYttrium|farrago:ingot@0" will match an yttrium
+	 * ingot using the ore dictionary if possible, or will fall back to a static
+	 * reference to Farrago's yttrium ingot. These can be chained, so if you
+	 * really wanted, you could do something like "#ingotYellorium|#ingotUranium|
+	 * #ingotPlutonium|#gemEnderPearl|minecraft:ender_pearl". An {@link OreSelector}
+	 * will be returned.
+	 * <p>
+	 * For a fully qualified block or item name, an @ sign is
+	 * a separator between the item's name and it's required damage value. If
+	 * the damage value is omitted, all damage values are accepted. A value of
+	 * 32767 also acts as a wildcard. If the given block or item name is not found,
+	 * the selector returned will be a {@link NullSelector}, which matches nothing.
+	 * If the name is found, an {@link ItemSelector} will be returned.
+	 * Finally, a Mojangson NBT definition can be enclosed in curly braces at the
+	 * end to require certain NBT tags to be present. As with damage values, if
+	 * omitted, any values are accepted. If trailed by a '?', then any extra tags
+	 * on the item are ignored. So, {Foo:Bar} matches {Foo:Bar} but not
+	 * {Foo:Bar,Baz:Quux}, but {Foo:Bar}? will match both.
+	 * 
+	 * ('Mojangson' here means the format used by command blocks.)
+	 * <p>
+	 * For a dollar sign, the given class will be loaded and
+	 * instanciated with the default constructor. An unknown {@link Selector}
+	 * subclass will be returned.
+	 * @param def A string matching the format described above
+	 * @return A newly created Selector matching the format
+	 * @throws IllegalArgumentException if the format string is invalid
+	 */
+	public static Selector parseSelector(String def) {
+		try {
+			if (def.equals("x")) {
+				return new NullSelector();
+			}
+			if (def.startsWith("#")) {
+				if (def.contains("|")) {
+					int idx = def.indexOf('|');
+					return new OreSelector(def.substring(1, idx), parseSelector(def.substring(idx+1)));
+				} else {
+					return new OreSelector(def.substring(1));
+				}
+			}
+			if (def.startsWith("$")) {
+				return (Selector) Class.forName(def.substring(1)).newInstance();
+			}
+			int meta = 32767;
+			NBTTagCompound tag = null;
+			boolean lenientTag = def.endsWith("}?");
+			if (def.contains("{") && def.contains("}")) {
+				String mojangson = def.substring(def.indexOf('{'), def.indexOf('}')+1);
+				tag = (NBTTagCompound) JsonToNBT.func_150315_a(mojangson);
+				def = def.substring(0, def.indexOf('{'));
+			}
+			if (def.contains("@")) {
+				meta = Integer.parseInt(def.substring(def.indexOf('@')+1));
+				def = def.substring(0, def.indexOf('@'));
+			}
+			ItemStack stack = new ItemStack((Item) Item.itemRegistry.getObject(def), 1, meta);
+			if (stack.getItem() == null) return new NullSelector();
+			stack.setTagCompound(tag);
+			return new ItemSelector(stack, lenientTag);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Selector string is invalid: "+def, e);
 		}
-		if (def.contains("@")) {
-			meta = Integer.parseInt(def.substring(def.indexOf('@')+1));
-			def = def.substring(0, def.indexOf('@'));
-		}
-		ItemStack stack = new ItemStack((Item) Item.itemRegistry.getObject(def), 1, meta);
-		if (stack.getItem() == null) return new NullSelector();
-		stack.setTagCompound(tag);
-		return new ItemSelector(stack, lenientTag);
 	}
 
 	public static long hashItemStack(ItemStack toHash) {

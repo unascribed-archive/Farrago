@@ -3,14 +3,19 @@ package com.gameminers.farrago.item;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.IIcon;
+
+import com.gameminers.farrago.FarragoMod;
+import com.gameminers.farrago.Material;
 
 public class ItemUtilityBelt extends ItemArmor {
 	private IIcon buckle;
@@ -130,6 +135,18 @@ public class ItemUtilityBelt extends ItemArmor {
 	public void registerIcons(IIconRegister p_94581_1_) {
 		super.registerIcons(p_94581_1_);
 		buckle = p_94581_1_.registerIcon("farrago:utility_belt_buckle");
+	}
+	
+	@Override
+	public void getSubItems(Item item, CreativeTabs tabs, List list) {
+		for (Material mat : FarragoMod.materials) {
+			if (!mat.validForBelt) continue;
+			ItemStack stack = setExtraRows(new ItemStack(item, 1, 0), mat.beltRows);
+			stack.getTagCompound().setTag("display", new NBTTagCompound());
+			stack.getTagCompound().getCompoundTag("display").setInteger("color", mat.color);
+			stack.setStackDisplayName("\u00A7f"+mat.name+" Utility Belt");
+			list.add(stack);
+		}
 	}
 	
 }

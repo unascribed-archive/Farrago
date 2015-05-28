@@ -23,11 +23,18 @@ import net.minecraft.world.World;
 
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.Masses;
+import com.gameminers.farrago.Material;
 import com.gameminers.farrago.entity.EntityKahurProjectile;
-import com.gameminers.farrago.enums.MineralColor;
 import com.gameminers.farrago.enums.WoodColor;
 
 public class ItemKahur extends Item {
+	public enum Ability {
+		SPUD,
+		POTIONS,
+		TORCHES,
+		ROCKET
+	}
+
 	private IIcon body;
 	private IIcon drum;
 	private IIcon pump;
@@ -50,7 +57,7 @@ public class ItemKahur extends Item {
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean advanced) {
 		WoodColor bodyColor = WoodColor.BIG_OAK;
 		WoodColor drumColor = WoodColor.SPRUCE;
-		MineralColor pumpColor = MineralColor.IRON;
+		String pumpColor = "Unknown";
 		if (stack.hasTagCompound()){ 
 			if (stack.getTagCompound().hasKey("KahurBodyMaterial")) {
 				bodyColor = WoodColor.valueOf(stack.getTagCompound().getString("KahurBodyMaterial"));
@@ -58,13 +65,13 @@ public class ItemKahur extends Item {
 			if (stack.getTagCompound().hasKey("KahurDrumMaterial")) {
 				drumColor = WoodColor.valueOf(stack.getTagCompound().getString("KahurDrumMaterial"));
 			}
-			if (stack.getTagCompound().hasKey("KahurPumpMaterial")) {
-				pumpColor = MineralColor.valueOf(stack.getTagCompound().getString("KahurPumpMaterial"));
+			if (stack.getTagCompound().hasKey("KahurPumpName")) {
+				pumpColor = stack.getTagCompound().getString("KahurPumpName");
 			}
 		}
 		list.add("\u00A77Body: "+bodyColor.getFriendlyName());
 		list.add("\u00A77Drum: "+drumColor.getFriendlyName());
-		list.add("\u00A77Pump: "+pumpColor.getFriendlyName());
+		list.add("\u00A77Pump: "+pumpColor);
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityName")) {
 			list.add("\u00A77Contains: "+stack.getTagCompound().getString("KahurEntityName"));
 		}
@@ -97,11 +104,30 @@ public class ItemKahur extends Item {
 	
 	@Override
 	public int getMaxDamage(ItemStack stack) {
-		MineralColor pumpColor = MineralColor.IRON;
+		// is this a strange and arbitrary place for this code?
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurPumpMaterial")) {
-			pumpColor = MineralColor.valueOf(stack.getTagCompound().getString("KahurPumpMaterial"));
+			FarragoMod.log.info("Converting old-style (hardcoded) Kahur NBT to new-style (material)");
+			String moniker = stack.getTagCompound().getString("KahurPumpMaterial");
+			Material mat = FarragoMod.monikerLookup.get(moniker);
+			if (mat == null) {
+				FarragoMod.log.warn("Unknown moniker "+moniker);
+			} else {
+				NBTTagCompound tag = stack.getTagCompound();
+				tag.setString("KahurPumpName", mat.name);
+				tag.setInteger("KahurDurability", mat.kahurDurability);
+				tag.setInteger("KahurPumpColor", mat.color);
+				tag.setBoolean("KahurDeterministic", mat.kahurDeterministic);
+				if (mat.kahurSpecial != null) {
+					tag.setString("KahurAbility", mat.kahurSpecial.name());
+				}
+				tag.setBoolean("KahurCanPickUpMobs", mat.kahurMobs);
+				stack.getTagCompound().removeTag("KahurPumpMaterial");
+			}
 		}
-		return pumpColor.getDurability();
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurDurability")) {
+			return stack.getTagCompound().getInteger("KahurDurability");
+		}
+		return 250;
 	}
 	
 	@Override
@@ -152,15 +178,7 @@ public class ItemKahur extends Item {
 				return drumColor.getColor();
 			}
 		} else if (pass == 2) {
-			MineralColor pumpColor = MineralColor.IRON;
-			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurPumpMaterial")) {
-				try {
-					pumpColor = MineralColor.valueOf(stack.getTagCompound().getString("KahurPumpMaterial"));
-				} catch (IllegalArgumentException e) {
-					stack.getTagCompound().setString("KahurPumpMaterial", "IRON");
-				}
-			}
-			return pumpColor.getColor();
+			return stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurPumpColor") ? stack.getTagCompound().getInteger("KahurPumpColor") : -1;
 		} else if (pass == 3) {
 			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityName")) {
 				return -1;
@@ -184,14 +202,22 @@ public class ItemKahur extends Item {
 	
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
-		for (MineralColor pump : MineralColor.values()) {
-				ItemStack kahur = new ItemStack(item);
-				NBTTagCompound tag = new NBTTagCompound();
-				tag.setString("KahurBodyMaterial", "BIG_OAK");
-				tag.setString("KahurDrumMaterial", "SPRUCE");
-				tag.setString("KahurPumpMaterial", pump.name());
-				kahur.setTagCompound(tag);
-				list.add(kahur);
+		for (Material mat : FarragoMod.materials) {
+			if (!mat.validForKahur) continue;
+			ItemStack kahur = new ItemStack(item);
+			NBTTagCompound tag = new NBTTagCompound();
+			tag.setString("KahurBodyMaterial", "BIG_OAK");
+			tag.setString("KahurDrumMaterial", "SPRUCE");
+			tag.setString("KahurPumpName", mat.name);
+			tag.setInteger("KahurDurability", mat.kahurDurability);
+			tag.setInteger("KahurPumpColor", mat.color);
+			tag.setBoolean("KahurDeterministic", mat.kahurDeterministic);
+			if (mat.kahurSpecial != null) {
+				tag.setString("KahurAbility", mat.kahurSpecial.name());
+			}
+			tag.setBoolean("KahurCanPickUpMobs", mat.kahurMobs);
+			kahur.setTagCompound(tag);
+			list.add(kahur);
 		}
 	}
 	
@@ -201,11 +227,7 @@ public class ItemKahur extends Item {
 			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurEntityName")) {
 				return true;
 			}
-			MineralColor pumpColor = MineralColor.IRON;
-			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("KahurPumpMaterial")) {
-				pumpColor = MineralColor.valueOf(stack.getTagCompound().getString("KahurPumpMaterial"));
-			}
-			if (pumpColor.ordinal() <= MineralColor.LAPIS.ordinal()) return true;
+			if (!stack.hasTagCompound() || !stack.getTagCompound().getBoolean("KahurCanPickUpMobs")) return true;
 			if (target instanceof EntityPlayer) return true;
 			if (target instanceof IBossDisplayData) return true;
 			if (stack.getMaxDamage()-stack.getItemDamage() < 12) {
@@ -274,11 +296,9 @@ public class ItemKahur extends Item {
 			ItemStack item = null;
 			int iter = 0;
 			int slot = 0;
-			MineralColor pumpColor = MineralColor.IRON;
-			if (gun.hasTagCompound() && gun.getTagCompound().hasKey("KahurPumpMaterial")) {
-				pumpColor = MineralColor.valueOf(gun.getTagCompound().getString("KahurPumpMaterial"));
-			}
-			if (pumpColor.ordinal() >= MineralColor.ENDER.ordinal()) {
+			if (!gun.hasTagCompound()) return gun;
+			String ability = gun.getTagCompound().getString("KahurAbility");
+			if (gun.getTagCompound().getBoolean("KahurDeterministic")) {
 				for (slot = 27; slot < 36; slot++) {
 					item = player.inventory.mainInventory[slot];
 					if (item != null && item.getItem() != null && item.stackSize > 0 && item != gun) {
@@ -292,7 +312,7 @@ public class ItemKahur extends Item {
 					}
 					return gun;
 				}
-			} else if (pumpColor == MineralColor.OBSIDIAN) {
+			} else if ("ROCKET".equals(ability)) {
 				if (player.inventory.consumeInventoryItem(Items.gunpowder)) {
 					world.playSoundAtEntity(player, "mob.enderdragon.hit", 1.0F, (itemRand.nextFloat() * 0.4F + 1.2F));
 					if (!world.isRemote) {
@@ -307,7 +327,7 @@ public class ItemKahur extends Item {
 					}
 				}
 				return gun;
-			} else if (pumpColor == MineralColor.GLOW) {
+			} else if ("TORCHES".equals(ability)) {
 				if (player.inventory.consumeInventoryItem(Item.getItemFromBlock(Blocks.torch))) {
 					fire(gun, -5, world, player);
 				} else {
@@ -317,7 +337,7 @@ public class ItemKahur extends Item {
 					}
 				}
 				return gun;
-			} else if (pumpColor == MineralColor.POTATO) { // POTATO IS A MINERAL. DO NOT QUESTION.
+			} else if ("SPUD".equals(ability)) {
 				if (player.inventory.consumeInventoryItem(Items.poisonous_potato)) {
 					fire(gun, -6, world, player);
 				} else if (player.inventory.consumeInventoryItem(Items.potato)) {
@@ -331,7 +351,7 @@ public class ItemKahur extends Item {
 					}
 				}
 				return gun;
-			} else if (pumpColor == MineralColor.GLASS) {
+			} else if ("POTIONS".equals(ability)) {
 				int leSlot = find(player.inventory, Items.potionitem);
 				if (leSlot != -1) {
 					fire(gun, leSlot, world, player);

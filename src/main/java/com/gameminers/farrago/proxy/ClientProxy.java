@@ -138,7 +138,7 @@ public class ClientProxy implements Proxy {
 			String config = IOUtils.toString(in);
 			in.close();
 			config = config
-					.replace("@MODPACK_BRAND@", String.valueOf(FarragoMod.brand))
+					.replace("@MODPACK_BRAND@", '"'+String.valueOf(FarragoMod.brand)+'"')
 					.replace("@SHOW_BRAND@", Boolean.toString(FarragoMod.showBrand));
 			FileUtils.writeStringToFile(configFile, config);
 		} catch (IOException e1) {

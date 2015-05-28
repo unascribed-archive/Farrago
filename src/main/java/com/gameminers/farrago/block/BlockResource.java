@@ -24,7 +24,8 @@ public class BlockResource extends BlockCompressed implements NameDelegate {
 		"yttrium",
 		"yttrium_copper",
 		"copper",
-		"ender_pearl"
+		"ender_pearl",
+		"apocite"
 	};
 	private MapColor[] resourceColors = {
 		MapColor.snowColor,
