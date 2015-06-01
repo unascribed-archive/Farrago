@@ -1,13 +1,14 @@
 cyber_cider.ogg: Sampled from 'Cyber Thunder Cider' by EZFG
 cyber_sting.ogg: Sampled from 'Cyber Thunder Cider' by EZFG
 
-laser_fire.ogg: 'Lasgun fire' by 211redman112 - http://www.freesound.org/people/211redman112/sounds/234083/
-laser_impact.ogg: 'Lasgun impact' by 211redman112 - http://www.freesound.org/people/211redman112/sounds/234082/
-laser_charge.ogg: based on 'charging loop 2' by JavierZumer - http://www.freesound.org/people/JavierZumer/sounds/257231/
-laser_charge_short.ogg: based on 'charging loop 2' by JavierZumer - http://www.freesound.org/people/JavierZumer/sounds/257231/
-laser_overcharge.ogg: 'metal door gate.mp3' by JavierZumer - http://www.freesound.org/people/JavierZumer/sounds/257233/
-laser_mode.ogg: 'Switch 31.wav' by LG - http://www.freesound.org/people/LG/sounds/72184/
+laser_fire.ogg: 'Lasgun fire' by 211redman112 - http://freesound.org/people/211redman112/sounds/234083/
+laser_impact.ogg: 'Lasgun impact' by 211redman112 - http://freesound.org/people/211redman112/sounds/234082/
+laser_charge.ogg: based on 'charging loop 2' by JavierZumer - http://freesound.org/people/JavierZumer/sounds/257231/
+laser_charge_short.ogg: based on 'charging loop 2' by JavierZumer - http://freesound.org/people/JavierZumer/sounds/257231/
+laser_overcharge.ogg: 'metal door gate.mp3' by JavierZumer - http://freesound.org/people/JavierZumer/sounds/257233/
+laser_mode.ogg: 'Switch 31.wav' by LG - http://freesound.org/people/LG/sounds/72184/
 laser_scope.ogg: 'Gun scope zoom in' by satanicupsman - http://freesound.org/people/satanicupsman/sounds/172958/
 minigun_spin.ogg: 'Computer Hum 2' by tgfcoder - http://freesound.org/people/tgfcoder/sounds/146951/
 minigun_spin_up.ogg: based on 'Computer Hum 2' by tgfcoder - http://freesound.org/people/tgfcoder/sounds/146951/
 switch_hotbar.ogg: 'WeaponSwap' by twisterman - http://freesound.org/people/twisterman/sounds/159450/
+lock_slot.ogg: 'Locking a door (no key)' by grimny - http://freesound.org/people/grimny/sounds/123530/
