@@ -3,7 +3,6 @@
 /config/
 /crash-reports/
 /eclipse/
-/gradle/
 /logs/
 /mods/
 /resourcepacks/
@@ -30,3 +29,4 @@
 /stencil1.png
 /stencil2.png
 /stencil3.png
+!/gradle/wrapper/gradle-wrapper.jar
