@@ -55,6 +55,7 @@ import com.gameminers.farrago.entity.EntityBlunderbussProjectile;
 import com.gameminers.farrago.entity.EntityRifleProjectile;
 import com.gameminers.farrago.enums.RifleMode;
 import com.gameminers.farrago.network.ChangeSelectedHotbarMessage;
+import com.gameminers.farrago.network.LockSlotMessage;
 import com.gameminers.farrago.network.ModifyRifleModeMessage;
 import com.gameminers.farrago.selector.Selector;
 import com.typesafe.config.ConfigException;
@@ -77,6 +78,7 @@ public class ClientProxy implements Proxy {
 	private KeyBinding prevHotbar;
 	private KeyBinding nextHotbar;
 	private KeyBinding renameHotbar;
+	private KeyBinding lockSlot;
 	@Override
 	public void postInit() {
 		InitScreen.init();
@@ -97,9 +99,11 @@ public class ClientProxy implements Proxy {
 		prevHotbar = new KeyBinding("key.farrago.utility_belt.prev_hotbar", Keyboard.KEY_PRIOR, "key.categories.farrago.utility_belt");
 		nextHotbar = new KeyBinding("key.farrago.utility_belt.next_hotbar", Keyboard.KEY_NEXT, "key.categories.farrago.utility_belt");
 		renameHotbar = new KeyBinding("key.farrago.utility_belt.rename_hotbar", Keyboard.KEY_INSERT, "key.categories.farrago.utility_belt");
+		lockSlot = new KeyBinding("key.farrago.utility_belt.lock_slot", Keyboard.KEY_DELETE, "key.categories.farrago.utility_belt");
 		ClientRegistry.registerKeyBinding(prevHotbar);
 		ClientRegistry.registerKeyBinding(nextHotbar);
 		ClientRegistry.registerKeyBinding(renameHotbar);
+		ClientRegistry.registerKeyBinding(lockSlot);
 		FarragoMod.lightPipeRenderType = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(new LightPipeBlockRenderer());
 		IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
@@ -253,6 +257,8 @@ public class ClientProxy implements Proxy {
 							FarragoMod.CHANNEL.sendToServer(new ChangeSelectedHotbarMessage(false));
 						} else if (renameHotbar.isPressed()) {
 							new PaneRenameHotbar(FarragoMod.UTILITY_BELT.getCurrentRow(legs), legs).show();
+						} else if (lockSlot.isPressed()) {
+							FarragoMod.CHANNEL.sendToServer(new LockSlotMessage(mc.thePlayer.inventory.currentItem));
 						}
 					}
 				}
@@ -377,6 +383,11 @@ public class ClientProxy implements Proxy {
 			}
 		}
 		Encyclopedia.process(e.itemStack, e.entityPlayer, e.toolTip, e.showAdvancedItemTooltips);
+	}
+
+	@Override
+	public void breakUtilityBelt(ItemStack belt) {
+		FarragoMod.doBreakUtilityBelt(belt, Minecraft.getMinecraft().getIntegratedServer().getConfigurationManager().playerEntityList);
 	}
 
 }

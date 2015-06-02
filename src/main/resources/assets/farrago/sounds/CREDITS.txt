@@ -12,3 +12,4 @@ minigun_spin.ogg: 'Computer Hum 2' by tgfcoder - http://freesound.org/people/tgf
 minigun_spin_up.ogg: based on 'Computer Hum 2' by tgfcoder - http://freesound.org/people/tgfcoder/sounds/146951/
 switch_hotbar.ogg: 'WeaponSwap' by twisterman - http://freesound.org/people/twisterman/sounds/159450/
 lock_slot.ogg: 'Locking a door (no key)' by grimny - http://freesound.org/people/grimny/sounds/123530/
+belt_break.ogg: 'BeltBuckle' by HerbertBoland - http://freesound.org/people/HerbertBoland/sounds/28300/

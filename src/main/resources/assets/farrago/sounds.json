@@ -106,5 +106,23 @@
 				"stream": false
 			}
 		]
+	},
+	"lock_slot": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "lock_slot",
+				"stream": false
+			}
+		]
+	},
+	"belt_break": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "belt_break",
+				"stream": false
+			}
+		]
 	}
 }

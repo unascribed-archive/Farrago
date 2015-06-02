@@ -70,7 +70,8 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
 		setResistance(10.0f);
 	}
 
-    public IIcon getIcon(int side, int meta) {
+    @Override
+	public IIcon getIcon(int side, int meta) {
 		return getIcon(null, meta, 0, 0, side);
     }
     
@@ -122,7 +123,8 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
 		return meta;
 	}
 	
-    @SideOnly(Side.CLIENT)
+    @Override
+	@SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister registry) {
     	for (int i = 0; i < machineTypes.length; i++) {
     		String s = machineTypes[i];
@@ -136,7 +138,8 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
     	}
     }
     
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float xOfs, float yOfs, float zOfs) {
+    @Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float xOfs, float yOfs, float zOfs) {
         if (world.isRemote) {
             return true;
         } else {
@@ -164,6 +167,7 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
     	}
 	}
 	
+	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
 		TileEntityMachine te = (TileEntityMachine) world.getTileEntity(x, y, z);
 
@@ -211,14 +215,17 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 
+	@Override
 	public boolean hasComparatorInputOverride() {
 		return true;
 	}
 
+	@Override
 	public int getComparatorInputOverride(World world, int x, int y, int z, int side) {
 		return Container.calcRedstoneFromInventory((IInventory) world.getTileEntity(x, y, z));
 	}
 
+	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
 		int l = MathHelper.floor_double((double) (placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
 
@@ -243,6 +250,7 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
 		}
 	}
 
+	@Override
 	public void onBlockAdded(World world, int x, int y, int z) {
 		super.onBlockAdded(world, x, y, z);
 		if (!world.isRemote) {

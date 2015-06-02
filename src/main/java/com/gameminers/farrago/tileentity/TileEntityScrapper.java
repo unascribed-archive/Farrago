@@ -47,7 +47,7 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
     public int furnaceCookTime;
     public int operationLength = 400;
 	private String inventoryName;
-	private static final boolean DEBUG = false;
+	private static boolean debug = false;
 
 	@Override
 	public String getInventoryName() {
@@ -207,7 +207,7 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 					}
 				}
 			}
-			operationLength = DEBUG ? 20 : (dirt ? 10 : (dustable ? 100 : 400));
+			operationLength = debug ? 20 : (dirt ? 10 : (dustable ? 100 : 400));
 			if (worldObj.isRemote) return false;
 			boolean scrappable = dirt || dustable || FarragoMod.recipes.containsKey(FarragoMod.hashItemStack(getStackInSlot(0)));
 			if (!scrappable) {
@@ -252,7 +252,7 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 
 	
 	private int processRecipes(ItemStack itemstack, IRecipe cause, IRecipe previousCause, int depth) {
-		String prefix = DEBUG ? Strings.repeat('\t', depth*2) : null;
+		String prefix = debug ? Strings.repeat('\t', depth*2) : null;
 		if (itemstack == null) return 1;
 		if (depth >= 14) return 0;
 		debug(prefix+Item.itemRegistry.getNameForObject(itemstack.getItem())+"@"+itemstack.getItemDamage()+" x"+itemstack.stackSize);
@@ -407,7 +407,7 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 						}
 						List<ItemStack> dusts = OreDictionary.getOres("dust"+material);
 						if (dusts == null || dusts.isEmpty()) continue;
-						if (DEBUG || worldObj.rand.nextInt(r.getRecipeOutput().stackSize*2) == 0) {
+						if (debug || worldObj.rand.nextInt(r.getRecipeOutput().stackSize*2) == 0) {
 							ItemStack stack = dusts.get(0).copy();
 							stack.stackSize = 1;
 							addItem(stack);
@@ -423,7 +423,7 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 				}
 			}
 		}
-		if (depth == 0 && DEBUG) {
+		if (depth == 0 && debug) {
 			debug("(Scrapper debugging is enabled. If this isn't a development environment, this build is faulty. You should report this to whoever compiled this build of Farrago.)");
 		}
 		return rubbleCount;
@@ -432,7 +432,7 @@ public class TileEntityScrapper extends TileEntityMachine implements ISidedInven
 	
 
 	private void debug(String string) {
-		if (DEBUG) {
+		if (debug) {
 			FarragoMod.log.info(string);
 		}
 	}

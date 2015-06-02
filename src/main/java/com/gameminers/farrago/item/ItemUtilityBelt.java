@@ -13,15 +13,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.IIcon;
-
 import com.gameminers.farrago.FarragoMod;
 import com.gameminers.farrago.Material;
+import com.google.common.collect.Lists;
 
 public class ItemUtilityBelt extends ItemArmor {
 	private IIcon buckle;
 	public ItemUtilityBelt() {
 		super(ArmorMaterial.CLOTH, 0, 2);
 		setTextureName("farrago:utility_belt");
+		setCreativeTab(FarragoMod.creativeTab);
 		setUnlocalizedName("utility_belt");
 	}
 	
@@ -83,12 +84,12 @@ public class ItemUtilityBelt extends ItemArmor {
 		stack.getTagCompound().setInteger("Row", row);
 	}
 
-	public ItemStack[] getRowContents(ItemStack stack, int idx) {
-		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey("Row"+idx+"Content", 9)) {
+	protected ItemStack[] getContents(ItemStack stack, String src) {
+		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey(src, 9)) {
 			return new ItemStack[InventoryPlayer.getHotbarSize()];
 		}
 		ItemStack[] row = new ItemStack[InventoryPlayer.getHotbarSize()];
-		NBTTagList list = stack.getTagCompound().getTagList("Row"+idx+"Content", 10);
+		NBTTagList list = stack.getTagCompound().getTagList(src, 10);
 		for (int i = 0; i < list.tagCount(); i++) {
 			NBTTagCompound tag = list.getCompoundTagAt(i);
 			row[tag.getInteger("Slot")] = ItemStack.loadItemStackFromNBT(tag);
@@ -96,7 +97,7 @@ public class ItemUtilityBelt extends ItemArmor {
 		return row;
 	}
 	
-	public void setRowContents(ItemStack stack, int idx, ItemStack[] contents) {
+	protected void setContents(ItemStack stack, String dest, ItemStack[] contents) {
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
@@ -107,13 +108,43 @@ public class ItemUtilityBelt extends ItemArmor {
 			tag.setInteger("Slot", i);
 			list.appendTag(tag);
 		}
-		stack.getTagCompound().setTag("Row"+idx+"Content", list);
+		stack.getTagCompound().setTag(dest, list);
+	}
+	
+	public ItemStack[] getRowContents(ItemStack stack, int idx) {
+		return getContents(stack, "Row"+idx+"Content");
+	}
+	
+	public void setRowContents(ItemStack stack, int idx, ItemStack[] contents) {
+		setContents(stack, "Row"+idx+"Content", contents);
+	}
+	
+	public ItemStack[] getSwapContents(ItemStack stack) {
+		return getContents(stack, "SwapContent");
+	}
+	
+	public void setSwapContents(ItemStack stack, ItemStack[] contents) {
+		setContents(stack, "SwapContent", contents);
 	}
 
 	public void deleteRow(ItemStack stack, int idx) {
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Row"+idx+"Content")) {
 			stack.getTagCompound().removeTag("Row"+idx+"Content");
 		}
+	}
+	
+	public byte[] getLockedSlots(ItemStack stack, int row) {
+		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey("Row", 3)) {
+			return new byte[0];
+		}
+		return stack.getTagCompound().getByteArray("Row"+row+"Locks");
+	}
+	
+	public void setLockedSlots(ItemStack stack, int row, byte[] locks) {
+		if (!stack.hasTagCompound()) {
+			stack.setTagCompound(new NBTTagCompound());
+		}
+		stack.getTagCompound().setByteArray("Row"+row+"Locks", locks);;
 	}
 	
 	@Override
@@ -149,4 +180,32 @@ public class ItemUtilityBelt extends ItemArmor {
 		}
 	}
 	
+	@Override
+	public int getMaxDamage() {
+		return 3;
+	}
+	
+	@Override
+	public void setDamage(ItemStack stack, int damage) {
+		super.setDamage(stack, damage);
+		if (stack.getItemDamage() > stack.getMaxDamage()) {
+			FarragoMod.proxy.breakUtilityBelt(stack);
+		}
+	}
+
+	public List<ItemStack> getCompleteContents(ItemStack stack) {
+		List<ItemStack> li = Lists.newArrayList();
+		for (int i = 0; i <= getExtraRows(stack); i++) {
+			for (ItemStack s : getRowContents(stack, i)) {
+				if (s == null) continue;
+				li.add(s);
+			}
+		}
+		for (ItemStack s : getSwapContents(stack)) {
+			if (s == null) continue;
+			li.add(s);
+		}
+		return li;
+	}
+
 }

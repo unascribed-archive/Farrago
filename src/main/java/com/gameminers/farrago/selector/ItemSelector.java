@@ -12,6 +12,8 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.collect.Lists;
 
+import cpw.mods.fml.relauncher.ReflectionHelper;
+
 public class ItemSelector implements Selector {
 	private ItemStack item;
 	private boolean lenientTag;
@@ -48,7 +50,7 @@ public class ItemSelector implements Selector {
 		if (stack == item) return true;
 		if (stack == null) return false;
 		goat.func_150996_a(stack.getItem());
-		goat.setItemDamage(item.getItemDamage() == OreDictionary.WILDCARD_VALUE ? OreDictionary.WILDCARD_VALUE : stack.getItemDamage());
+		ReflectionHelper.setPrivateValue(ItemStack.class, goat, item.getItemDamage() == OreDictionary.WILDCARD_VALUE ? OreDictionary.WILDCARD_VALUE : stack.getItemDamage(), 5);
 		goat.setTagCompound(item.hasTagCompound() && stack.hasTagCompound() ? (NBTTagCompound)stack.getTagCompound().copy() : null);
 		ItemStack comp = goat;
 		if (lenientTag && item.hasTagCompound() && comp.hasTagCompound()) {

@@ -3,6 +3,7 @@ package com.gameminers.farrago.proxy;
 import java.util.Random;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 
@@ -18,4 +19,5 @@ public interface Proxy {
 	void glowRandomDisplayTick(World world, int x, int y, int z, Random rand);
 	void scope(EntityPlayer player);
 	void tooltip(ItemTooltipEvent e);
+	void breakUtilityBelt(ItemStack belt);
 }

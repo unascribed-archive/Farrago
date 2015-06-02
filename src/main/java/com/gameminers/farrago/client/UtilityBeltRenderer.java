@@ -8,6 +8,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -21,6 +22,7 @@ public class UtilityBeltRenderer {
 	private static ItemStack[] lastHotbarContent;
 	private static boolean switching = false;
 	public static void render(Minecraft mc, ItemStack belt, float partialTicks, int width, int height) {
+		mc.mcProfiler.startSection("actionBarMulti");
 		int cur = FarragoMod.UTILITY_BELT.getCurrentRow(belt);
 		if (lastHotbar != cur && !switching) {
 			switching = true;
@@ -73,7 +75,7 @@ public class UtilityBeltRenderer {
 					GL11.glTranslatef(0, trans, 0);
 					GL11.glScalef(scale, scale, 1);
 					renderHotbar(mc, belt, partialTicks, (int)(width*(1f/scale)), (int)(height*(1f/scale)), cur, mc.thePlayer.inventory.mainInventory);
-				} else if (i == 2) {
+				} else if (i == 2 && lastHotbarContent != null) {
 					GL11.glTranslatef(0, trans2, 0);
 					GL11.glScalef(scale2, scale2, 1);
 					renderHotbar(mc, belt, partialTicks, (int)(width*(1f/scale2)), (int)(height*(1f/scale2)), lastHotbar, lastHotbarContent);
@@ -85,6 +87,7 @@ public class UtilityBeltRenderer {
 		} else {
 			renderHotbar(mc, belt, partialTicks, width, height, cur, mc.thePlayer.inventory.mainInventory);
 		}
+		mc.mcProfiler.endSection();
 	}
 	
 	public static void tick(Minecraft mc, ItemStack belt) {
@@ -100,29 +103,42 @@ public class UtilityBeltRenderer {
 	}
 	
 	public static void renderHotbar(Minecraft mc, ItemStack belt, float partialTicks, int width, int height, int row, ItemStack[] contents) {
-		mc.mcProfiler.startSection("actionBarMulti");
+		mc.mcProfiler.startSection("actionBar");
 
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		mc.renderEngine.bindTexture(wadjets);
-
-		InventoryPlayer inv = mc.thePlayer.inventory;
-		Rendering.drawTexturedModalRect(width / 2 - 91, height - 22, 0, 0, 182, 22);
-		Rendering.drawTexturedModalRect(width / 2 - 91 - 1 + inv.currentItem * 20, height - 22 - 1, 0, 22, 24, 22);
-
-		GL11.glDisable(GL11.GL_BLEND);
-		
-		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-		RenderHelper.enableGUIStandardItemLighting();
 
 		for (int i = 0; i < InventoryPlayer.getHotbarSize(); ++i) {
 			int x = width / 2 - 90 + i * 20 + 2;
-			int z = height - 16 - 3;
-			renderInventorySlot(contents[i], x, z, partialTicks, mc);
+			int y = height - 16 - 3;
+			int u = (20 * i) + 1;
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			mc.renderEngine.bindTexture(wadjets);
+			if (ArrayUtils.contains(FarragoMod.UTILITY_BELT.getLockedSlots(belt, row), (byte)i)) {
+				GL11.glColor3f(1.0f, 0.5f, 0.0f);
+			} else {
+				GL11.glColor3f(1.0f, 1.0f, 1.0f);
+			}
+			if (i == 0) {
+				Rendering.drawTexturedModalRect(x-3, y-3, u-1, 0, 21, 22);
+			} else if (i == 8) {
+				Rendering.drawTexturedModalRect(x-2, y-3, u, 0, 21, 22);
+			} else {
+				Rendering.drawTexturedModalRect(x-2, y-3, u, 0, 20, 22);
+			}
+			GL11.glColor3f(1.0f, 1.0f, 1.0f);
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+			RenderHelper.enableGUIStandardItemLighting();
+			renderInventorySlot(contents[i], x, y, partialTicks, mc);
+			RenderHelper.disableStandardItemLighting();
+			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		}
 
-		RenderHelper.disableStandardItemLighting();
-		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		
+		GL11.glColor3f(1.0f, 1.0f, 1.0f);
+		mc.renderEngine.bindTexture(wadjets);
+		Rendering.drawTexturedModalRect(width / 2 - 91 - 1 + mc.thePlayer.inventory.currentItem * 20, height - 22 - 1, 0, 22, 24, 22, 60);
 		
 		String nm = FarragoMod.UTILITY_BELT.getRowName(belt, row);
 		mc.fontRenderer.drawStringWithShadow(nm, width / 2 - 95 - mc.fontRenderer.getStringWidth(nm), height - 15, -1);
@@ -132,6 +148,7 @@ public class UtilityBeltRenderer {
 	
 	public static void renderInventorySlot(ItemStack itemstack, int x, int y, float partialTicks, Minecraft mc) {
 		if (itemstack != null) {
+			GL11.glPushMatrix();
 			float f1 = (float) itemstack.animationsToGo - partialTicks;
 			if (switching) {
 				f1 = 0;
@@ -151,6 +168,7 @@ public class UtilityBeltRenderer {
 			}
 
 			itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, mc.getTextureManager(), itemstack, x, y);
+			GL11.glPopMatrix();
 		}
 	}
 }

@@ -77,10 +77,14 @@ import com.gameminers.farrago.item.resource.ItemVividOrb;
 import com.gameminers.farrago.network.ChangeSelectedHotbarHandler;
 import com.gameminers.farrago.network.ChangeSelectedHotbarMessage;
 import com.gameminers.farrago.network.FarragoGuiHandler;
+import com.gameminers.farrago.network.LockSlotHandler;
+import com.gameminers.farrago.network.LockSlotMessage;
 import com.gameminers.farrago.network.ModifyRifleModeHandler;
 import com.gameminers.farrago.network.ModifyRifleModeMessage;
 import com.gameminers.farrago.network.RenameHotbarHandler;
 import com.gameminers.farrago.network.RenameHotbarMessage;
+import com.gameminers.farrago.network.SpawnBeltBreakParticleHandler;
+import com.gameminers.farrago.network.SpawnBeltBreakParticleMessage;
 import com.gameminers.farrago.proxy.Proxy;
 import com.gameminers.farrago.recipes.RecipeChromatic;
 import com.gameminers.farrago.recipes.RecipesVividOrbDyes;
@@ -113,6 +117,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -212,6 +217,9 @@ public class FarragoMod {
 		CHANNEL.registerMessage(ModifyRifleModeHandler.class, ModifyRifleModeMessage.class, 0, Side.SERVER);
 		CHANNEL.registerMessage(ChangeSelectedHotbarHandler.class, ChangeSelectedHotbarMessage.class, 1, Side.SERVER);
 		CHANNEL.registerMessage(RenameHotbarHandler.class, RenameHotbarMessage.class, 2, Side.SERVER);
+		CHANNEL.registerMessage(LockSlotHandler.class, LockSlotMessage.class, 3, Side.SERVER);
+		
+		CHANNEL.registerMessage(SpawnBeltBreakParticleHandler.class, SpawnBeltBreakParticleMessage.class, 0, Side.CLIENT);
 		
 		COMBUSTOR = new BlockCombustor();
 		SCRAPPER = new BlockScrapper();
@@ -1024,5 +1032,30 @@ public class FarragoMod {
 	public static int getPassThruCost(Config config, String key) {
 		ConfigValue val = config.getValue(key);
 		return val.valueType() == ConfigValueType.STRING ? -1 : ((Number)val.unwrapped()).intValue();
+	}
+
+	public static void doBreakUtilityBelt(ItemStack belt, List<EntityPlayer> players) {
+		if (!FarragoMod.config.getBoolean("utilityBelt.dropItemsOnBreak")) return;
+		for (EntityPlayer p : players) {
+			for (ItemStack s : p.inventory.armorInventory) {
+				if (s == belt) {
+					_breakUtilityBelt(p, s);
+					return;
+				}
+			}
+			for (ItemStack s : p.inventory.mainInventory) {
+				if (s == belt) {
+					_breakUtilityBelt(p, s);
+					return;
+				}
+			}
+		}
+	}
+	private static void _breakUtilityBelt(EntityPlayer p, ItemStack belt) {
+		p.worldObj.playSoundAtEntity(p, "farrago:belt_break", 0.8f, 1.0f);
+		CHANNEL.sendToAllAround(new SpawnBeltBreakParticleMessage(p.getEntityId()), new TargetPoint(p.dimension, p.posX, p.posY, p.posZ, 64));
+		for (ItemStack s : FarragoMod.UTILITY_BELT.getCompleteContents(belt)) {
+			p.entityDropItem(s, 0.2f);
+		}
 	}
 }

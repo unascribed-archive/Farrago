@@ -24,6 +24,8 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import cpw.mods.fml.relauncher.ReflectionHelper;
+
 public class Masses {
 	public static Map<Long, List<Float>> mass = Maps.newHashMap();
 	public static Map<Long, Float> bakedMass = Maps.newHashMap();
@@ -210,7 +212,7 @@ public class Masses {
 				return array(mass.get(hash));
 			}
 		}
-		goat.setItemDamage(OreDictionary.WILDCARD_VALUE);
+		ReflectionHelper.setPrivateValue(ItemStack.class, goat, OreDictionary.WILDCARD_VALUE, 5);
 		hash = FarragoMod.hashItemStack(goat);
 		if (baked && allowBaked) {
 			if (bakedMass.containsKey(hash)) {
