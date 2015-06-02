@@ -1034,6 +1034,16 @@ public class FarragoMod {
 		return val.valueType() == ConfigValueType.STRING ? -1 : ((Number)val.unwrapped()).intValue();
 	}
 
+	/*
+	 * Hold on, before you berate me for this awful hack, I can explain!
+	 * 
+	 * PlayerDestroyItemEvent doesn't fire for armor. I looked through all code
+	 * related to armor breaking, and the only external method that's called that
+	 * tons of other things don't also call that is reasonable is setDamage.
+	 * 
+	 * setDamage doesn't pass in an Entity, so I scan every player on the server...
+	 * Please submit an issue if there's a new (better) way to do it!
+	 */
 	public static void doBreakUtilityBelt(ItemStack belt, List<EntityPlayer> players) {
 		if (!FarragoMod.config.getBoolean("utilityBelt.dropItemsOnBreak")) return;
 		for (EntityPlayer p : players) {
