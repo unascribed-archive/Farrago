@@ -28,6 +28,16 @@ public class UtilityBeltRenderer {
 		if (lastHotbar != cur && !switching) {
 			switching = true;
 			lastHotbarContent = FarragoMod.UTILITY_BELT.getRowContents(belt, lastHotbar);
+			byte[] lastLocked = FarragoMod.UTILITY_BELT.getLockedSlots(belt, lastHotbar);
+			byte[] locked = FarragoMod.UTILITY_BELT.getLockedSlots(belt, cur);
+			ItemStack[] swap = FarragoMod.UTILITY_BELT.getSwapContents(belt);
+			for (byte b : lastLocked) {
+				if (swap[b] != null) {
+					lastHotbarContent[b] = swap[b];
+				} else if (ArrayUtils.contains(locked, b)) {
+					lastHotbarContent[b] = mc.thePlayer.inventory.mainInventory[b];
+				}
+			}
 		}
 		if (switching) {
 			boolean dir = cur > lastHotbar;
