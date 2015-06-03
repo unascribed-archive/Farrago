@@ -255,11 +255,9 @@ public class ClientProxy implements Proxy {
 						if (nextHotbar.isPressed()) {
 							FarragoMod.CHANNEL.sendToServer(new ChangeSelectedHotbarMessage(true));
 							UtilityBeltRenderer.direction = true;
-							UtilityBeltRenderer.resetAnim();
 						} else if (prevHotbar.isPressed()) {
 							FarragoMod.CHANNEL.sendToServer(new ChangeSelectedHotbarMessage(false));
 							UtilityBeltRenderer.direction = false;
-							UtilityBeltRenderer.resetAnim();
 						} else if (renameHotbar.isPressed()) {
 							new PaneRenameHotbar(FarragoMod.UTILITY_BELT.getCurrentRow(legs), legs).show();
 						} else if (lockSlot.isPressed()) {

@@ -191,10 +191,4 @@ public class UtilityBeltRenderer {
 			GL11.glPopMatrix();
 		}
 	}
-
-	public static void resetAnim() {
-		lastHotbarContent = null;
-		lastHotbarTicks = 0;
-		switching = false;
-	}
 }
