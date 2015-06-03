@@ -27,14 +27,24 @@ public class LockSlotHandler implements IMessageHandler<LockSlotMessage, IMessag
 					}
 					int cur = FarragoMod.UTILITY_BELT.getCurrentRow(legs);
 					byte[] slots = FarragoMod.UTILITY_BELT.getLockedSlots(legs, cur);
+					ItemStack[] swap = FarragoMod.UTILITY_BELT.getSwapContents(legs);
 					if (ArrayUtils.contains(slots, slot)) {
 						slots = ArrayUtils.removeElement(slots, slot);
+						if (swap[slot] == null) {
+							swap[slot] = player.inventory.mainInventory[slot];
+							player.inventory.mainInventory[slot] = null;
+						}
 						player.worldObj.playSoundAtEntity(player, "farrago:lock_slot", 0.4f, 1.5f);
 					} else {
 						slots = ArrayUtils.add(slots, slot);
+						if (player.inventory.mainInventory[slot] == null) {
+							player.inventory.mainInventory[slot] = swap[slot];
+							swap[slot] = null;
+						}
 						player.worldObj.playSoundAtEntity(player, "farrago:lock_slot", 0.4f, 1.0f);
 					}
 					FarragoMod.UTILITY_BELT.setLockedSlots(legs, cur, slots);
+					FarragoMod.UTILITY_BELT.setSwapContents(legs, swap);
 				}
 			}
 		}

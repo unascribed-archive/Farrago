@@ -25,8 +25,10 @@ public class ChangeSelectedHotbarHandler implements IMessageHandler<ChangeSelect
 					byte[] lock = FarragoMod.UTILITY_BELT.getLockedSlots(legs, idx);
 					ItemStack[] swap = FarragoMod.UTILITY_BELT.getSwapContents(legs);
 					for (byte b : lock) {
-						swap[b] = player.inventory.mainInventory[b];
-						player.inventory.mainInventory[b] = null;
+						if (swap[b] == null) {
+							swap[b] = player.inventory.mainInventory[b];
+							player.inventory.mainInventory[b] = null;
+						}
 					}
 					
 					ItemStack[] hotbar = new ItemStack[hotbarSize];
@@ -44,16 +46,11 @@ public class ChangeSelectedHotbarHandler implements IMessageHandler<ChangeSelect
 					System.arraycopy(FarragoMod.UTILITY_BELT.getRowContents(legs, nextIdx), 0, player.inventory.mainInventory, 0, hotbarSize);
 					
 					byte[] nextLock = FarragoMod.UTILITY_BELT.getLockedSlots(legs, nextIdx);
-					for (byte b : lock) {
-						if (player.inventory.mainInventory[b] != null) {
-							player.entityDropItem(player.inventory.mainInventory[b], 0.2f);
-						}
-						player.inventory.mainInventory[b] = swap[b];
-						swap[b] = null;
-					}
 					for (byte b : nextLock) {
-						player.entityDropItem(player.inventory.mainInventory[b], 0.2f);
-						player.inventory.mainInventory[b] = null;
+						if (player.inventory.mainInventory[b] == null) {
+							player.inventory.mainInventory[b] = swap[b];
+							swap[b] = null;
+						}
 					}
 					
 					FarragoMod.UTILITY_BELT.setSwapContents(legs, swap);
