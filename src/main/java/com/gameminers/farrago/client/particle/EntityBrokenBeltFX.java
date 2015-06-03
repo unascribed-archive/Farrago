@@ -17,7 +17,7 @@ public class EntityBrokenBeltFX extends EntityFX {
 		motionX = entity.motionX * 0.75;
 		motionZ = entity.motionZ * 0.75;
 		rotationYaw = entity.rotationYaw;
-		particleMaxAge = 25000;
+		particleMaxAge = 250;
 		particleScale = 3f;
 		setSize(0.6f, 0.05f);
 	}
