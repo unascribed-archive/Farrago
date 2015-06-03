@@ -112,6 +112,7 @@ public class ClientProxy implements Proxy {
 		}
 		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(this);
+		UtilityBeltRenderer.showSwapSpace = FarragoMod.config.getBoolean("debug.showSwapSpace");
 	}
 
 	@Override

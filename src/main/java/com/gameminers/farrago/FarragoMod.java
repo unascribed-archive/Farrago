@@ -260,6 +260,9 @@ public class FarragoMod {
 		CHROMATIC_LEGGINGS = new ItemChromaticArmor(2).setTextureName("farrago:chromatic_leggings").setUnlocalizedName("chromatic_leggings");
 		CHROMATIC_BOOTS = new ItemChromaticArmor(3).setTextureName("farrago:chromatic_boots").setUnlocalizedName("chromatic_boots");
 		
+		TileEntityScrapper.dumpTrees = FarragoMod.config.getBoolean("debug.dumpCraftingTrees");
+		TileEntityScrapper.sanic = FarragoMod.config.getBoolean("debug.fastScrapper");
+		
 		ConfigList li = config.getList("materials");
 		for (ConfigValue cv : li) {
 			Config obj = ((ConfigObject) cv).toConfig();

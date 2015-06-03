@@ -21,6 +21,7 @@ public class UtilityBeltRenderer {
 	private static int lastHotbarTicks = 0;
 	private static ItemStack[] lastHotbarContent;
 	private static boolean switching = false;
+	public static boolean showSwapSpace;
 	public static void render(Minecraft mc, ItemStack belt, float partialTicks, int width, int height) {
 		mc.mcProfiler.startSection("actionBarMulti");
 		int cur = FarragoMod.UTILITY_BELT.getCurrentRow(belt);
@@ -87,7 +88,9 @@ public class UtilityBeltRenderer {
 		} else {
 			renderHotbar(mc, belt, partialTicks, width, height, cur, mc.thePlayer.inventory.mainInventory);
 		}
-		renderHotbar(mc, belt, partialTicks, 182, 23, -1, FarragoMod.UTILITY_BELT.getSwapContents(belt));
+		if (showSwapSpace) {
+			renderHotbar(mc, belt, partialTicks, 182, 23, -1, FarragoMod.UTILITY_BELT.getSwapContents(belt));
+		}
 		mc.mcProfiler.endSection();
 	}
 	
