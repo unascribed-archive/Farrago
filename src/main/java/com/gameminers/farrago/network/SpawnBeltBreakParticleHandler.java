@@ -12,7 +12,6 @@ public class SpawnBeltBreakParticleHandler implements IMessageHandler<SpawnBeltB
 
 	@Override
 	public IMessage onMessage(SpawnBeltBreakParticleMessage message, MessageContext ctx) {
-		System.out.println("yo yo yo");
 		Entity e = Minecraft.getMinecraft().theWorld.getEntityByID(message.getEntityId());
 		Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBrokenBeltFX(Minecraft.getMinecraft().getTextureManager(), e));
 		return null;

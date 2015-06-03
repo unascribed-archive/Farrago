@@ -26,7 +26,6 @@ public class LockSlotHandler implements IMessageHandler<LockSlotMessage, IMessag
 						return null;
 					}
 					int cur = FarragoMod.UTILITY_BELT.getCurrentRow(legs);
-					System.out.println("wow   such row   many "+cur);
 					byte[] slots = FarragoMod.UTILITY_BELT.getLockedSlots(legs, cur);
 					if (ArrayUtils.contains(slots, slot)) {
 						slots = ArrayUtils.removeElement(slots, slot);

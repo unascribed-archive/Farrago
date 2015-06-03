@@ -182,7 +182,7 @@ public class ItemUtilityBelt extends ItemArmor {
 	
 	@Override
 	public int getMaxDamage() {
-		return 3;
+		return FarragoMod.config.getInt("utilityBelt.durability");
 	}
 	
 	@Override

@@ -1046,6 +1046,7 @@ public class FarragoMod {
 	 */
 	public static void doBreakUtilityBelt(ItemStack belt, List<EntityPlayer> players) {
 		if (!FarragoMod.config.getBoolean("utilityBelt.dropItemsOnBreak")) return;
+		if (belt.getItemDamage() == OreDictionary.WILDCARD_VALUE) return;
 		for (EntityPlayer p : players) {
 			for (ItemStack s : p.inventory.armorInventory) {
 				if (s == belt) {

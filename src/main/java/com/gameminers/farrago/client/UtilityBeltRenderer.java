@@ -87,6 +87,7 @@ public class UtilityBeltRenderer {
 		} else {
 			renderHotbar(mc, belt, partialTicks, width, height, cur, mc.thePlayer.inventory.mainInventory);
 		}
+		renderHotbar(mc, belt, partialTicks, 182, 23, -1, FarragoMod.UTILITY_BELT.getSwapContents(belt));
 		mc.mcProfiler.endSection();
 	}
 	
@@ -104,7 +105,7 @@ public class UtilityBeltRenderer {
 	
 	public static void renderHotbar(Minecraft mc, ItemStack belt, float partialTicks, int width, int height, int row, ItemStack[] contents) {
 		mc.mcProfiler.startSection("actionBar");
-
+		byte[] locked = FarragoMod.UTILITY_BELT.getLockedSlots(belt, row);
 
 		for (int i = 0; i < InventoryPlayer.getHotbarSize(); ++i) {
 			int x = width / 2 - 90 + i * 20 + 2;
@@ -113,7 +114,7 @@ public class UtilityBeltRenderer {
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			mc.renderEngine.bindTexture(wadjets);
-			if (ArrayUtils.contains(FarragoMod.UTILITY_BELT.getLockedSlots(belt, row), (byte)i)) {
+			if (ArrayUtils.contains(locked, (byte)i)) {
 				GL11.glColor3f(1.0f, 0.5f, 0.0f);
 			} else {
 				GL11.glColor3f(1.0f, 1.0f, 1.0f);
@@ -138,7 +139,13 @@ public class UtilityBeltRenderer {
 		
 		GL11.glColor3f(1.0f, 1.0f, 1.0f);
 		mc.renderEngine.bindTexture(wadjets);
-		Rendering.drawTexturedModalRect(width / 2 - 91 - 1 + mc.thePlayer.inventory.currentItem * 20, height - 22 - 1, 0, 22, 24, 22, 60);
+		if (ArrayUtils.contains(locked, (byte)mc.thePlayer.inventory.currentItem)) {
+			GL11.glColor3f(1.0f, 0.5f, 0.0f);
+		} else {
+			GL11.glColor3f(1.0f, 1.0f, 1.0f);
+		}
+		Rendering.drawTexturedModalRect(width / 2 - 91 - 1 + mc.thePlayer.inventory.currentItem * 20, height - 22 - 1, 0, 22, 24, 23, 60);
+		GL11.glColor3f(1.0f, 1.0f, 1.0f);
 		
 		String nm = FarragoMod.UTILITY_BELT.getRowName(belt, row);
 		mc.fontRenderer.drawStringWithShadow(nm, width / 2 - 95 - mc.fontRenderer.getStringWidth(nm), height - 15, -1);
