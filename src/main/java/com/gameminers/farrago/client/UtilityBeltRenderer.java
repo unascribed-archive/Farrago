@@ -22,6 +22,7 @@ public class UtilityBeltRenderer {
 	private static ItemStack[] lastHotbarContent;
 	private static boolean switching = false;
 	public static boolean showSwapSpace;
+	public static boolean direction;
 	public static void render(Minecraft mc, ItemStack belt, float partialTicks, int width, int height) {
 		mc.mcProfiler.startSection("actionBarMulti");
 		int cur = FarragoMod.UTILITY_BELT.getCurrentRow(belt);
@@ -40,14 +41,13 @@ public class UtilityBeltRenderer {
 			}
 		}
 		if (switching) {
-			boolean dir = cur > lastHotbar;
 			float ticks = lastHotbarTicks + partialTicks;
 			float scale = 1;
 			float scale2 = 1;
 			float trans = 0;
 			float trans2 = 0;
-			if (dir) {
-				trans = lastHotbar > cur ? ticks*2f : (11-ticks)*2f;
+			if (direction) {
+				trans = direction ? (11-ticks)*2f : ticks*2f;
 			} else {
 				scale = ((ticks/11f)*0.5f)+0.5f;
 				trans = (6-ticks) * 2f;
@@ -61,8 +61,8 @@ public class UtilityBeltRenderer {
 			
 			if (lastHotbar != FarragoMod.UTILITY_BELT.getCurrentRow(belt) && lastHotbarTicks < 11) {
 				if (switching) {
-					if (!dir) {
-						trans2 = lastHotbar > cur ? ticks*2f : (11-ticks)*2f;
+					if (!direction) {
+						trans2 = direction ? (11-ticks)*2f : ticks*2f;
 					} else {
 						scale2 = (((11-ticks)/11f)*0.5f)+0.5f;
 						trans2 = ticks * 2f;
@@ -74,7 +74,7 @@ public class UtilityBeltRenderer {
 				
 			}
 			int[] order;
-			if (dir) {
+			if (direction) {
 				order = new int[] {2, 1};
 			} else {
 				order = new int[] {1, 2};
@@ -190,5 +190,11 @@ public class UtilityBeltRenderer {
 			itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, mc.getTextureManager(), itemstack, x, y);
 			GL11.glPopMatrix();
 		}
+	}
+
+	public static void resetAnim() {
+		lastHotbarContent = null;
+		lastHotbarTicks = 0;
+		switching = false;
 	}
 }
