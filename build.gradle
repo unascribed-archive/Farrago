@@ -27,7 +27,7 @@ repositories {
 }
 
 apply plugin: 'forge'
-group = "com.gameminers.farrago"
+group = "com.unascribed.farrago"
 // version and such are in gradle.properties
 
 minecraft {
