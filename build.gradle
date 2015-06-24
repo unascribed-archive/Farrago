@@ -34,11 +34,11 @@ minecraft {
     version = "1.7.10-10.13.2.1307-1.7.10" // double 1.7.10s - is this good luck?
     runDir = "eclipse"
 	
-	replaceIn "src/main/java/com/gameminers/farrago/FarragoMod.java"
+	replaceIn "src/main/java/com/unascribed/farrago/FarragoMod.java"
 	replace "@VERSION@", project.version
 	replace "@MCVERSION@", project.minecraft.version
 	
-	srgExtra "PK: com/typesafe/config com/gameminers/farrago/repackage/com/typesafe/config"
+	srgExtra "PK: com/typesafe/config com/unascribed/farrago/repackage/com/typesafe/config"
 }
 
 configurations {
