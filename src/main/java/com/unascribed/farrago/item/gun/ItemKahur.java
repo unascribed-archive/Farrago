@@ -427,11 +427,11 @@ public class ItemKahur extends Item {
 		proj.setItem(copy);
 		proj.setDamage(Masses.getMass(copy)+(Masses.getMagic(copy)*2f));
 		gun.damageItem((int)Masses.getMagic(copy)+1, player);
-		if (copy.getItem() == Items.gunpowder) {
+		if (copy.getItem() == Items.gunpowder && FarragoMod.config.getBoolean("kahur.special.gunpowder.enable")) {
 			Entity owner = null;
 			world.createExplosion(owner, player.posX, player.posY, player.posZ, 0.4f, false);
 			gun.damageItem(12, player);
-		} else if (copy.getItem() == Items.arrow) {
+		} else if (copy.getItem() == Items.arrow && FarragoMod.config.getBoolean("kahur.special.arrow.enable")) {
 			world.spawnEntityInWorld(new EntityArrow(world, player, 0.8f));
 		} else {
 			world.spawnEntityInWorld(proj);
