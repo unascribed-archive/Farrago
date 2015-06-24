@@ -3,6 +3,7 @@ package com.unascribed.farrago.proxy;
 import java.io.File;
 import java.util.Random;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -55,9 +56,11 @@ public class ServerProxy implements Proxy {
 	@Override public void glowRandomDisplayTick(World world, int x, int y, int z,Random rand) {}
 	@Override public void scope(EntityPlayer player) {}
 	@Override public void tooltip(ItemTooltipEvent e) {}
+	@Override public void spawnBeltBreakParticle(Entity e) {}
 	@Override
 	public void breakUtilityBelt(ItemStack belt) {
 		FarragoMod.doBreakUtilityBelt(belt, MinecraftServer.getServer().getConfigurationManager().playerEntityList);
 	}
+	
 
 }

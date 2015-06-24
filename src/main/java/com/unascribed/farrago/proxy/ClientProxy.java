@@ -17,6 +17,7 @@ import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -48,6 +49,7 @@ import com.unascribed.farrago.client.init.InitScreen;
 import com.unascribed.farrago.client.pane.PaneBranding;
 import com.unascribed.farrago.client.pane.PaneOrbGlow;
 import com.unascribed.farrago.client.pane.PaneRenameHotbar;
+import com.unascribed.farrago.client.particle.EntityBrokenBeltFX;
 import com.unascribed.farrago.client.render.LightPipeBlockRenderer;
 import com.unascribed.farrago.client.render.RenderBlunderbussProjectile;
 import com.unascribed.farrago.client.render.RenderNull;
@@ -391,6 +393,11 @@ public class ClientProxy implements Proxy {
 	@Override
 	public void breakUtilityBelt(ItemStack belt) {
 		FarragoMod.doBreakUtilityBelt(belt, Minecraft.getMinecraft().getIntegratedServer().getConfigurationManager().playerEntityList);
+	}
+
+	@Override
+	public void spawnBeltBreakParticle(Entity e) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBrokenBeltFX(Minecraft.getMinecraft().getTextureManager(), e));
 	}
 
 }

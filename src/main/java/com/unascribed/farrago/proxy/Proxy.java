@@ -5,6 +5,7 @@ import java.util.Random;
 import com.unascribed.farrago.entity.EntityRifleProjectile;
 import com.unascribed.farrago.enums.RifleMode;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -20,4 +21,5 @@ public interface Proxy {
 	void scope(EntityPlayer player);
 	void tooltip(ItemTooltipEvent e);
 	void breakUtilityBelt(ItemStack belt);
+	void spawnBeltBreakParticle(Entity e);
 }

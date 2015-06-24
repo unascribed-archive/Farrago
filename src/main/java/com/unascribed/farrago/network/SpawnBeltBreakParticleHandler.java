@@ -1,10 +1,7 @@
 package com.unascribed.farrago.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-
-import com.unascribed.farrago.client.particle.EntityBrokenBeltFX;
-
+import com.unascribed.farrago.FarragoMod;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -13,8 +10,7 @@ public class SpawnBeltBreakParticleHandler implements IMessageHandler<SpawnBeltB
 
 	@Override
 	public IMessage onMessage(SpawnBeltBreakParticleMessage message, MessageContext ctx) {
-		Entity e = Minecraft.getMinecraft().theWorld.getEntityByID(message.getEntityId());
-		Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBrokenBeltFX(Minecraft.getMinecraft().getTextureManager(), e));
+		FarragoMod.proxy.spawnBeltBreakParticle(Minecraft.getMinecraft().theWorld.getEntityByID(message.getEntityId()));
 		return null;
 	}
 }
