@@ -139,6 +139,9 @@ public class UtilityBeltRenderer {
 			} else {
 				Rendering.drawTexturedModalRect(x-2, y-3, u, 0, 20, 22);
 			}
+			if (i == mc.thePlayer.inventory.currentItem) {
+				Rendering.drawTexturedModalRect(x-4, y-4, 0, 22, 24, 23, 60);
+			}
 			GL11.glColor3f(1.0f, 1.0f, 1.0f);
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -149,16 +152,6 @@ public class UtilityBeltRenderer {
 		}
 
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		
-		GL11.glColor3f(1.0f, 1.0f, 1.0f);
-		mc.renderEngine.bindTexture(wadjets);
-		if (ArrayUtils.contains(locked, (byte)mc.thePlayer.inventory.currentItem)) {
-			GL11.glColor3f(1.0f, 0.5f, 0.0f);
-		} else {
-			GL11.glColor3f(1.0f, 1.0f, 1.0f);
-		}
-		Rendering.drawTexturedModalRect(width / 2 - 91 - 1 + mc.thePlayer.inventory.currentItem * 20, height - 22 - 1, 0, 22, 24, 23, 60);
-		GL11.glColor3f(1.0f, 1.0f, 1.0f);
 		
 		String nm = FarragoMod.UTILITY_BELT.getRowName(belt, row);
 		mc.fontRenderer.drawStringWithShadow(nm, width / 2 - 95 - mc.fontRenderer.getStringWidth(nm), height - 15, -1);
