@@ -96,10 +96,10 @@ public class ClientProxy implements Proxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityRifleProjectile.class, new RenderNull());
 		MinecraftForgeClient.registerItemRenderer(FarragoMod.RIFLE, new RifleItemRenderer());
 		MinecraftForgeClient.registerItemRenderer(FarragoMod.UNDEFINED, new UndefinedItemRenderer());
-		prevHotbar = new KeyBinding("key.farrago.utility_belt.prev_hotbar", Keyboard.KEY_PRIOR, "key.categories.farrago.utility_belt");
-		nextHotbar = new KeyBinding("key.farrago.utility_belt.next_hotbar", Keyboard.KEY_NEXT, "key.categories.farrago.utility_belt");
-		renameHotbar = new KeyBinding("key.farrago.utility_belt.rename_hotbar", Keyboard.KEY_INSERT, "key.categories.farrago.utility_belt");
-		lockSlot = new KeyBinding("key.farrago.utility_belt.lock_slot", Keyboard.KEY_DELETE, "key.categories.farrago.utility_belt");
+		prevHotbar = new KeyBinding("key.farrago.utility_belt.prev_hotbar", Keyboard.KEY_MINUS, "key.categories.farrago.utility_belt");
+		nextHotbar = new KeyBinding("key.farrago.utility_belt.next_hotbar", Keyboard.KEY_EQUALS, "key.categories.farrago.utility_belt");
+		renameHotbar = new KeyBinding("key.farrago.utility_belt.rename_hotbar", Keyboard.KEY_BACK, "key.categories.farrago.utility_belt");
+		lockSlot = new KeyBinding("key.farrago.utility_belt.lock_slot", Keyboard.KEY_0, "key.categories.farrago.utility_belt");
 		ClientRegistry.registerKeyBinding(prevHotbar);
 		ClientRegistry.registerKeyBinding(nextHotbar);
 		ClientRegistry.registerKeyBinding(renameHotbar);
