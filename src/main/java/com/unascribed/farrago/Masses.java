@@ -27,8 +27,8 @@ import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class Masses {
-	public static Map<Long, List<Float>> mass = Maps.newHashMap();
-	public static Map<Long, Float> bakedMass = Maps.newHashMap();
+	public static final Map<Long, List<Float>> mass = Maps.newHashMap();
+	public static final Map<Long, Float> bakedMass = Maps.newHashMap();
 	static boolean baked = false;
 	public static void calculateMass(Item i, int depth, int durability) {
 		if (!FarragoMod.config.getBoolean("kahur.calculateMasses")) {
@@ -145,7 +145,7 @@ public class Masses {
 		if (Float.isInfinite(newMass) || Float.isNaN(newMass) || newMass <= 0) {
 			newMass = 0;
 		}
-		List<Float> list = mass.get(is);
+		List<Float> list = mass.get(FarragoMod.hashItemStack(is));
 		if (list == null) {
 			list = Lists.newArrayList();
 			mass.put(FarragoMod.hashItemStack(is), list);
@@ -249,7 +249,7 @@ public class Masses {
 			total += f;
 		}
 		float avg = total / array.length;
-		return avg == Float.NaN || avg == Float.NEGATIVE_INFINITY || avg == Float.POSITIVE_INFINITY ? 0f : avg;
+		return Float.isNaN(avg) || avg == Float.NEGATIVE_INFINITY || avg == Float.POSITIVE_INFINITY ? 0f : avg;
 	}
 	
 	private static float average(List<Float> list) {
@@ -258,7 +258,7 @@ public class Masses {
 			total += f;
 		}
 		float avg = total / list.size();
-		return avg == Float.NaN || avg == Float.NEGATIVE_INFINITY || avg == Float.POSITIVE_INFINITY ? 0f : avg;
+		return Float.isNaN(avg) || avg == Float.NEGATIVE_INFINITY || avg == Float.POSITIVE_INFINITY ? 0f : avg;
 	}
 
 	

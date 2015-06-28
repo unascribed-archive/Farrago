@@ -8,7 +8,6 @@ public abstract class TileEntityMachineFurnaceLike extends TileEntityMachine {
 	protected static final int[] slotsTop = new int[] { 0 };
 	protected static final int[] slotsBottom = new int[] { 2, 1 };
 	protected static final int[] slotsSides = new int[] { 1 };
-	protected String customName;
 	public int burnTime;
 	public int currentItemBurnTime;
 	public int cookTime;

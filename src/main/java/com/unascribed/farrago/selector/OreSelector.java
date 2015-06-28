@@ -67,6 +67,7 @@ public class OreSelector implements Selector {
 		} else {
 			oresPresent = true;
 			oreRepresentation = ores.get(0);
+			oreId = OreDictionary.getOreID(ore);
 		}
 		oresChecked = true;
 		return oresPresent;

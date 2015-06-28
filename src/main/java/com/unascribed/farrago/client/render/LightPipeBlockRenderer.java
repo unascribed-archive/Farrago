@@ -54,7 +54,7 @@ public class LightPipeBlockRenderer implements ISimpleBlockRenderingHandler {
 		if (meta != 0) {
 			type = ((int) Math.ceil(meta/3f))-1;
 			int base = type*3;
-			count = (meta == 0 ? 0 : meta-base);
+			count = meta-base;
 		}
 		
 		if (junction) {

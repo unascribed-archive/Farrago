@@ -284,9 +284,6 @@ public class ItemKahur extends Item {
 		        ent.motionX *= (double)1.5f;
 		        ent.motionY *= (double)1.5f;
 		        ent.motionZ *= (double)1.5f;
-		        ent.motionX = ent.motionX;
-		        ent.motionY = ent.motionY;
-		        ent.motionZ = ent.motionZ;
 		        float f3 = MathHelper.sqrt_double(ent.motionX * ent.motionX + ent.motionZ * ent.motionZ);
 		        ent.prevRotationYaw = ent.rotationYaw = (float)(Math.atan2(ent.motionX, ent.motionZ) * 180.0D / Math.PI);
 		        ent.prevRotationPitch = ent.rotationPitch = (float)(Math.atan2(ent.motionY, (double)f3) * 180.0D / Math.PI);

@@ -121,7 +121,7 @@ public class BlockLightPipe extends Block {
 				if (mMeta != 0) {
 					mType = ((int) Math.ceil(mMeta/3f))-1;
 					mBase = mType*3;
-					mCount = (mMeta == 0 ? 0 : mMeta-mBase);
+					mCount =  mMeta-mBase;
 				} else {
 					mType = type;
 					mBase = base;

@@ -175,13 +175,13 @@ public class FarragoMod {
 	
 	public static SimpleNetworkWrapper CHANNEL;
 	
-	public static Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
+	public static final Map<Long, List<IRecipe>> recipes = new HashMap<Long, List<IRecipe>>();
 	
 	public static String brand = null;
 	public static boolean showBrand = true;
 	
 	public static boolean copperlessEnvironment;
-	public static CreativeTabs creativeTab = new CreativeTabs("farrago") {
+	public static final CreativeTabs creativeTab = new CreativeTabs("farrago") {
 		private ItemStack iconItemStack;
 		@Override
 		public ItemStack getIconItemStack() {
@@ -199,11 +199,11 @@ public class FarragoMod {
 	public static int scopeTicks;
 	private YttriumGenerator yttrGen;
 	private XenotimeGenerator xenoGen;
-	public static Map<Selector, String> disabled = Maps.newHashMap();
+	public static final Map<Selector, String> disabled = Maps.newHashMap();
 	public static Config config;
 	public static int lightPipeRenderType;
-	public static List<Material> materials = Lists.newArrayList();
-	public static Map<String, Material> monikerLookup = Maps.newHashMap();
+	public static final List<Material> materials = Lists.newArrayList();
+	public static final Map<String, Material> monikerLookup = Maps.newHashMap();
 	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
@@ -1023,7 +1023,7 @@ public class FarragoMod {
 		hash |= (toHash.getItemDamage() & Short.MAX_VALUE) << Short.SIZE;
 		hash |= (Item.getIdFromItem(toHash.getItem()) & Short.MAX_VALUE);
 		if (toHash.hasTagCompound()) {
-			hash |= (toHash.getTagCompound().hashCode() << 32);
+			hash |= ((long)toHash.getTagCompound().hashCode() << 32);
 		}
 		return hash;
 	}
