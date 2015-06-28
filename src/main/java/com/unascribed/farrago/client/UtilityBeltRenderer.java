@@ -119,7 +119,7 @@ public class UtilityBeltRenderer {
 	public static void renderHotbar(Minecraft mc, ItemStack belt, float partialTicks, int width, int height, int row, ItemStack[] contents) {
 		mc.mcProfiler.startSection("actionBar");
 		byte[] locked = FarragoMod.UTILITY_BELT.getLockedSlots(belt, row);
-
+		
 		for (int i = 0; i < InventoryPlayer.getHotbarSize(); ++i) {
 			int x = width / 2 - 90 + i * 20 + 2;
 			int y = height - 16 - 3;
@@ -140,7 +140,7 @@ public class UtilityBeltRenderer {
 				Rendering.drawTexturedModalRect(x-2, y-3, u, 0, 20, 22);
 			}
 			if (i == mc.thePlayer.inventory.currentItem) {
-				Rendering.drawTexturedModalRect(x-4, y-4, 0, 22, 24, 23, 60);
+				Rendering.drawTexturedModalRect(x-4, y-4, 0, 22, 24, 23, 1);
 			}
 			GL11.glColor3f(1.0f, 1.0f, 1.0f);
 			GL11.glDisable(GL11.GL_BLEND);
@@ -173,7 +173,7 @@ public class UtilityBeltRenderer {
 				GL11.glScalef(1.0F / f2, (f2 + 1.0F) / 2.0F, 1.0F);
 				GL11.glTranslatef((float) (-(x + 8)), (float) (-(y + 12)), 0.0F);
 			}
-			itemRenderer.zLevel = 3;
+			itemRenderer.zLevel += 3;
 			itemRenderer.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), itemstack, x, y);
 
 			if (f1 > 0.0F) {
@@ -181,6 +181,7 @@ public class UtilityBeltRenderer {
 			}
 
 			itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, mc.getTextureManager(), itemstack, x, y);
+			itemRenderer.zLevel -= 3;
 			GL11.glPopMatrix();
 		}
 	}
