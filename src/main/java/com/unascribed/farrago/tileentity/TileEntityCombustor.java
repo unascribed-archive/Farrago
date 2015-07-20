@@ -11,7 +11,7 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
-public class TileEntityCombustor extends TileEntityMachineFurnaceLike implements ISidedInventory {
+public class TileEntityCombustor extends TileEntityFurnaceMachine implements ISidedInventory {
 	public TileEntityCombustor() {
 		super("container.combustor", 3);
 	}

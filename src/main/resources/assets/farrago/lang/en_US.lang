@@ -20,10 +20,14 @@ item.cell_blaze.name=Incendiary Rifle Magazine
 item.cell_minigun_empty.name=Empty Minigun Drum
 item.cell_minigun.name=High-Velocity Minigun Drum
 
-death.attack.rifle_backfire=%1$s overcharged their Yttric Rifle
-death.attack.blunderbuss_backfire=%1$s got a bit carried away with their Blunderbuss
+death.attack.rifle_backfire=%1$s overcharged their %2$s
+death.attack.blunderbuss_backfire=%1$s got a bit carried away with their %2$s
 death.attack.laser=%1$s was fried by %2$s
+death.attack.laser.item=%1$s was fried by %2$s using %3$s
 death.attack.blunderbuss=%1$s was torn to shreds by %2$s
+death.attack.blunderbuss.item=%1$s was torn to shreds by %2$s using %3$s
+death.attack.kahur_shot=%1$s was bombarded by %2$s using %3$s
+death.attack.kahur_shot.item=%1$s was bombarded by %2$s using %3$s shot from %4$s
 
 tile.combustor.name=§mCombustor§r
 tile.machine_combustor.name=Combustor
@@ -32,6 +36,8 @@ container.combustor=Combustor
 tile.scrapper.name=§mScrapper§r
 tile.machine_scrapper.name=Scrapper
 container.scrapper=Scrapper
+
+tile.machine_radio.name=Yttric Radio
 
 tile.machine_cell_filler.name=Injector [NYI]
 container.cell_filler=Injector

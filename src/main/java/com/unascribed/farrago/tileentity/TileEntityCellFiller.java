@@ -4,7 +4,7 @@ import com.unascribed.farrago.enums.DustType;
 
 import net.minecraft.item.ItemStack;
 
-public class TileEntityCellFiller extends TileEntityMachine {
+public class TileEntityCellFiller extends TileEntityInventoryMachine {
 	public int cookTime;
 	
 	public TileEntityCellFiller() {

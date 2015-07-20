@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.unascribed.farrago.FarragoMod;
+import com.unascribed.farrago.damagesource.DamageSourceKahur;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -107,7 +108,7 @@ public class EntityKahurProjectile extends EntityThrowable {
 						worldObj.playSoundAtEntity(living, "random.burp", 0.8f, 1.0f);
 						dropChance = 0.0f;
 					} else {
-						living.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), damage);
+						living.attackEntityFrom(new DamageSourceKahur("kahur_shot", this, getThrower()), damage);
 						dropChance = 0.4f;
 						if (FarragoMod.config.getBoolean("kahur.special.poisonousPotato.enable") && getItem().getItem() == Items.poisonous_potato) {
 							living.addPotionEffect(new PotionEffect(Potion.poison.getId(), 100, 1));

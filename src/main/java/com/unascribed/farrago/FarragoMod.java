@@ -1,5 +1,6 @@
 package com.unascribed.farrago;
 
+import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -101,6 +102,7 @@ import com.unascribed.farrago.selector.OreSelector;
 import com.unascribed.farrago.selector.Selector;
 import com.unascribed.farrago.tileentity.TileEntityCellFiller;
 import com.unascribed.farrago.tileentity.TileEntityCombustor;
+import com.unascribed.farrago.tileentity.TileEntityRadio;
 import com.unascribed.farrago.tileentity.TileEntityScrapper;
 import com.unascribed.farrago.tileentity.TileEntityTicker;
 
@@ -205,6 +207,12 @@ public class FarragoMod {
 	public static final List<Material> materials = Lists.newArrayList();
 	public static final Map<String, Material> monikerLookup = Maps.newHashMap();
 	
+	public static List<URL> legalRadioStations = Lists.newArrayList();
+	public static boolean allowAllRadioStations;
+	
+	public static List<URL> localLegalRadioStations = Lists.newArrayList();
+	public static boolean localAllowAllRadioStations;
+	
 	@EventHandler
 	public void onPreInit(FMLPreInitializationEvent e) {
 		proxy.preInit();
@@ -219,7 +227,7 @@ public class FarragoMod {
 		CHANNEL.registerMessage(RenameHotbarHandler.class, RenameHotbarMessage.class, 2, Side.SERVER);
 		CHANNEL.registerMessage(LockSlotHandler.class, LockSlotMessage.class, 3, Side.SERVER);
 		
-		CHANNEL.registerMessage(SpawnBeltBreakParticleHandler.class, SpawnBeltBreakParticleMessage.class, 0, Side.CLIENT);
+		CHANNEL.registerMessage(SpawnBeltBreakParticleHandler.class, SpawnBeltBreakParticleMessage.class, 4, Side.CLIENT);
 		
 		COMBUSTOR = new BlockCombustor();
 		SCRAPPER = new BlockScrapper();
@@ -289,6 +297,7 @@ public class FarragoMod {
 		GameRegistry.registerTileEntity(TileEntityCombustor.class, "FarragoCombustor");
 		GameRegistry.registerTileEntity(TileEntityScrapper.class, "FarragoScrapper");
 		GameRegistry.registerTileEntity(TileEntityCellFiller.class, "FarragoCellFiller");
+		GameRegistry.registerTileEntity(TileEntityRadio.class, "FarragoRadio");
 		GameRegistry.registerTileEntity(TileEntityTicker.class, "FarragoTicker");
 		
 		GameRegistry.registerBlock(GLOW, null, "glow");
@@ -502,6 +511,70 @@ public class FarragoMod {
 					));
 		} else {
 			disabled.put(new ItemSelector(new ItemStack(MACHINE, 1, 1)), config.getString("machines.scrapper.disableReason"));
+		}
+		
+		if (config.getBoolean("machines.radio.craftable")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(MACHINE, 1, 3),
+					"TDT",
+					"YEY",
+					"YRY",
+					'Y', "ingotYttriumCopper",
+					'T', Blocks.redstone_torch,
+					'E', "gemEnderPearl",
+					'R', "record",
+					'D', "dustDiamond"
+					));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(MACHINE, 1, 3)), config.getString("machines.radio.disableReason"));
+		}
+		
+		if (config.getBoolean("machines.aggregator.craftable")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(COLLECTOR, 1, 0),
+					"GGG",
+					"YYY",
+					"CCC",
+					'C', "ingotYttriumCopper",
+					'Y', "dustYttrium",
+					'G', "blockGlassColorless"
+					));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(COLLECTOR, 1, 1),
+					"GGG",
+					"YYY",
+					"CCC",
+					'C', "ingotYttriumCopper",
+					'Y', "dustYttrium",
+					'G', "blockGlassYellow"
+					));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(COLLECTOR, 1, 2),
+					"GGG",
+					"YYY",
+					"CCC",
+					'C', "ingotYttriumCopper",
+					'Y', "dustYttrium",
+					'G', "blockGlassMagenta"
+					));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(COLLECTOR, 1, 3),
+					"GGG",
+					"YYY",
+					"CCC",
+					'C', "ingotYttriumCopper",
+					'Y', "dustYttrium",
+					'G', "blockGlassBlue"
+					));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(LIGHT_PIPE, 6),
+					"GGG",
+					"YgY",
+					"GGG",
+					'g', "dustGold",
+					'Y', "dustYttrium",
+					'G', "blockGlass"
+					));
+		} else {
+			disabled.put(new ItemSelector(new ItemStack(COLLECTOR, 1, 0)), config.getString("machines.aggregator.disableReason"));
+			disabled.put(new ItemSelector(new ItemStack(COLLECTOR, 1, 1)), config.getString("machines.aggregator.disableReason"));
+			disabled.put(new ItemSelector(new ItemStack(COLLECTOR, 1, 2)), config.getString("machines.aggregator.disableReason"));
+			disabled.put(new ItemSelector(new ItemStack(COLLECTOR, 1, 3)), config.getString("machines.aggregator.disableReason"));
+			disabled.put(new ItemSelector(new ItemStack(LIGHT_PIPE)), config.getString("machines.aggregator.disableReason"));
 		}
 		
 		if (config.getBoolean("blunderbuss.craftable")) {

@@ -4,7 +4,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public abstract class TileEntityMachineFurnaceLike extends TileEntityMachine {
+public abstract class TileEntityFurnaceMachine extends TileEntityInventoryMachine {
 	protected static final int[] slotsTop = new int[] { 0 };
 	protected static final int[] slotsBottom = new int[] { 2, 1 };
 	protected static final int[] slotsSides = new int[] { 1 };
@@ -12,7 +12,7 @@ public abstract class TileEntityMachineFurnaceLike extends TileEntityMachine {
 	public int currentItemBurnTime;
 	public int cookTime;
 
-	protected TileEntityMachineFurnaceLike(String normalName, int inventorySize) {
+	protected TileEntityFurnaceMachine(String normalName, int inventorySize) {
 		super(normalName, inventorySize);
 	}
 

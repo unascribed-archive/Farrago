@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.unascribed.farrago.FarragoMod;
 import com.unascribed.farrago.tileentity.TileEntityCombustor;
+import com.unascribed.farrago.tileentity.TileEntityInventoryMachine;
 import com.unascribed.farrago.tileentity.TileEntityMachine;
 
 import net.minecraft.block.Block;
@@ -32,6 +33,7 @@ public class BlockCombustor extends Block {
 		setBlockName("combustor");
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int side, int meta) {
 		meta = meta & 0x7;
@@ -63,6 +65,7 @@ public class BlockCombustor extends Block {
 		return new TileEntityCombustor();
 	}
 
+	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float xOfs, float yOfs, float zOfs) {
 		if (world.isRemote) {
 			return true;
@@ -77,6 +80,7 @@ public class BlockCombustor extends Block {
 		}
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister p_149651_1_) {
 		blockIcon = p_149651_1_.registerIcon("farrago:combustor_side");
@@ -85,12 +89,14 @@ public class BlockCombustor extends Block {
 		bottom = p_149651_1_.registerIcon("farrago:combustor_bottom");
 	}
 	
+	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
 		TileEntityMachine te = (TileEntityMachine) world.getTileEntity(x, y, z);
 
-		if (te != null) {
-			for (int i = 0; i < te.getSizeInventory(); ++i) {
-				ItemStack itemstack = te.getStackInSlot(i);
+		if (te != null && te instanceof TileEntityInventoryMachine) {
+			TileEntityInventoryMachine inv = (TileEntityInventoryMachine) te;
+			for (int i = 0; i < inv.getSizeInventory(); ++i) {
+				ItemStack itemstack = inv.getStackInSlot(i);
 
 				if (itemstack != null) {
 					float f = world.rand.nextFloat() * 0.8F + 0.1F;

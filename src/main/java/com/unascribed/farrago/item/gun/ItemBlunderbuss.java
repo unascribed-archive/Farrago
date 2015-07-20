@@ -1,6 +1,7 @@
 package com.unascribed.farrago.item.gun;
 
 import com.unascribed.farrago.FarragoMod;
+import com.unascribed.farrago.damagesource.DamageSourceBackfire;
 import com.unascribed.farrago.entity.EntityBlunderbussProjectile;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,7 +10,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class ItemBlunderbuss extends Item {
@@ -66,7 +66,7 @@ public class ItemBlunderbuss extends Item {
 						player.inventory.consumeInventoryItem(Item.getItemFromBlock(Blocks.gravel));
 					}
 					if (itemRand.nextInt(12) == 1) {
-						player.attackEntityFrom(new DamageSource("blunderbuss_backfire"), (float)FarragoMod.config.getDouble("blunderbuss.backfireDamage"));
+						player.attackEntityFrom(new DamageSourceBackfire("blunderbuss_backfire", gun), (float)FarragoMod.config.getDouble("blunderbuss.backfireDamage"));
 					}
 					player.inventory.consumeInventoryItem(Item.getItemFromBlock(Blocks.gravel));
 					gun.damageItem(itemRand.nextInt(3)+1, player);

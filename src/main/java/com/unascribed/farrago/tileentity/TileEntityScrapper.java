@@ -9,7 +9,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -29,7 +28,7 @@ import com.unascribed.farrago.item.resource.ItemRubble;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityScrapper extends TileEntityMachine implements ISidedInventory {
+public class TileEntityScrapper extends TileEntityInventoryMachine {
 	public TileEntityScrapper() {
 		super("container.scrapper", 12);
 	}

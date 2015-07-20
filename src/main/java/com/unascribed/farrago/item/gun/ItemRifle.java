@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.unascribed.farrago.FarragoMod;
 import com.unascribed.farrago.Inventories;
+import com.unascribed.farrago.damagesource.DamageSourceBackfire;
 import com.unascribed.farrago.entity.EntityRifleProjectile;
 import com.unascribed.farrago.enums.RifleMode;
 
@@ -76,7 +77,7 @@ public class ItemRifle extends Item {
 	@Override
 	public ItemStack onEaten(ItemStack gun, World world, EntityPlayer player) {
 		gun.damageItem(32, player);
-		player.attackEntityFrom(new DamageSource("rifle_backfire"), 8);
+		player.attackEntityFrom(new DamageSourceBackfire("rifle_backfire", gun), 8);
 		Inventories.consumeInventoryItem(player.inventory, FarragoMod.CELL, getMode(gun).getCellType());
 		world.playSoundAtEntity(player, "farrago:laser_overcharge", 1.0f, 1.0f);
 		if (world instanceof WorldServer) {
@@ -143,6 +144,7 @@ public class ItemRifle extends Item {
 		return icons[idx];
 	}
 	
+	@Override
 	public IIcon getIcon(ItemStack stack, int pass) {
 		return icons[0];
 	}

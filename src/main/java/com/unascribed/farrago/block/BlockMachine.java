@@ -6,7 +6,9 @@ import java.util.Random;
 import com.unascribed.farrago.FarragoMod;
 import com.unascribed.farrago.tileentity.TileEntityCellFiller;
 import com.unascribed.farrago.tileentity.TileEntityCombustor;
+import com.unascribed.farrago.tileentity.TileEntityInventoryMachine;
 import com.unascribed.farrago.tileentity.TileEntityMachine;
+import com.unascribed.farrago.tileentity.TileEntityRadio;
 import com.unascribed.farrago.tileentity.TileEntityScrapper;
 
 import net.minecraft.block.Block;
@@ -41,6 +43,10 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
 			this.front = front;
 			this.frontOn = frontOn;
 		}
+		public MachineIcons(IIcon only) {
+			front = only;
+			top = bottom = side = frontOn = null;
+		}
 		public final IIcon top;
 		public final IIcon bottom;
 		public final IIcon side;
@@ -48,17 +54,19 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
 		public final IIcon frontOn;
 	}
 
-	private String[] machineTypes = {
+	public String[] machineTypes = {
 			"combustor",
 			"scrapper",
-			"cell_filler"
+			"cell_filler",
+			"radio"
 	};
-	private Class[] tileEntities = {
+	public Class[] tileEntities = {
 			TileEntityCombustor.class,
 			TileEntityScrapper.class,
-			TileEntityCellFiller.class
+			TileEntityCellFiller.class,
+			TileEntityRadio.class
 	};
-	private MachineIcons[] icons = new MachineIcons[machineTypes.length];
+	public MachineIcons[] icons = new MachineIcons[machineTypes.length];
 
 	public BlockMachine() {
 		super(Material.iron);
@@ -127,13 +135,17 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
     public void registerBlockIcons(IIconRegister registry) {
     	for (int i = 0; i < machineTypes.length; i++) {
     		String s = machineTypes[i];
-    		icons[i] = new MachineIcons(
-    				registry.registerIcon("farrago:"+s+"_top"),
-    				registry.registerIcon("farrago:"+s+"_bottom"),
-    				registry.registerIcon("farrago:"+s+"_side"),
-    				registry.registerIcon("farrago:"+s+"_front"),
-    				registry.registerIcon("farrago:"+s+"_front_on")
-    				);
+    		if (s.equals("radio")) {
+    			icons[i] = new MachineIcons(registry.registerIcon("farrago:radio"));
+    		} else {
+	    		icons[i] = new MachineIcons(
+	    				registry.registerIcon("farrago:"+s+"_top"),
+	    				registry.registerIcon("farrago:"+s+"_bottom"),
+	    				registry.registerIcon("farrago:"+s+"_side"),
+	    				registry.registerIcon("farrago:"+s+"_front"),
+	    				registry.registerIcon("farrago:"+s+"_front_on")
+	    				);
+    		}
     	}
     }
     
@@ -170,9 +182,10 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
 		TileEntityMachine te = (TileEntityMachine) world.getTileEntity(x, y, z);
 
-		if (te != null) {
-			for (int i = 0; i < te.getSizeInventory(); ++i) {
-				ItemStack itemstack = te.getStackInSlot(i);
+		if (te != null && te instanceof TileEntityInventoryMachine) {
+			TileEntityInventoryMachine inv = (TileEntityInventoryMachine) te;
+			for (int i = 0; i < inv.getSizeInventory(); ++i) {
+				ItemStack itemstack = inv.getStackInSlot(i);
 
 				if (itemstack != null) {
 					float f = world.rand.nextFloat() * 0.8F + 0.1F;
@@ -244,8 +257,8 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
 			((TileEntityMachine) world.getTileEntity(x, y, z)).setDirection(4);
 		}
 
-		if (stack.hasDisplayName()) {
-			((TileEntityMachine) world.getTileEntity(x, y, z)).setName(stack.getDisplayName());
+		if (stack.hasDisplayName() && world.getTileEntity(x, y, z) instanceof TileEntityInventoryMachine) {
+			((TileEntityInventoryMachine) world.getTileEntity(x, y, z)).setName(stack.getDisplayName());
 		}
 	}
 
