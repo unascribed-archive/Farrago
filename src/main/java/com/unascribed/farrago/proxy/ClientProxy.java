@@ -51,6 +51,7 @@ import com.unascribed.farrago.client.pane.PaneOrbGlow;
 import com.unascribed.farrago.client.pane.PaneRenameHotbar;
 import com.unascribed.farrago.client.particle.EntityBrokenBeltFX;
 import com.unascribed.farrago.client.render.LightPipeBlockRenderer;
+import com.unascribed.farrago.client.render.MachineBlockRenderer;
 import com.unascribed.farrago.client.render.RenderBlunderbussProjectile;
 import com.unascribed.farrago.client.render.RenderNull;
 import com.unascribed.farrago.client.render.RifleItemRenderer;
@@ -107,7 +108,9 @@ public class ClientProxy implements Proxy {
 		ClientRegistry.registerKeyBinding(renameHotbar);
 		ClientRegistry.registerKeyBinding(lockSlot);
 		FarragoMod.lightPipeRenderType = RenderingRegistry.getNextAvailableRenderId();
+		FarragoMod.machineRenderType = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(new LightPipeBlockRenderer());
+		RenderingRegistry.registerBlockHandler(new MachineBlockRenderer());
 		IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
 		if (manager instanceof IReloadableResourceManager) {
 			((IReloadableResourceManager)manager).registerReloadListener(new Encyclopedia());

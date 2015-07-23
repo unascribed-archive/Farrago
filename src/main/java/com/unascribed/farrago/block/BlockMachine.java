@@ -54,6 +54,8 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
 		public final IIcon frontOn;
 	}
 
+	public static boolean inventory;
+
 	public String[] machineTypes = {
 			"combustor",
 			"scrapper",
@@ -102,6 +104,11 @@ public class BlockMachine extends BlockContainer implements NameDelegate {
         return side == 1 ? icons[meta].top : (side == 0 ? icons[meta].bottom : (side != facing ? icons[meta].side : on ? icons[meta].frontOn : icons[meta].front));
     }
 
+    @Override
+    public int getRenderType() {
+    	return inventory ? 0 : FarragoMod.machineRenderType;
+    }
+    
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
 		if (meta >= machineTypes.length) meta = 0;

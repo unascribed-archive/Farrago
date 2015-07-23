@@ -203,7 +203,7 @@ public class FarragoMod {
 	private XenotimeGenerator xenoGen;
 	public static final Map<Selector, String> disabled = Maps.newHashMap();
 	public static Config config;
-	public static int lightPipeRenderType;
+	public static int lightPipeRenderType, machineRenderType;
 	public static final List<Material> materials = Lists.newArrayList();
 	public static final Map<String, Material> monikerLookup = Maps.newHashMap();
 	
